@@ -9,10 +9,10 @@ export default function Footer() {
           {/* Logo / Brand */}
           <Link to="/" className="flex items-center space-x-2.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-lg shadow-soft-xs">
-              R
+              H
             </div>
             <span className="text-lg font-extrabold font-display tracking-tight text-white">
-              Resume<span className="text-brand-400">AI</span>
+              Hire<span className="text-brand-400">Setu</span>
             </span>
           </Link>
 

@@ -85,7 +85,7 @@ export default function Dashboard() {
       {/* Top Navbar Header */}
       <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-surface-200/80 px-6 py-4 shadow-soft-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2.5 group">
+          <Link to="/dashboard" className="flex items-center space-x-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-xl shadow-soft-sm group-hover:scale-105 transition-transform">
               H
             </div>

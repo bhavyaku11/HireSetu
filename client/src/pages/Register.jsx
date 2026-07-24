@@ -16,7 +16,7 @@ export default function Register() {
   const [apiError, setApiError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const navigate = useNavigate();
 
   const validate = () => {
@@ -80,7 +80,7 @@ export default function Register() {
       <div className="w-full max-w-md relative z-10 space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <Link to="/" className="inline-flex items-center space-x-2.5 group">
+          <Link to={user ? '/dashboard' : '/'} className="inline-flex items-center space-x-2.5 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-xl shadow-soft-sm group-hover:scale-105 transition-transform">
               H
             </div>
