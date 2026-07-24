@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import Input from '../components/ui/Input';
@@ -95,9 +96,6 @@ export default function Dashboard() {
           </Link>
 
           <div className="flex items-center space-x-3">
-            <Badge variant="primary" dot>
-              {user?.name || 'User'}
-            </Badge>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Sign Out
             </Button>
@@ -176,8 +174,8 @@ export default function Dashboard() {
                 onClick={() => setShowModal(true)}
                 className="rounded-2xl border-2 border-dashed border-brand-200 hover:border-brand-400 bg-brand-50/30 hover:bg-brand-50/70 p-6 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer transition-all duration-200 group min-h-[220px]"
               >
-                <div className="w-12 h-12 rounded-2xl bg-white border border-brand-200 flex items-center justify-center text-brand-600 text-2xl shadow-soft-xs group-hover:scale-110 transition-transform">
-                  +
+                <div className="w-12 h-12 rounded-2xl bg-white border border-brand-200 flex items-center justify-center text-brand-600 shadow-soft-xs group-hover:scale-110 transition-transform">
+                  <Plus className="w-6 h-6 stroke-[2.5]" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold font-display text-brand-700">
