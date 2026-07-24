@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
+import logoMark from '../assets/logo-mark.png';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -75,9 +76,11 @@ export default function Login() {
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <Link to={user ? '/dashboard' : '/'} className="inline-flex items-center space-x-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-xl shadow-soft-sm group-hover:scale-105 transition-transform">
-              H
-            </div>
+            <img 
+              src={logoMark} 
+              alt="HireSetu" 
+              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" 
+            />
             <span className="text-2xl font-extrabold font-display tracking-tight text-surface-900">
               Hire<span className="text-brand-500">Setu</span>
             </span>

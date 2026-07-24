@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
+import { useAuth } from '../context/AuthContext';
+import logoMark from '../assets/logo-mark.png';
 
 export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -19,71 +21,77 @@ export default function Register() {
   const { register, user } = useAuth();
   const navigate = useNavigate();
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!formData.name.trim()) {
       newErrors.name = 'Full name is required';
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
+    if (!formData.email.trim()) {
       newErrors.email = 'Email address is required';
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
-    if (apiError) setApiError('');
+
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError('');
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-    if (!validate()) return;
-
+    setErrors({});
     setIsSubmitting(true);
-    const result = await register(formData.name.trim(), formData.email.trim(), formData.password);
-    setIsSubmitting(false);
 
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setApiError(result.message);
+    try {
+      const result = await register(formData.name, formData.email, formData.password);
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setApiError(result.message || 'Registration failed. Please try again.');
+      }
+    } catch (err) {
+      setApiError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-brand-canvas relative flex items-center justify-center p-4 font-body selection:bg-brand-500/20 selection:text-brand-700">
-      {/* Background Dot Grid Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#d4ccff_1.2px,transparent_1.2px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+    <div className="min-h-screen hero-bg flex items-center justify-center p-4 font-body selection:bg-brand-500/20 selection:text-brand-700 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute -top-32 -left-32 w-[450px] h-[450px] rounded-full bg-brand-200/20 blur-[90px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-[450px] h-[450px] rounded-full bg-brand-100/30 blur-[90px] pointer-events-none" />
 
-      {/* Decorative Blur Orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-brand-300/20 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Centered Auth Card */}
       <div className="w-full max-w-md relative z-10 space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <Link to={user ? '/dashboard' : '/'} className="inline-flex items-center space-x-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-xl shadow-soft-sm group-hover:scale-105 transition-transform">
-              H
-            </div>
+            <img
+              src={logoMark}
+              alt="HireSetu Logo"
+              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-200"
+            />
             <span className="text-2xl font-extrabold font-display tracking-tight text-surface-900">
               Hire<span className="text-brand-500">Setu</span>
             </span>

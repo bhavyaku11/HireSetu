@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logoMark from '../../assets/logo-mark.png';
 
 export default function Footer() {
   return (
@@ -8,9 +9,11 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo / Brand */}
           <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-lg shadow-soft-xs">
-              H
-            </div>
+            <img
+              src={logoMark}
+              alt="HireSetu Logo"
+              className="w-8 h-8 object-contain"
+            />
             <span className="text-lg font-extrabold font-display tracking-tight text-white">
               Hire<span className="text-brand-400">Setu</span>
             </span>

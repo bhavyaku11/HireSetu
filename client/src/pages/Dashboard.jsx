@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import Input from '../components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
+import logoMark from '../assets/logo-mark.png';
 
 export default function Dashboard() {
   const { user, token, logout } = useAuth();
@@ -87,9 +88,11 @@ export default function Dashboard() {
       <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-surface-200/80 px-6 py-4 shadow-soft-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center space-x-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-brand flex items-center justify-center text-white font-extrabold font-display text-xl shadow-soft-sm group-hover:scale-105 transition-transform">
-              H
-            </div>
+            <img
+              src={logoMark}
+              alt="HireSetu Logo"
+              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform duration-200"
+            />
             <span className="text-xl font-extrabold font-display tracking-tight text-surface-900">
               Hire<span className="text-brand-500">Setu</span>
             </span>

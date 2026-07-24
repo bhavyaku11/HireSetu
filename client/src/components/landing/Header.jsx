@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
+import logoMark from '../../assets/logo-mark.png';
 
 const NAV_LINKS = [
   { label: 'How It Works', href: '#how-it-works' },
@@ -31,9 +32,11 @@ export default function Header() {
 
           {/* ── Brand Logo / Wordmark ─────────────────── */}
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center text-white font-black font-display text-base shadow-soft-sm group-hover:scale-105 transition-transform duration-200">
-              H
-            </div>
+            <img
+              src={logoMark}
+              alt="HireSetu Logo"
+              className="w-8 h-8 object-contain group-hover:scale-105 transition-transform duration-200"
+            />
             <span className="text-[17px] font-extrabold font-display tracking-tight text-surface-900 leading-none">
               Hire<span className="text-brand-500">Setu</span>
             </span>
