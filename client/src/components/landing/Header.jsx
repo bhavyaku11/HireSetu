@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
   { label: 'How It Works', href: '#how-it-works' },
+  { label: 'Features', href: '#features' },
+  { label: 'FAQ', href: '#faq' },
 ];
 
 export default function Header() {
