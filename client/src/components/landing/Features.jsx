@@ -50,7 +50,7 @@ const FEATURES = [
 
 export default function Features() {
   return (
-    <section id="features" className="py-24 bg-surface-50 relative overflow-hidden">
+    <section id="features" className="py-16 md:py-24 bg-surface-50 relative overflow-hidden">
       {/* Background Subtle Gradient Overlay */}
       <div className="absolute inset-0 bg-brand-canvas opacity-60 pointer-events-none" />
 

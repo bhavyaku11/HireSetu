@@ -3,7 +3,7 @@ import { Card } from '../ui/Card';
 
 export default function CredibilityStat() {
   return (
-    <section className="py-20 bg-white relative overflow-hidden border-t border-surface-200/60">
+    <section className="py-16 md:py-24 bg-white relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-5 sm:px-8 text-center space-y-6 relative z-10">
         
         {/* Container Card */}
