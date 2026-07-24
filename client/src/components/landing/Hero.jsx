@@ -119,7 +119,7 @@ function ResumeCard({ className = '', style = {} }) {
 /* ─── Main Hero Component ────────────────────────────────────────────── */
 export default function Hero() {
   return (
-    <section className="relative hero-bg pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden">
+    <section className="relative hero-bg min-h-[calc(100dvh-64px)] flex items-center py-16 md:py-20 overflow-hidden">
 
       {/* ── Subtle full-section dot texture overlay ── */}
       <div
