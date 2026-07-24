@@ -166,7 +166,7 @@ export default function Hero() {
 
             {/* CTA buttons — exactly two */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
-              <Link to="/register" className="w-full sm:w-auto">
+              <Link to="/login" className="w-full sm:w-auto">
                 <Button
                   variant="primary"
                   size="lg"
@@ -180,7 +180,7 @@ export default function Hero() {
                   Build Resume with AI
                 </Button>
               </Link>
-              <Link to="/register" className="w-full sm:w-auto">
+              <Link to="/login" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"

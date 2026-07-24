@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from '../ui/Card';
 
 const STEPS = [
@@ -121,9 +122,9 @@ export default function HowItWorks() {
         <div className="text-center">
           <p className="text-[13px] text-surface-400 font-medium">
             Takes less than 5 minutes to get started —{' '}
-            <a href="/register" className="text-brand-500 font-semibold hover:text-brand-700 hover:underline underline-offset-2 transition-colors">
+            <Link to="/login" className="text-brand-500 font-semibold hover:text-brand-700 hover:underline underline-offset-2 transition-colors">
               try it free
-            </a>
+            </Link>
           </p>
         </div>
       </div>
