@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
+import ImportedResume from './pages/ImportedResume';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/builder/:resumeId" element={<Builder />} />
+              <Route path="/imported/:resumeId" element={<ImportedResume />} />
             </Route>
 
             {/* Fallback & 404 Routes */}

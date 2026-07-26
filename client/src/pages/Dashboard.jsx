@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Upload } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import Input from '../components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
+import ImportModal from '../components/dashboard/ImportModal';
 import logoMark from '../assets/logo-mark.png';
 
 export default function Dashboard() {
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [error, setError] = useState('');
 
   const fetchResumes = async () => {
@@ -123,15 +125,26 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => setShowModal(true)}
-              leftIcon={<span>+</span>}
-              className="shadow-soft-md self-start sm:self-auto shrink-0"
-            >
-              New Resume
-            </Button>
+            <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto shrink-0">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setShowImportModal(true)}
+                leftIcon={<Upload className="w-5 h-5" />}
+                className="shadow-soft-sm"
+              >
+                Import Resume
+              </Button>
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => setShowModal(true)}
+                leftIcon={<span>+</span>}
+                className="shadow-soft-md"
+              >
+                New Resume
+              </Button>
+            </div>
           </div>
         </Card>
 
@@ -163,12 +176,22 @@ export default function Dashboard() {
                   No resumes created yet
                 </h4>
                 <p className="text-xs text-surface-500 max-w-sm mx-auto">
-                  Click "+ New Resume" to start building your first ATS-ready resume with AI.
+                  Create a new ATS resume or import an existing PDF/DOCX file.
                 </p>
               </div>
-              <Button variant="primary" size="md" onClick={() => setShowModal(true)} leftIcon={<span>+</span>}>
-                New Resume
-              </Button>
+              <div className="flex items-center justify-center gap-3">
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={() => setShowImportModal(true)}
+                  leftIcon={<Upload className="w-4 h-4" />}
+                >
+                  Import Resume
+                </Button>
+                <Button variant="primary" size="md" onClick={() => setShowModal(true)} leftIcon={<span>+</span>}>
+                  New Resume
+                </Button>
+              </div>
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -186,6 +209,24 @@ export default function Dashboard() {
                   </h4>
                   <p className="text-[11px] text-surface-500">
                     Start a fresh document with ATS layout
+                  </p>
+                </div>
+              </div>
+
+              {/* Import Resume Card Tile */}
+              <div
+                onClick={() => setShowImportModal(true)}
+                className="rounded-2xl border-2 border-dashed border-surface-300 hover:border-brand-400 bg-surface-50/50 hover:bg-brand-50/40 p-6 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer transition-all duration-200 group min-h-[220px]"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-white border border-surface-200 group-hover:border-brand-200 flex items-center justify-center text-surface-600 group-hover:text-brand-600 shadow-soft-xs group-hover:scale-110 transition-transform">
+                  <Upload className="w-6 h-6 stroke-[2.2]" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold font-display text-surface-900 group-hover:text-brand-700">
+                    Import Resume
+                  </h4>
+                  <p className="text-[11px] text-surface-500">
+                    Upload PDF or DOCX file
                   </p>
                 </div>
               </div>
@@ -292,6 +333,13 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Import Resume Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+      />
     </div>
   );
 }
+
