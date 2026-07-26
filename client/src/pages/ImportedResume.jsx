@@ -5,6 +5,7 @@ import { CheckCircle2, FileText, ArrowLeft, ArrowRight, Upload, Sparkles } from 
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
+import AtsParseView from '../components/ats/AtsParseView';
 import logoMark from '../assets/logo-mark.png';
 
 export default function ImportedResume() {
@@ -21,6 +22,7 @@ export default function ImportedResume() {
   const filename = stateData.filename || 'Uploaded_Resume.pdf';
   const size = stateData.size || 0;
   const rawText = stateData.rawText || (resume && resume.raw_extracted_text) || '';
+  const resumeTitle = (resume && resume.title) || stateData.resumeTitle || 'Imported Resume';
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -168,38 +170,6 @@ export default function ImportedResume() {
                 </div>
               </div>
 
-              {/* Extracted Raw Text Display */}
-              <div className="rounded-2xl border border-surface-200 bg-white p-6 space-y-4 shadow-soft-xs">
-                <div className="flex items-center justify-between border-b border-surface-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-brand-600" />
-                    <h4 className="text-sm font-bold font-display text-surface-900">
-                      Extracted Resume Text
-                    </h4>
-                  </div>
-                  {rawText && (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="neutral" size="sm">
-                        {rawText.length} characters
-                      </Badge>
-                      <Badge variant="neutral" size="sm">
-                        {rawText.split(/\s+/).filter(Boolean).length} words
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-
-                {rawText ? (
-                  <div className="bg-surface-900 text-surface-100 rounded-xl p-5 font-mono text-xs leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap selection:bg-brand-500 selection:text-white border border-surface-800">
-                    {rawText}
-                  </div>
-                ) : (
-                  <div className="p-6 text-center text-surface-500 bg-surface-50 rounded-xl border border-dashed border-surface-200 text-xs font-medium">
-                    No extracted text preview available.
-                  </div>
-                )}
-              </div>
-
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
                 <Button
@@ -221,6 +191,13 @@ export default function ImportedResume() {
                 </Button>
               </div>
             </Card>
+
+            {/* ATS Parse-Test Transparency View Component */}
+            <AtsParseView
+              rawText={rawText}
+              resumeTitle={resumeTitle}
+              sections={resume?.sections || []}
+            />
           </div>
         )}
       </main>
