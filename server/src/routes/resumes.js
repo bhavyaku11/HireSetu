@@ -401,18 +401,22 @@ function runHeuristicAtsAnalysis(text) {
     issues.push({
       severity: 'high',
       category: 'Contact Information',
-      description: 'No valid email address detected in the resume text.',
+      description: 'No valid email address detected in the contact info.',
       instance: '',
-      recommendation: 'Add a professional email address at the top of your resume.',
+      whyItMatters: 'Recruiters and automated ATS candidate screening pipelines require a valid email to send interview invitations. Missing contact email prevents recruiter outreach.',
+      howToFix: 'Include your professional email address (e.g. name@email.com) at the top of your resume header.',
+      recommendation: 'Include your professional email address (e.g. name@email.com) at the top of your resume header.',
     });
   }
   if (!hasPhone) {
     issues.push({
       severity: 'medium',
       category: 'Contact Information',
-      description: 'No clear phone number detected.',
+      description: 'No standard mobile phone number detected.',
       instance: '',
-      recommendation: 'Include a standard 10-digit mobile or phone number.',
+      whyItMatters: 'Hiring managers often conduct quick phone screens. Without a phone number, your application may be flagged as incomplete.',
+      howToFix: 'Add a 10-digit mobile or phone number next to your location in the header.',
+      recommendation: 'Add a 10-digit mobile or phone number next to your location in the header.',
     });
   }
 
@@ -427,7 +431,9 @@ function runHeuristicAtsAnalysis(text) {
       category: 'Section Headers',
       description: 'Missing standard "Work Experience" or "Employment" section header.',
       instance: '',
-      recommendation: 'Use standard headers like "Work Experience" so ATS algorithms categorize your career history correctly.',
+      whyItMatters: 'Recruiters and ATS bots look for a clear "Experience" heading — without one, relevant work history may be skipped entirely by candidate ranking algorithms.',
+      howToFix: 'Label your career section with a standard title like "Work Experience" or "Employment History".',
+      recommendation: 'Label your career section with a standard title like "Work Experience" or "Employment History".',
     });
   }
   if (!hasEdu) {
@@ -437,7 +443,9 @@ function runHeuristicAtsAnalysis(text) {
       category: 'Section Headers',
       description: 'Missing standard "Education" section header.',
       instance: '',
-      recommendation: 'Add an "Education" section with your degree, institution, and graduation year.',
+      whyItMatters: 'Employers verify degree prerequisites using automated search queries. Unlabelled education sections fail automated requirement checks.',
+      howToFix: 'Add a dedicated "Education" section with degree title, institution, and graduation year.',
+      recommendation: 'Add a dedicated "Education" section with degree title, institution, and graduation year.',
     });
   }
   if (!hasSkills) {
@@ -447,7 +455,9 @@ function runHeuristicAtsAnalysis(text) {
       category: 'Section Headers',
       description: 'No dedicated "Skills" section detected.',
       instance: '',
-      recommendation: 'Create a distinct "Skills" section to list technical and soft skills.',
+      whyItMatters: 'ATS scanners extract core technical competencies from explicit Skills sections to match keyword density against job descriptions.',
+      howToFix: 'Create a distinct "Skills" section grouping technical, domain, and tool proficiencies.',
+      recommendation: 'Create a distinct "Skills" section grouping technical, domain, and tool proficiencies.',
     });
   }
 
@@ -466,6 +476,8 @@ function runHeuristicAtsAnalysis(text) {
         category: 'Action Verbs & Metrics',
         description: `Used weak or passive verb phrase "${w.phrase}".`,
         instance: w.phrase,
+        whyItMatters: 'Passive wording diminishes your perceived ownership and impact. Active power verbs demonstrate strong leadership and initiative to hiring teams.',
+        howToFix: w.rec,
         recommendation: w.rec,
       });
     }
@@ -477,9 +489,11 @@ function runHeuristicAtsAnalysis(text) {
     issues.push({
       severity: 'medium',
       category: 'Action Verbs & Metrics',
-      description: 'Missing quantifiable metrics (percentages, dollar amounts, or numbers) to prove project impact.',
+      description: 'Missing quantifiable metrics (percentages, dollar amounts, or numbers) to prove impact.',
       instance: '',
-      recommendation: 'Add quantifiable outcomes (e.g. "Increased sales by 25%", "Reduced latency by 150ms").',
+      whyItMatters: 'Resumes with concrete numbers receive up to 40% higher response rates because metrics provide objective, verifiable proof of your achievements.',
+      howToFix: 'Quantify 2-3 bullet points with measurable results (e.g. "Increased revenue by 18%", "Reduced load time by 300ms").',
+      recommendation: 'Quantify 2-3 bullet points with measurable results (e.g. "Increased revenue by 18%", "Reduced load time by 300ms").',
     });
   }
 
@@ -491,7 +505,9 @@ function runHeuristicAtsAnalysis(text) {
       category: 'ATS Compatibility',
       description: `Detected ${badSymbols.length} non-standard graphic symbol(s) (e.g. "${badSymbols[0]}").`,
       instance: badSymbols[0],
-      recommendation: 'Replace graphic bullet icons with standard text bullets or hyphens (-).',
+      whyItMatters: 'Graphic symbols and custom icon bullets often render as unreadable broken rectangles or question mark boxes in legacy ATS parsers.',
+      howToFix: 'Replace graphic bullet icons with standard text hyphens (-) or standard round bullet points.',
+      recommendation: 'Replace graphic bullet icons with standard text hyphens (-) or standard round bullet points.',
     });
   }
 
@@ -564,12 +580,19 @@ Evaluate the resume across 4 dimensions:
 
 Return a valid JSON object with:
 - summary: string (1-2 sentence executive overview)
-- issues: array of objects with fields (severity: "high"|"medium"|"low", category: "Grammar & Spelling"|"Readability"|"Action Verbs & Metrics"|"ATS Compatibility"|"Section Headers", description: string, instance: string, recommendation: string)
+- issues: array of objects with fields:
+  - severity: "high"|"medium"|"low"
+  - category: "Grammar & Spelling"|"Readability"|"Action Verbs & Metrics"|"ATS Compatibility"|"Section Headers"|"Contact Information"
+  - description: string (short description of WHAT is wrong)
+  - instance: string (exact quote or phrase from resume that needs fixing, or empty string if general)
+  - whyItMatters: string (concise explanation of WHY this matters to ATS parsers or recruiters)
+  - howToFix: string (actionable one-liner guide on HOW to fix it)
+  - recommendation: string (alias of howToFix)
 - missingSections: array of strings`;
 
       const aiResponse = await generateJsonCompletion(prompt, {
         systemPrompt: 'You are an expert HR Technology, Grammar, and ATS Resume Auditor.',
-        maxTokens: 1500,
+        maxTokens: 1600,
         temperature: 0.2,
       });
 
@@ -585,7 +608,12 @@ Return a valid JSON object with:
           score: typeof aiResponse.score === 'number' ? aiResponse.score : calculatedScores.score,
           scoreBreakdown: aiResponse.scoreBreakdown || calculatedScores.scoreBreakdown,
           summary: aiResponse.summary || calculatedScores.summary,
-          issues,
+          issues: issues.map((iss) => ({
+            ...iss,
+            whyItMatters: iss.whyItMatters || 'This issue affects ATS parsing indexing or recruiter readability.',
+            howToFix: iss.howToFix || iss.recommendation || 'Apply standard formatting or clearer wording to resolve.',
+            recommendation: iss.recommendation || iss.howToFix || 'Apply standard formatting or clearer wording to resolve.',
+          })),
           missingSections,
         };
       }

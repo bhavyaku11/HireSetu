@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Sparkles, AlertCircle, CheckCircle2, FileX, Quote } from 'lucide-react';
+import { Sparkles, AlertCircle, CheckCircle2, FileX, Quote, ChevronDown, ChevronUp, Info, Wrench, HelpCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import Badge, { Pill } from '../ui/Badge';
 import { Card } from '../ui/Card';
@@ -11,6 +11,14 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
   const [analysis, setAnalysis] = useState(initialAnalysis);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState('');
+  const [expandedIssues, setExpandedIssues] = useState({});
+
+  const toggleIssue = (issueId) => {
+    setExpandedIssues((prev) => ({
+      ...prev,
+      [issueId]: !prev[issueId],
+    }));
+  };
 
   const handleRunAnalysis = async () => {
     if (!resumeId) return;
@@ -46,6 +54,91 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
   const highIssues = analysis?.issues?.filter((i) => i.severity === 'high') || [];
   const mediumIssues = analysis?.issues?.filter((i) => i.severity === 'medium') || [];
   const lowIssues = analysis?.issues?.filter((i) => i.severity === 'low') || [];
+
+  const renderIssueCard = (issue, index, severityKey, borderBgStyles, badgeVariant) => {
+    const issueId = `${severityKey}-${index}`;
+    const isExpanded = !!expandedIssues[issueId];
+
+    const whyText = issue.whyItMatters || 'This issue negatively impacts ATS parsing indexing or candidate ranking.';
+    const fixText = issue.howToFix || issue.recommendation || 'Apply standard section headers and active language to resolve.';
+
+    return (
+      <div
+        key={issueId}
+        className={`rounded-xl border transition-all duration-200 ${borderBgStyles.wrapper} ${
+          isExpanded ? 'shadow-soft-md' : 'hover:shadow-soft-xs'
+        }`}
+      >
+        {/* Scannable Header Row (Clickable) */}
+        <div
+          onClick={() => toggleIssue(issueId)}
+          className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-1 min-w-0">
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge variant={badgeVariant} size="sm">
+                {severityKey.toUpperCase()}
+              </Badge>
+              <span className={`text-xs font-bold font-display ${borderBgStyles.title}`}>
+                {issue.category}
+              </span>
+            </div>
+            <p className={`text-xs font-semibold truncate ${borderBgStyles.desc}`}>
+              {issue.description}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] font-bold text-surface-500 hidden sm:inline-block">
+              {isExpanded ? 'Hide Reason' : 'Why & How to Fix'}
+            </span>
+            <button
+              type="button"
+              className={`p-1 rounded-lg transition-colors ${borderBgStyles.btn}`}
+              aria-label={isExpanded ? 'Collapse suggestion' : 'Expand suggestion'}
+            >
+              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Expandable Reasoning & Fix Detail View */}
+        {isExpanded && (
+          <div className="px-4 pb-4 pt-1 border-t border-surface-200/60 space-y-3 animate-fadeIn">
+            {/* Why It Matters Box */}
+            <div className="p-3 bg-white/90 rounded-lg border border-surface-200/80 space-y-1">
+              <div className="flex items-center gap-1.5 text-surface-800 text-[11px] font-bold font-display uppercase tracking-wider">
+                <HelpCircle className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+                <span>Why This Matters</span>
+              </div>
+              <p className="text-xs text-surface-700 leading-relaxed font-medium">
+                {whyText}
+              </p>
+            </div>
+
+            {/* Flagged Instance Quote Box */}
+            {issue.instance && (
+              <div className="p-2.5 bg-surface-900 text-surface-100 rounded-lg text-xs flex items-start gap-2 font-mono shadow-soft-xs">
+                <Quote className="w-3.5 h-3.5 text-brand-400 shrink-0 mt-0.5" />
+                <span className="break-all">Flagged text: "{issue.instance}"</span>
+              </div>
+            )}
+
+            {/* How to Fix Actionable Guide */}
+            <div className="p-3 bg-brand-50/70 rounded-lg border border-brand-200/80 space-y-1">
+              <div className="flex items-center gap-1.5 text-brand-950 text-[11px] font-bold font-display uppercase tracking-wider">
+                <Wrench className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+                <span>How to Fix</span>
+              </div>
+              <p className="text-xs font-semibold text-brand-900 leading-relaxed">
+                {fixText}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Card padding="p-6 md:p-8" className="bg-white border-surface-200 shadow-soft-lg space-y-6">
@@ -125,13 +218,13 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
             </div>
           )}
 
-          {/* Issues Grouped by Severity */}
+          {/* Expandable Issues Grouped by Severity */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider text-surface-500 font-display">
-                Detected Issues & Recommendations ({analysis.issues?.length || 0})
+                Detected Issues & Reasoning ({analysis.issues?.length || 0})
               </h4>
-              <span className="text-[11px] font-semibold text-surface-400">Grouped by Severity</span>
+              <span className="text-[11px] font-semibold text-surface-400">Click any item to expand reason & fix</span>
             </div>
 
             {(!analysis.issues || analysis.issues.length === 0) ? (
@@ -143,88 +236,52 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
             ) : (
               <div className="space-y-3">
                 {/* High Severity Issues */}
-                {highIssues.map((issue, i) => (
-                  <div key={`high-${i}`} className="p-4 bg-rose-50/60 border border-rose-200 rounded-xl space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="danger" size="sm">High Severity</Badge>
-                        <span className="text-xs font-bold text-rose-950 font-display">{issue.category}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs font-medium text-rose-900">{issue.description}</p>
-
-                    {/* Specific Flagged Instance Quote */}
-                    {issue.instance && (
-                      <div className="p-2.5 bg-white/90 rounded-lg border border-rose-200 text-xs text-rose-950 flex items-start gap-2 font-mono">
-                        <Quote className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
-                        <span>"{issue.instance}"</span>
-                      </div>
-                    )}
-
-                    {issue.recommendation && (
-                      <p className="text-xs text-rose-700 bg-white/80 p-2.5 rounded-lg border border-rose-200/80 font-medium">
-                        💡 <span className="font-bold">Recommendation:</span> {issue.recommendation}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {highIssues.map((issue, i) =>
+                  renderIssueCard(
+                    issue,
+                    i,
+                    'high',
+                    {
+                      wrapper: 'bg-rose-50/50 border-rose-200/80',
+                      title: 'text-rose-950',
+                      desc: 'text-rose-900',
+                      btn: 'text-rose-700 hover:bg-rose-100/70',
+                    },
+                    'danger'
+                  )
+                )}
 
                 {/* Medium Severity Issues */}
-                {mediumIssues.map((issue, i) => (
-                  <div key={`med-${i}`} className="p-4 bg-amber-50/60 border border-amber-200 rounded-xl space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="warning" size="sm">Medium Severity</Badge>
-                        <span className="text-xs font-bold text-amber-950 font-display">{issue.category}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs font-medium text-amber-900">{issue.description}</p>
-
-                    {/* Specific Flagged Instance Quote */}
-                    {issue.instance && (
-                      <div className="p-2.5 bg-white/90 rounded-lg border border-amber-200 text-xs text-amber-950 flex items-start gap-2 font-mono">
-                        <Quote className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                        <span>"{issue.instance}"</span>
-                      </div>
-                    )}
-
-                    {issue.recommendation && (
-                      <p className="text-xs text-amber-800 bg-white/80 p-2.5 rounded-lg border border-amber-200/80 font-medium">
-                        💡 <span className="font-bold">Recommendation:</span> {issue.recommendation}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {mediumIssues.map((issue, i) =>
+                  renderIssueCard(
+                    issue,
+                    i,
+                    'medium',
+                    {
+                      wrapper: 'bg-amber-50/50 border-amber-200/80',
+                      title: 'text-amber-950',
+                      desc: 'text-amber-900',
+                      btn: 'text-amber-700 hover:bg-amber-100/70',
+                    },
+                    'warning'
+                  )
+                )}
 
                 {/* Low Severity Issues */}
-                {lowIssues.map((issue, i) => (
-                  <div key={`low-${i}`} className="p-4 bg-sky-50/60 border border-sky-200 rounded-xl space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="neutral" size="sm">Low Severity</Badge>
-                        <span className="text-xs font-bold text-sky-950 font-display">{issue.category}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs font-medium text-sky-900">{issue.description}</p>
-
-                    {/* Specific Flagged Instance Quote */}
-                    {issue.instance && (
-                      <div className="p-2.5 bg-white/90 rounded-lg border border-sky-200 text-xs text-sky-950 flex items-start gap-2 font-mono">
-                        <Quote className="w-3.5 h-3.5 text-sky-500 shrink-0 mt-0.5" />
-                        <span>"{issue.instance}"</span>
-                      </div>
-                    )}
-
-                    {issue.recommendation && (
-                      <p className="text-xs text-sky-800 bg-white/80 p-2.5 rounded-lg border border-sky-200/80 font-medium">
-                        💡 <span className="font-bold">Recommendation:</span> {issue.recommendation}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {lowIssues.map((issue, i) =>
+                  renderIssueCard(
+                    issue,
+                    i,
+                    'low',
+                    {
+                      wrapper: 'bg-sky-50/50 border-sky-200/80',
+                      title: 'text-sky-950',
+                      desc: 'text-sky-900',
+                      btn: 'text-sky-700 hover:bg-sky-100/70',
+                    },
+                    'neutral'
+                  )
+                )}
               </div>
             )}
           </div>
@@ -256,4 +313,3 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
     </Card>
   );
 }
-

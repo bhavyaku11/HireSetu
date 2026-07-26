@@ -74,6 +74,15 @@ async function runAnalyzeTests() {
     throw new Error('Analyze endpoint failed');
   }
 
+  const sampleIssue = analyzeData.analysis.issues?.[0];
+  if (!sampleIssue || !sampleIssue.whyItMatters || (!sampleIssue.howToFix && !sampleIssue.recommendation)) {
+    throw new Error('Analysis issue missing whyItMatters or howToFix reasoning details');
+  }
+  console.log('Sample Issue Reasoning Verified:', {
+    whyItMatters: sampleIssue.whyItMatters,
+    howToFix: sampleIssue.howToFix || sampleIssue.recommendation,
+  });
+
   console.log('\n=== 5. Check Database Persistence for ats_analysis ===');
   const [dbRows] = await pool.query('SELECT ats_analysis FROM resumes WHERE id = ?', [resumeId]);
   const storedAnalysis = typeof dbRows[0]?.ats_analysis === 'string' ? JSON.parse(dbRows[0].ats_analysis) : dbRows[0]?.ats_analysis;
