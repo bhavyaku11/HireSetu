@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
 import ImportedResume from './pages/ImportedResume';
+import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
             {/* Protected Application Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/builder/:resumeId" element={<Builder />} />
               <Route path="/imported/:resumeId" element={<ImportedResume />} />
             </Route>
