@@ -1,6 +1,7 @@
 import express from 'express';
 import pool from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { handleFileUpload } from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -259,5 +260,40 @@ router.delete('/:id/sections/:sectionType', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error deleting section' });
   }
 });
+
+/**
+ * @route   POST /api/resumes/:id/import
+ * @desc    Upload resume file (PDF or DOCX, max 5MB) for validation
+ * @access  Private
+ */
+router.post(
+  '/:id/import',
+  async (req, res, next) => {
+    try {
+      const resumeId = req.params.id;
+      const resume = await verifyResumeOwnership(resumeId, req.user.id);
+      if (!resume) {
+        return res.status(404).json({ message: 'Resume not found or access denied' });
+      }
+      next();
+    } catch (error) {
+      console.error('Error checking resume ownership:', error);
+      return res.status(500).json({ message: 'Internal server error checking resume ownership' });
+    }
+  },
+  handleFileUpload,
+  async (req, res) => {
+    try {
+      return res.status(200).json({
+        message: 'File uploaded successfully',
+        filename: req.file.originalname,
+        size: req.file.size,
+      });
+    } catch (error) {
+      console.error('Error importing resume file:', error);
+      return res.status(500).json({ message: 'Internal server error during resume import' });
+    }
+  }
+);
 
 export default router;
