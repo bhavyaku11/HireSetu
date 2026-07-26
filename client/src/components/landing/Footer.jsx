@@ -19,15 +19,8 @@ export default function Footer() {
             </span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-surface-400 font-medium">
-            <a href="#features" className="hover:text-white transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="hover:text-white transition-colors">
-              How it works
-            </a>
-            
+          {/* Action Links */}
+          <div className="flex items-center gap-6 text-xs text-surface-400 font-medium">
             <Link to="/login" className="hover:text-white transition-colors">
               Log in
             </Link>
