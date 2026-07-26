@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { handleAvatarUpload } from '../middleware/upload.js';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
@@ -241,6 +244,53 @@ router.put('/me', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Update profile error:', error);
     return res.status(500).json({ message: 'Internal server error updating user profile' });
+  }
+});
+
+/**
+ * @route   POST /api/auth/me/avatar
+ * @desc    Upload user profile image (JPEG, PNG, WebP max 2MB)
+ * @access  Private (Protected by JWT)
+ */
+router.post('/me/avatar', authenticateToken, handleAvatarUpload, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    const newImageUrl = `/uploads/avatars/${req.file.filename}`;
+
+    // Old file replacement strategy: delete existing avatar file from disk if present
+    const oldImageUrl = req.user.profile_image_url;
+    if (oldImageUrl && oldImageUrl.startsWith('/uploads/avatars/')) {
+      const oldFilename = path.basename(oldImageUrl);
+      const oldFilePath = path.join(process.cwd(), 'uploads/avatars', oldFilename);
+      if (fs.existsSync(oldFilePath)) {
+        try {
+          fs.unlinkSync(oldFilePath);
+        } catch (unlinkErr) {
+          console.warn(`Failed to delete old profile image file ${oldFilePath}:`, unlinkErr.message);
+        }
+      }
+    }
+
+    // Save new profile image URL to database
+    await pool.query('UPDATE users SET profile_image_url = ? WHERE id = ?', [newImageUrl, req.user.id]);
+
+    // Fetch updated user profile
+    const [updatedRows] = await pool.query(
+      'SELECT id, name, email, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE id = ?',
+      [req.user.id]
+    );
+
+    return res.status(200).json({
+      message: 'Profile image updated successfully',
+      profile_image_url: newImageUrl,
+      user: updatedRows[0],
+    });
+  } catch (error) {
+    console.error('Avatar upload error:', error);
+    return res.status(500).json({ message: 'Internal server error uploading avatar image' });
   }
 });
 

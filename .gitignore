@@ -25,3 +25,8 @@ out/
 # OS Metadata
 .DS_Store
 Thumbs.db
+
+# User Uploads
+uploads/
+server/uploads/
+
