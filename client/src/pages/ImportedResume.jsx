@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
 import AtsParseView from '../components/ats/AtsParseView';
+import AtsAnalysisResults from '../components/ats/AtsAnalysisResults';
 import logoMark from '../assets/logo-mark.png';
 
 export default function ImportedResume() {
@@ -191,6 +192,15 @@ export default function ImportedResume() {
                 </Button>
               </div>
             </Card>
+
+            {/* ATS Analysis Audit Report Component */}
+            <AtsAnalysisResults
+              resumeId={resumeId}
+              initialAnalysis={resume?.ats_analysis || null}
+              onAnalysisComplete={(updatedAnalysis) => {
+                setResume((prev) => (prev ? { ...prev, ats_analysis: updatedAnalysis } : prev));
+              }}
+            />
 
             {/* ATS Parse-Test Transparency View Component */}
             <AtsParseView

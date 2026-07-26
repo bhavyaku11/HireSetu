@@ -16,10 +16,16 @@ const pool = mysql.createPool({
 
 async function ensureSchemaUpdates() {
   try {
-    const [columns] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'raw_extracted_text'");
-    if (columns.length === 0) {
+    const [rawCols] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'raw_extracted_text'");
+    if (rawCols.length === 0) {
       await pool.query('ALTER TABLE resumes ADD COLUMN raw_extracted_text LONGTEXT NULL');
       console.log('Successfully added raw_extracted_text column to resumes table');
+    }
+
+    const [analysisCols] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'ats_analysis'");
+    if (analysisCols.length === 0) {
+      await pool.query('ALTER TABLE resumes ADD COLUMN ats_analysis JSON NULL');
+      console.log('Successfully added ats_analysis column to resumes table');
     }
   } catch (err) {
     console.error('Schema update check warning:', err.message);
