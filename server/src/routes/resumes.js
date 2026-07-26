@@ -327,7 +327,68 @@ router.post(
 );
 
 /**
- * Heuristic ATS Analysis Fallback
+ * RESUME STRENGTH SCORE SCORING FORMULA (0 - 100):
+ * --------------------------------------------------
+ * Base Initial Score: 100 points
+ * 
+ * Deductions:
+ * - High Severity Issue:   -15 points (Critical errors e.g. missing essential contact info, severe spelling/grammar errors)
+ * - Medium Severity Issue: -8 points  (Readability issues, weak action verbs, missing metrics, non-standard section headers)
+ * - Low Severity Issue:    -3 points  (Minor symbol formatting, slightly long bullet point)
+ * - Missing Core Section:  -10 points per missing standard section (e.g. Work Experience, Education, Skills)
+ * 
+ * Score Boundaries: Math.max(10, Math.min(100, Base Score))
+ * 
+ * Sub-Scores:
+ * - atsScore: 100 - (ATS deductions + missing section penalties)
+ * - contentScore: 100 - (Action verb & Metric deductions)
+ * - grammarScore: 100 - (Grammar & Readability deductions)
+ */
+function calculateResumeStrengthScore(issues = [], missingSections = []) {
+  let baseScore = 100;
+  let atsDeductions = 0;
+  let contentDeductions = 0;
+  let grammarDeductions = 0;
+
+  issues.forEach((issue) => {
+    let penalty = 3;
+    if (issue.severity === 'high') penalty = 15;
+    else if (issue.severity === 'medium') penalty = 8;
+    else if (issue.severity === 'low') penalty = 3;
+
+    baseScore -= penalty;
+
+    const cat = (issue.category || '').toLowerCase();
+    if (cat.includes('ats') || cat.includes('header') || cat.includes('symbol')) {
+      atsDeductions += penalty;
+    } else if (cat.includes('verb') || cat.includes('metric') || cat.includes('impact')) {
+      contentDeductions += penalty;
+    } else if (cat.includes('grammar') || cat.includes('spelling') || cat.includes('readability')) {
+      grammarDeductions += penalty;
+    } else {
+      atsDeductions += Math.round(penalty / 2);
+      grammarDeductions += Math.round(penalty / 2);
+    }
+  });
+
+  const sectionPenalty = (missingSections ? missingSections.length : 0) * 10;
+  baseScore -= sectionPenalty;
+  atsDeductions += sectionPenalty;
+
+  const finalScore = Math.max(10, Math.min(100, baseScore));
+
+  return {
+    score: finalScore,
+    scoreBreakdown: {
+      atsScore: Math.max(10, Math.min(100, 100 - atsDeductions)),
+      contentScore: Math.max(10, Math.min(100, 100 - contentDeductions)),
+      grammarScore: Math.max(10, Math.min(100, 100 - grammarDeductions)),
+    },
+  };
+}
+
+/**
+ * Heuristic ATS & Readability Analysis Fallback
  */
 function runHeuristicAtsAnalysis(text) {
   const issues = [];
@@ -341,6 +402,7 @@ function runHeuristicAtsAnalysis(text) {
       severity: 'high',
       category: 'Contact Information',
       description: 'No valid email address detected in the resume text.',
+      instance: '',
       recommendation: 'Add a professional email address at the top of your resume.',
     });
   }
@@ -349,6 +411,7 @@ function runHeuristicAtsAnalysis(text) {
       severity: 'medium',
       category: 'Contact Information',
       description: 'No clear phone number detected.',
+      instance: '',
       recommendation: 'Include a standard 10-digit mobile or phone number.',
     });
   }
@@ -363,6 +426,7 @@ function runHeuristicAtsAnalysis(text) {
       severity: 'high',
       category: 'Section Headers',
       description: 'Missing standard "Work Experience" or "Employment" section header.',
+      instance: '',
       recommendation: 'Use standard headers like "Work Experience" so ATS algorithms categorize your career history correctly.',
     });
   }
@@ -372,6 +436,7 @@ function runHeuristicAtsAnalysis(text) {
       severity: 'high',
       category: 'Section Headers',
       description: 'Missing standard "Education" section header.',
+      instance: '',
       recommendation: 'Add an "Education" section with your degree, institution, and graduation year.',
     });
   }
@@ -381,34 +446,64 @@ function runHeuristicAtsAnalysis(text) {
       severity: 'medium',
       category: 'Section Headers',
       description: 'No dedicated "Skills" section detected.',
+      instance: '',
       recommendation: 'Create a distinct "Skills" section to list technical and soft skills.',
     });
   }
 
+  // Check 3: Passive Voice & Weak Action Verbs
+  const weakPhrases = [
+    { phrase: 'was responsible for', rec: 'Replace with active verb like "Led", "Managed", or "Directed"' },
+    { phrase: 'worked on', rec: 'Use impactful verbs like "Engineered", "Developed", or "Architected"' },
+    { phrase: 'helped with', rec: 'Use decisive verbs like "Collaborated on", "Facilitated", or "Supported"' },
+    { phrase: 'handled', rec: 'Use strong verbs like "Orchestrated", "Administered", or "Executed"' },
+  ];
+
+  weakPhrases.forEach((w) => {
+    if (text.toLowerCase().includes(w.phrase)) {
+      issues.push({
+        severity: 'medium',
+        category: 'Action Verbs & Metrics',
+        description: `Used weak or passive verb phrase "${w.phrase}".`,
+        instance: w.phrase,
+        recommendation: w.rec,
+      });
+    }
+  });
+
+  // Check 4: Quantifiable Metrics (% / $ / numbers)
+  const hasNumbersOrMetrics = /\b\d+(%|\+|\$|k|M)?\b/.test(text);
+  if (!hasNumbersOrMetrics) {
+    issues.push({
+      severity: 'medium',
+      category: 'Action Verbs & Metrics',
+      description: 'Missing quantifiable metrics (percentages, dollar amounts, or numbers) to prove project impact.',
+      instance: '',
+      recommendation: 'Add quantifiable outcomes (e.g. "Increased sales by 25%", "Reduced latency by 150ms").',
+    });
+  }
+
+  // Check 5: Formatting / Non-standard graphic symbols
   const badSymbols = text.match(/[★■▲●◆▶✓✔✕✖]/g);
   if (badSymbols && badSymbols.length > 0) {
     issues.push({
       severity: 'low',
-      category: 'Formatting & Symbols',
-      description: `Detected ${badSymbols.length} non-standard graphic symbols (e.g. ${badSymbols[0]}) that may render as corrupted boxes in some ATS systems.`,
+      category: 'ATS Compatibility',
+      description: `Detected ${badSymbols.length} non-standard graphic symbol(s) (e.g. "${badSymbols[0]}").`,
+      instance: badSymbols[0],
       recommendation: 'Replace graphic bullet icons with standard text bullets or hyphens (-).',
     });
   }
 
-  let score = 100;
-  issues.forEach((iss) => {
-    if (iss.severity === 'high') score -= 20;
-    else if (iss.severity === 'medium') score -= 10;
-    else if (iss.severity === 'low') score -= 5;
-  });
-  score = Math.max(20, Math.min(100, score));
+  const { score, scoreBreakdown } = calculateResumeStrengthScore(issues, missingSections);
 
   const summary = issues.length === 0
-    ? 'Excellent ATS readability. Section headers and content structure meet standard bot parsing criteria.'
-    : `Detected ${issues.length} potential ATS readability issue(s). Address high severity findings to improve parsing rates.`;
+    ? 'Outstanding resume strength and ATS readability. Content, metrics, and formatting meet recruiter standards.'
+    : `Overall Resume Strength Score: ${score}/100. Identified ${issues.length} area(s) for improvement across ATS compatibility, grammar, and impact metrics.`;
 
   return {
     score,
+    scoreBreakdown,
     summary,
     issues,
     missingSections,
@@ -417,7 +512,7 @@ function runHeuristicAtsAnalysis(text) {
 
 /**
  * @route   POST /api/resumes/:id/analyze
- * @desc    Analyze ATS compatibility, formatting cleanliness, and missing sections
+ * @desc    Analyze ATS compatibility, formatting cleanliness, grammar, readability, and Resume Strength Score
  * @access  Private
  */
 router.post('/:id/analyze', async (req, res) => {
@@ -454,30 +549,48 @@ router.post('/:id/analyze', async (req, res) => {
     let analysisResult;
 
     try {
-      const prompt = `Evaluate the following resume text for Applicant Tracking System (ATS) compatibility, formatting cleanliness, section organization, and missing standard resume sections.
+      const prompt = `Perform a comprehensive HR & ATS Resume Audit on the following resume text.
 
-Resume Text to Analyze:
+Resume Text:
 ---
 ${textToAnalyze}
 ---
 
-Return a structured JSON object with:
-- score: number (0 to 100 overall ATS cleanliness score)
-- summary: string (executive overview)
-- issues: array of objects with fields (severity: "high"|"medium"|"low", category: string, description: string, recommendation: string)
+Evaluate the resume across 4 dimensions:
+1. ATS Compatibility & Formatting (section headers, graphic symbols, columns)
+2. Grammar & Spelling (flag specific instances with quotes and brief explanation)
+3. Readability & Tone (passive voice, overly long bullet points, sentence flow)
+4. Impact & Metrics (weak action verbs, missing quantifiable metrics like %, $, numbers)
+
+Return a valid JSON object with:
+- summary: string (1-2 sentence executive overview)
+- issues: array of objects with fields (severity: "high"|"medium"|"low", category: "Grammar & Spelling"|"Readability"|"Action Verbs & Metrics"|"ATS Compatibility"|"Section Headers", description: string, instance: string, recommendation: string)
 - missingSections: array of strings`;
 
-      analysisResult = await generateJsonCompletion(prompt, {
-        systemPrompt: 'You are an expert HR Technology and ATS Resume Auditor.',
-        maxTokens: 1200,
+      const aiResponse = await generateJsonCompletion(prompt, {
+        systemPrompt: 'You are an expert HR Technology, Grammar, and ATS Resume Auditor.',
+        maxTokens: 1500,
         temperature: 0.2,
       });
 
-      if (analysisResult.error) {
+      if (aiResponse.error) {
         analysisResult = runHeuristicAtsAnalysis(textToAnalyze);
+      } else {
+        // Calculate deterministic Resume Strength Score & sub-breakdowns
+        const issues = Array.isArray(aiResponse.issues) ? aiResponse.issues : [];
+        const missingSections = Array.isArray(aiResponse.missingSections) ? aiResponse.missingSections : [];
+        const calculatedScores = calculateResumeStrengthScore(issues, missingSections);
+
+        analysisResult = {
+          score: typeof aiResponse.score === 'number' ? aiResponse.score : calculatedScores.score,
+          scoreBreakdown: aiResponse.scoreBreakdown || calculatedScores.scoreBreakdown,
+          summary: aiResponse.summary || calculatedScores.summary,
+          issues,
+          missingSections,
+        };
       }
     } catch (aiErr) {
-      console.warn('Claude API request failed, running heuristic ATS analysis fallback:', aiErr.message);
+      console.warn('Claude API request failed, running heuristic ATS & strength analysis fallback:', aiErr.message);
       analysisResult = runHeuristicAtsAnalysis(textToAnalyze);
     }
 
@@ -489,13 +602,14 @@ Return a structured JSON object with:
     ]);
 
     return res.status(200).json({
-      message: 'ATS compatibility and formatting analysis completed successfully',
+      message: 'Resume strength and ATS analysis completed successfully',
       analysis: analysisResult,
     });
   } catch (error) {
-    console.error('Error running ATS analysis:', error);
+    console.error('Error running resume analysis:', error);
     return res.status(500).json({ message: 'Internal server error analyzing resume' });
   }
 });
 
 export default router;
+
