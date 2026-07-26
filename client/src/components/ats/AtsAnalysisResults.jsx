@@ -170,14 +170,39 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2.5">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-          <span>{error}</span>
+        <div className="p-5 bg-rose-50 border border-rose-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-fadeIn">
+          <div className="flex items-center gap-3 text-rose-900">
+            <AlertCircle className="w-6 h-6 text-rose-600 shrink-0" />
+            <div>
+              <h5 className="text-xs font-bold font-display uppercase tracking-wider text-rose-950">Audit Request Failed</h5>
+              <p className="text-xs font-medium text-rose-800">{error}</p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRunAnalysis}
+            className="shrink-0 bg-white border-rose-300 text-rose-800 hover:bg-rose-100 shadow-soft-xs"
+          >
+            Retry Audit
+          </Button>
         </div>
       )}
 
-      {/* Main Analysis Display */}
-      {analysis ? (
+      {/* Loading Skeleton during AI Analysis */}
+      {analyzing ? (
+        <div className="p-10 rounded-2xl bg-brand-50/70 border border-brand-200 text-center space-y-4 animate-fadeIn">
+          <div className="w-12 h-12 rounded-2xl bg-brand-500 text-white flex items-center justify-center mx-auto shadow-soft-md animate-spin">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div className="space-y-1.5">
+            <h4 className="text-base font-bold font-display text-brand-950">Analyzing Your Resume with Claude AI...</h4>
+            <p className="text-xs font-medium text-brand-800 max-w-md mx-auto">
+              Evaluating ATS compatibility, grammar accuracy, weak action verbs, and quantifiable impact metrics. This takes 2–4 seconds.
+            </p>
+          </div>
+        </div>
+      ) : analysis ? (
         <div className="space-y-6 animate-fadeIn">
           {/* Visual Circular Score Meter Component */}
           <ScoreMeter score={analysis.score} breakdown={analysis.scoreBreakdown} />

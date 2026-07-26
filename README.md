@@ -115,23 +115,36 @@ Open your browser at `http://localhost:5173`.
 
 ---
 
-## 📌 Sprint 1 Status Breakdown
+## 📌 Sprint 2 Status Breakdown
 
-### **Implemented in Sprint 1**
-- ✅ **Monorepo Architecture**: Clean separation between React/Vite client and Express REST backend.
-- ✅ **Relational MySQL Database**: `users`, `resumes`, and `resume_sections` tables with JSON content columns and cascade deletions.
-- ✅ **Secure Authentication**: User registration, bcrypt password hashing, 7-day JWT issuance, and protected profile endpoint (`/api/auth/me`).
-- ✅ **Protected Resume CRUD API**: User-isolated endpoints for creating, fetching, updating, and deleting resumes and sections with strict ownership verification.
-- ✅ **Frontend Auth & Protected Routes**: `AuthContext` state management, `ProtectedRoute` wrapper, `Login`, `Register`, and `Dashboard` pages.
-- ✅ **Builder Shell & Navigation**: Responsive two-panel layout (`/builder/:id`), vertical section tabs, and header status indicator.
-- ✅ **Section Forms**: Full support for **Personal Info**, **Education**, **Work Experience**, **Projects**, and **Skills** with custom category tags and repeatable bullet lists.
-- ✅ **Debounced Auto-Save Engine**: 1-second auto-saver pushing section edits to MySQL with real-time `Saving...`, `All changes saved`, and `Failed to save` status indicators.
-- ✅ **Live Resume Preview Document**: Single-column, ATS-friendly document updated in real time.
-- ✅ **Error Handling & 404**: React `ErrorBoundary` and dedicated `NotFound` page.
+### **Implemented in Sprint 2 (Parts 22 - 30)**
+- ✅ **Resume Upload & Validation**: Protected `POST /api/resumes/:id/import` endpoint accepting `.pdf` and `.docx` uploads up to 5MB using `multer` with strict server-side MIME & extension validation.
+- ✅ **Frontend Drag-and-Drop Import UI**: Card tile on Dashboard & modal dialog supporting drag-and-drop or click-to-browse file upload with real-time file size & extension feedback.
+- ✅ **Text Extraction Engine**: `pdf-parse` (PDF) and `mammoth` (DOCX) text extraction utilities storing `raw_extracted_text` in MySQL with scanned image / unreadable text detection (`400 Bad Request`).
+- ✅ **ATS Parse-Test Transparency View**: Unstyled, sequential monospace text view rendering exactly how applicant tracking systems read resumes, complete with layout anomaly detection warning banners.
+- ✅ **Claude API Integration Setup**: `@anthropic-ai/sdk` integration in Express backend, reusable `generateCompletion` with exponential backoff retries for transient errors, and structured `generateJsonCompletion` parser with regex fallbacks.
+- ✅ **ATS Compatibility & Formatting Audit**: `POST /api/resumes/:id/analyze` route evaluating section headers, missing standard sections, and non-standard symbols.
+- ✅ **Grammar, Readability & Metrics Audit**: Automated evaluation flagging specific text quotes/instances for spelling, passive voice, weak action verbs, and missing quantifiable metrics (% / $ / numbers).
+- ✅ **Documented Resume Strength Score (0-100)**: Deterministic, explainable scoring formula calculating overall strength score and sub-scores (`atsScore`, `contentScore`, `grammarScore`).
+- ✅ **Visual Score Meter Component**: SVG circular progress ring component with animated stroke-dashoffset transitions, tier badges, and mini category progress bars.
+- ✅ **Explain-This-Suggestion Reasoning**: Expandable accordion UI on every issue card providing on-demand **Why it Matters** reasoning (ATS parser / recruiter impact) and **How to Fix** actionable guides.
+- ✅ **Resilient Loading & Retry Error Handling**: Animated AI scanning skeleton and explicit retry error state on API rate limit or network timeouts.
+- ✅ **Strict Route Access Control**: Enforced user ownership verification (`verifyResumeOwnership`) across all resume endpoints (`/import`, `/analyze`, `GET /:id`), returning `404 Not Found` for unauthorized access attempts.
 
-### **Deferred to Sprint 2 & 3**
-- ⏳ **AI Resume Suggestions & Tailoring**: Gemini API integration for bullet point rewriting and ATS optimization.
-- ⏳ **Export to PDF & Word**: Client-side / server-side document rendering to `.pdf` and `.docx`.
-- ⏳ **Additional Section Forms**: Certifications, Achievements, Positions of Responsibility, Languages, and Interests forms.
-- ⏳ **Multi-Template Selector**: Executive, Modern Minimalist, and Two-Column visual template themes.
-- ⏳ **httpOnly Cookie Auth**: Transitioning JWT storage from localStorage to httpOnly cookies for production security.
+### **Deferred to Sprint 3**
+- ⏳ **Job Description (JD) Matching & Keyword Gap Analysis**: Comparing resume content against target job descriptions to calculate match percentage and missing keywords.
+- ⏳ **AI-Powered Bullet Point Rewriting**: One-click Claude prompt actions to rewrite bullets into strong, action-verb-driven statements with metric placeholders.
+- ⏳ **Export to PDF & Word (.docx)**: Client-side / server-side document rendering to downloadable `.pdf` and `.docx` files.
+- ⏳ **Multi-Template Selector**: Modern executive, two-column, and minimalist document styling templates.
+
+---
+
+## 🔍 Known Edge Cases & Rough Edges (Pre-Review Checklist)
+
+1. **Scanned Image PDFs (No OCR)**:
+   - Resumes that are scanned images wrapped inside a PDF contain no extractable text stream. The system detects this and returns a clear message: `"We couldn't read text from this file, try a different format"`. (Full OCR integration using Tesseract is deferred to a future phase).
+2. **Anthropic API Key Requirement for Live Claude Calls**:
+   - Live AI completions require setting `ANTHROPIC_API_KEY` in `server/.env`. If the key is omitted or left as placeholder, the system automatically falls back to an integrated rule-based heuristic analyzer so the audit features remain functional during offline testing.
+3. **Complex Multi-Column Tables in Imported Resumes**:
+   - Extremely complex multi-column PDF layouts may merge horizontal lines in the raw text view. The ATS Parse-Test view detects this and displays a layout warning banner explaining that ATS bots may misread column ordering.
+

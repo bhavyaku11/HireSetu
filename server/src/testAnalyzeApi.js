@@ -91,7 +91,30 @@ async function runAnalyzeTests() {
     throw new Error('Database persistence check failed for ats_analysis');
   }
 
-  console.log('\n=== ALL ATS ANALYZE ENDPOINT TESTS PASSED SUCCESSFULLY! ===');
+  console.log('\n=== 6. Test Ownership Check (User 2 on User 1 Resume - Expect 404 Access Denied) ===');
+  const reg2Res = await fetch(`${baseURL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Analyze User 2', email: 'analyze_user2@example.com', password: 'password123' }),
+  });
+  const u2Data = await reg2Res.json();
+  const token2 = u2Data.token;
+
+  const deniedRes = await fetch(`${baseURL}/resumes/${resumeId}/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token2}`,
+    },
+  });
+  const deniedData = await deniedRes.json();
+  console.log(`Status: ${deniedRes.status}`, deniedData);
+
+  if (deniedRes.status !== 404) {
+    throw new Error('Ownership access control check failed for analyze route');
+  }
+
+  console.log('\n=== ALL ATS ANALYZE & ACCESS CONTROL TESTS PASSED SUCCESSFULLY! ===');
   process.exit(0);
 }
 
