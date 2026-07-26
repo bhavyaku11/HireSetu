@@ -106,6 +106,21 @@ async function runAnalyzeTests() {
   });
   console.log('✅ ATS Rules Engine response verified');
 
+  // Verify Content Quality Rules Engine result is present and well-formed
+  const cqEngine = analyzeData.analysis.contentQualityRulesEngine;
+  if (!cqEngine || typeof cqEngine.contentQualityScore !== 'number' || !Array.isArray(cqEngine.deductions)) {
+    throw new Error('Content Quality Rules Engine result missing or malformed in API response');
+  }
+  console.log(`\nContent Quality Rules Engine Score: ${cqEngine.contentQualityScore}/100`);
+  console.log(`Content Quality Rules Engine Deductions (${cqEngine.deductions.length}):`);
+  cqEngine.deductions.forEach((d) => {
+    if (!d.rule || typeof d.points !== 'number' || !d.reason) {
+      throw new Error(`Deduction missing required fields: ${JSON.stringify(d)}`);
+    }
+    console.log(`  [${d.rule}] ${d.points} pts — ${d.reason.substring(0, 80)}`);
+  });
+  console.log('✅ Content Quality Rules Engine response verified');
+
   console.log('\n=== 6. Test Ownership Check (User 2 on User 1 Resume - Expect 404 Access Denied) ===');
   const reg2Res = await fetch(`${baseURL}/auth/register`, {
     method: 'POST',

@@ -5,6 +5,7 @@ import { handleFileUpload } from '../middleware/upload.js';
 import { extractTextFromBuffer } from '../utils/extractor.js';
 import { generateJsonCompletion } from '../services/aiService.js';
 import { runAtsRulesEngine } from '../services/atsRulesEngine.js';
+import { runContentQualityRulesEngine } from '../services/contentQualityRulesEngine.js';
 
 const router = express.Router();
 
@@ -765,9 +766,6 @@ router.post('/:id/analyze', async (req, res) => {
       });
     }
 
-    // Run deterministic ATS rules engine (zero AI involvement)
-    const atsRulesResult = runAtsRulesEngine(textToAnalyze);
-
     let analysisResult;
 
     try {
@@ -827,20 +825,25 @@ Return a valid JSON object with:
       analysisResult = runHeuristicAtsAnalysis(textToAnalyze);
     }
 
-    // Override the ATS sub-score with the deterministic rules engine result.
-    // This ensures ATS parsability is never subject to AI variability.
-    analysisResult.scoreBreakdown.atsScore = atsRulesResult.atsScore;
-    analysisResult.atsRulesEngine = atsRulesResult;
+    // Run deterministic rule engines (zero AI involvement)
+    const atsRulesResult = runAtsRulesEngine(textToAnalyze);
+    const contentQualityRulesResult = runContentQualityRulesEngine(textToAnalyze);
 
-    // Recalculate the overall score as a weighted composite:
-    //   ATS parsability (40%) + Content quality (35%) + Grammar (25%)
+    // Override sub-scores with deterministic rules engine results.
+    analysisResult.scoreBreakdown.atsScore = atsRulesResult.atsScore;
+    analysisResult.scoreBreakdown.contentScore = contentQualityRulesResult.contentQualityScore;
+    analysisResult.atsRulesEngine = atsRulesResult;
+    analysisResult.contentQualityRulesEngine = contentQualityRulesResult;
+
+    // Recalculate overall score as a weighted composite:
+    //   ATS Parsability (40%) + Content Quality (35%) + Grammar (25%)
     const weightedOverall = Math.round(
       (atsRulesResult.atsScore * 0.40) +
-      (analysisResult.scoreBreakdown.contentScore * 0.35) +
+      (contentQualityRulesResult.contentQualityScore * 0.35) +
       (analysisResult.scoreBreakdown.grammarScore * 0.25)
     );
     analysisResult.score = Math.max(5, Math.min(100, weightedOverall));
-    analysisResult.summary = `Overall Resume Strength Score: ${analysisResult.score}/100. ATS Parsability: ${atsRulesResult.atsScore}/100. Identified ${analysisResult.issues.length} issue(s) and ${atsRulesResult.deductions.length} ATS rule deduction(s).`;
+    analysisResult.summary = `Overall Resume Strength Score: ${analysisResult.score}/100. ATS Parsability: ${atsRulesResult.atsScore}/100. Content Quality: ${contentQualityRulesResult.contentQualityScore}/100. Identified ${analysisResult.issues.length} issue(s), ${atsRulesResult.deductions.length} ATS rule deduction(s), and ${contentQualityRulesResult.deductions.length} Content Quality deduction(s).`;
 
     const jsonString = JSON.stringify(analysisResult);
     await pool.query('UPDATE resumes SET ats_analysis = ? WHERE id = ? AND user_id = ?', [
