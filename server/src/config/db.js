@@ -27,6 +27,16 @@ async function ensureSchemaUpdates() {
       await pool.query('ALTER TABLE resumes ADD COLUMN ats_analysis JSON NULL');
       console.log('Successfully added ats_analysis column to resumes table');
     }
+
+    const userProfileCols = ['profile_image_url', 'linkedin_url', 'github_url', 'portfolio_url', 'bio'];
+    for (const col of userProfileCols) {
+      const [existing] = await pool.query(`SHOW COLUMNS FROM users LIKE '${col}'`);
+      if (existing.length === 0) {
+        const colType = col === 'bio' ? 'VARCHAR(255) NULL' : 'VARCHAR(500) NULL';
+        await pool.query(`ALTER TABLE users ADD COLUMN ${col} ${colType}`);
+        console.log(`Successfully added ${col} column to users table`);
+      }
+    }
   } catch (err) {
     console.error('Schema update check warning:', err.message);
   }

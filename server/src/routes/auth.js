@@ -131,6 +131,22 @@ router.post('/login', async (req, res) => {
 });
 
 /**
+ * Helper to validate URL format (or empty string/null)
+ */
+const isValidUrl = (urlStr) => {
+  if (!urlStr || typeof urlStr !== 'string' || urlStr.trim() === '') {
+    return true;
+  }
+  const trimmed = urlStr.trim();
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch (err) {
+    return false;
+  }
+};
+
+/**
  * @route   GET /api/auth/me
  * @desc    Get logged-in user profile
  * @access  Private (Protected by JWT)
@@ -138,11 +154,93 @@ router.post('/login', async (req, res) => {
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     return res.status(200).json({
-      user: req.user
+      user: req.user,
     });
   } catch (error) {
     console.error('/me error:', error);
     return res.status(500).json({ message: 'Internal server error fetching user profile' });
+  }
+});
+
+/**
+ * @route   PUT /api/auth/me
+ * @desc    Update user profile fields (name, linkedin_url, github_url, portfolio_url, bio)
+ * @access  Private (Protected by JWT)
+ */
+router.put('/me', authenticateToken, async (req, res) => {
+  try {
+    const { name, linkedin_url, github_url, portfolio_url, bio } = req.body;
+
+    // Validate Name if provided
+    let updatedName = req.user.name;
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({ message: 'Name cannot be empty' });
+      }
+      updatedName = name.trim();
+    }
+
+    // Validate Bio if provided (max 200 chars)
+    let updatedBio = req.user.bio;
+    if (bio !== undefined && bio !== null) {
+      if (typeof bio !== 'string') {
+        return res.status(400).json({ message: 'Bio must be a text string' });
+      }
+      if (bio.length > 200) {
+        return res.status(400).json({ message: 'Bio cannot exceed 200 characters' });
+      }
+      updatedBio = bio.trim() || null;
+    }
+
+    // Validate URLs if provided
+    const urlFields = { linkedin_url, github_url, portfolio_url };
+    const updatedUrls = {
+      linkedin_url: req.user.linkedin_url,
+      github_url: req.user.github_url,
+      portfolio_url: req.user.portfolio_url,
+    };
+
+    for (const [key, value] of Object.entries(urlFields)) {
+      if (value !== undefined) {
+        if (value === null || value === '') {
+          updatedUrls[key] = null;
+        } else {
+          if (!isValidUrl(value)) {
+            return res.status(400).json({ message: `Invalid URL format for ${key}. URL must start with http:// or https://` });
+          }
+          updatedUrls[key] = value.trim();
+        }
+      }
+    }
+
+    // Update database (EXCLUDING profile_image_url)
+    await pool.query(
+      `UPDATE users 
+       SET name = ?, linkedin_url = ?, github_url = ?, portfolio_url = ?, bio = ?
+       WHERE id = ?`,
+      [
+        updatedName,
+        updatedUrls.linkedin_url,
+        updatedUrls.github_url,
+        updatedUrls.portfolio_url,
+        updatedBio,
+        req.user.id,
+      ]
+    );
+
+    // Fetch updated user profile
+    const [updatedRows] = await pool.query(
+      'SELECT id, name, email, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE id = ?',
+      [req.user.id]
+    );
+
+    return res.status(200).json({
+      message: 'Profile updated successfully',
+      user: updatedRows[0],
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return res.status(500).json({ message: 'Internal server error updating user profile' });
   }
 });
 

@@ -9,6 +9,11 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    profile_image_url VARCHAR(500) NULL,
+    linkedin_url VARCHAR(500) NULL,
+    github_url VARCHAR(500) NULL,
+    portfolio_url VARCHAR(500) NULL,
+    bio VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

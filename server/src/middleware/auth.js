@@ -23,7 +23,10 @@ export const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid or expired authentication token.' });
     }
 
-    const [rows] = await pool.query('SELECT id, name, email, created_at FROM users WHERE id = ?', [decoded.id]);
+    const [rows] = await pool.query(
+      'SELECT id, name, email, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE id = ?',
+      [decoded.id]
+    );
     
     if (rows.length === 0) {
       return res.status(401).json({ message: 'User belonging to this token no longer exists.' });
