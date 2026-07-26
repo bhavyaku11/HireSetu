@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PersonalInfoForm from '../components/builder/PersonalInfoForm';
 import EducationForm from '../components/builder/EducationForm';
@@ -29,8 +29,10 @@ const COMING_SOON_SECTIONS = [
 export default function Builder() {
   const { resumeId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { token } = useAuth();
 
+  const [showImportNotice, setShowImportNotice] = useState(!!location.state?.importedNotice);
   const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -224,6 +226,23 @@ export default function Builder() {
           )}
         </div>
       </header>
+
+      {/* One-Time Imported Resume Notice Banner */}
+      {showImportNotice && (
+        <div className="bg-brand-50 border-b border-brand-200 px-6 py-3 flex items-center justify-between gap-4 animate-fadeIn">
+          <div className="flex items-center gap-2 text-brand-900 text-xs font-semibold">
+            <span>✨</span>
+            <span>We've done our best to pull in your resume — please double check everything looks right.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowImportNotice(false)}
+            className="text-brand-700 hover:text-brand-900 text-xs font-bold px-2 py-1 rounded hover:bg-brand-100/60 transition-colors"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Main Two-Panel Content */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">

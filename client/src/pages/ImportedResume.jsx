@@ -58,6 +58,38 @@ export default function ImportedResume() {
     navigate('/login');
   };
 
+  const [mappingForBuilder, setMappingForBuilder] = useState(false);
+
+  const handleOpenInBuilder = async () => {
+    if (!resumeId) return;
+    setMappingForBuilder(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/resumes/${resumeId}/parse-to-builder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to map resume content for builder');
+      }
+
+      navigate(`/builder/${resumeId}`, {
+        state: { importedNotice: data.mapped },
+      });
+    } catch (err) {
+      console.error('Error setting up builder sections:', err);
+      setError(err.message || 'Failed to setup resume in builder');
+    } finally {
+      setMappingForBuilder(false);
+    }
+  };
+
   const formatFileSize = (bytes) => {
     if (!bytes) return 'Unknown size';
     if (bytes < 1024) return `${bytes} bytes`;
@@ -184,11 +216,12 @@ export default function ImportedResume() {
                 <Button
                   variant="primary"
                   size="md"
-                  onClick={() => navigate(`/builder/${resumeId}`)}
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                  onClick={handleOpenInBuilder}
+                  isLoading={mappingForBuilder}
+                  rightIcon={!mappingForBuilder && <ArrowRight className="w-4 h-4" />}
                   className="w-full sm:w-auto shadow-soft-md"
                 >
-                  Open in Builder
+                  {mappingForBuilder ? 'Setting up your resume for editing...' : 'Open in Builder'}
                 </Button>
               </div>
             </Card>

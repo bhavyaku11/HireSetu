@@ -6,6 +6,7 @@ import { extractTextFromBuffer } from '../utils/extractor.js';
 import { generateJsonCompletion } from '../services/aiService.js';
 import { runAtsRulesEngine } from '../services/atsRulesEngine.js';
 import { runContentQualityRulesEngine } from '../services/contentQualityRulesEngine.js';
+import { mapRawTextToSections } from '../services/resumeMapper.js';
 
 const router = express.Router();
 
@@ -327,6 +328,79 @@ router.post(
     }
   }
 );
+
+/**
+ * @route   POST /api/resumes/:id/parse-to-builder
+ * @desc    Map imported raw extracted text into structured resume_sections for builder editing (Idempotent)
+ * @access  Private
+ */
+router.post('/:id/parse-to-builder', async (req, res) => {
+  try {
+    const resumeId = req.params.id;
+
+    // 1. Ownership check
+    const resume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found or access denied' });
+    }
+
+    // 2. Check if sections already exist for this resume
+    const [existingSections] = await pool.query(
+      'SELECT id FROM resume_sections WHERE resume_id = ? LIMIT 1',
+      [resumeId]
+    );
+
+    if (existingSections.length > 0) {
+      // Idempotency check: sections already mapped! Return without overwriting.
+      return res.status(200).json({
+        message: 'Resume content is already populated in builder sections',
+        mapped: false,
+        resumeId: parseInt(resumeId, 10),
+      });
+    }
+
+    // 3. Check for raw extracted text
+    const rawText = resume.raw_extracted_text;
+    if (!rawText || typeof rawText !== 'string' || !rawText.trim()) {
+      return res.status(400).json({
+        message: 'No extracted text found on this resume. Please upload a PDF or DOCX file first.',
+      });
+    }
+
+    // 4. Run best-effort text-to-sections mapper
+    const mappedSections = await mapRawTextToSections(rawText);
+
+    // 5. Save/upsert sections into resume_sections database table
+    const sectionOrderMap = {
+      personal_info: 1,
+      education: 2,
+      experience: 3,
+      projects: 4,
+      skills: 5,
+    };
+
+    for (const [sectionType, content] of Object.entries(mappedSections)) {
+      const sortOrder = sectionOrderMap[sectionType] || 99;
+      const jsonContentString = JSON.stringify(content);
+
+      await pool.query(
+        'INSERT INTO resume_sections (resume_id, section_type, content, sort_order) VALUES (?, ?, ?, ?)',
+        [resumeId, sectionType, jsonContentString, sortOrder]
+      );
+    }
+
+    return res.status(200).json({
+      message: 'Resume content successfully mapped into builder sections',
+      mapped: true,
+      resumeId: parseInt(resumeId, 10),
+    });
+  } catch (error) {
+    console.error('Error mapping raw text to builder sections:', error);
+    return res.status(500).json({
+      message: 'Internal server error setting up resume sections in builder',
+    });
+  }
+});
 
 /**
  * RESUME STRENGTH SCORE SCORING FORMULA (0 - 100):
