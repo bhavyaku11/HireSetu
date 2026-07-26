@@ -344,12 +344,28 @@ router.post(
  * - contentScore: 100 - (Action verb & Metric deductions)
  * - grammarScore: 100 - (Grammar & Readability deductions)
  */
+/**
+ * Deterministic Resume Strength Score Calculator
+ *
+ * Scoring logic (deduction-based, starting from 100):
+ *   - Each HIGH severity issue:   -15 points
+ *   - Each MEDIUM severity issue: -8 points
+ *   - Each LOW severity issue:    -3 points
+ *   - Each missing standard section: -10 points (applied to ATS sub-score)
+ *   - Floor: 5 (never show 0 to avoid discouraging users completely)
+ *
+ * Sub-score routing by category:
+ *   ATS Score:     Contact Information, ATS Compatibility, Section Headers, Formatting & Structure
+ *   Content Score:  Action Verbs & Metrics, Content Quality
+ *   Grammar Score:  Grammar & Spelling, Readability
+ */
 function calculateResumeStrengthScore(issues = [], missingSections = []) {
   let baseScore = 100;
   let atsDeductions = 0;
   let contentDeductions = 0;
   let grammarDeductions = 0;
 
+  // Bug #5 fix: Route categories to the correct sub-score bucket
   issues.forEach((issue) => {
     let penalty = 3;
     if (issue.severity === 'high') penalty = 15;
@@ -359,15 +375,23 @@ function calculateResumeStrengthScore(issues = [], missingSections = []) {
     baseScore -= penalty;
 
     const cat = (issue.category || '').toLowerCase();
-    if (cat.includes('ats') || cat.includes('header') || cat.includes('symbol')) {
+    if (
+      cat.includes('ats') ||
+      cat.includes('header') ||
+      cat.includes('symbol') ||
+      cat.includes('contact') ||
+      cat.includes('formatting') ||
+      cat.includes('structure')
+    ) {
       atsDeductions += penalty;
-    } else if (cat.includes('verb') || cat.includes('metric') || cat.includes('impact')) {
+    } else if (cat.includes('verb') || cat.includes('metric') || cat.includes('impact') || cat.includes('content')) {
       contentDeductions += penalty;
     } else if (cat.includes('grammar') || cat.includes('spelling') || cat.includes('readability')) {
       grammarDeductions += penalty;
     } else {
+      // Unknown category: split across ATS and content
       atsDeductions += Math.round(penalty / 2);
-      grammarDeductions += Math.round(penalty / 2);
+      contentDeductions += Math.round(penalty / 2);
     }
   });
 
@@ -375,14 +399,14 @@ function calculateResumeStrengthScore(issues = [], missingSections = []) {
   baseScore -= sectionPenalty;
   atsDeductions += sectionPenalty;
 
-  const finalScore = Math.max(10, Math.min(100, baseScore));
+  const finalScore = Math.max(5, Math.min(100, baseScore));
 
   return {
     score: finalScore,
     scoreBreakdown: {
-      atsScore: Math.max(10, Math.min(100, 100 - atsDeductions)),
-      contentScore: Math.max(10, Math.min(100, 100 - contentDeductions)),
-      grammarScore: Math.max(10, Math.min(100, 100 - grammarDeductions)),
+      atsScore: Math.max(5, Math.min(100, 100 - atsDeductions)),
+      contentScore: Math.max(5, Math.min(100, 100 - contentDeductions)),
+      grammarScore: Math.max(5, Math.min(100, 100 - grammarDeductions)),
     },
   };
 }
@@ -393,9 +417,15 @@ function calculateResumeStrengthScore(issues = [], missingSections = []) {
 function runHeuristicAtsAnalysis(text) {
   const issues = [];
   const missingSections = [];
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const lowerText = text.toLowerCase();
 
+  // ──────────────────────────────────────────────────────────────────────
+  // CHECK 1: Contact Information
+  // ──────────────────────────────────────────────────────────────────────
   const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text);
   const hasPhone = /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(text);
+  const hasLinkedIn = /linkedin\.com/i.test(text) || /github\.com/i.test(text);
 
   if (!hasEmail) {
     issues.push({
@@ -419,10 +449,39 @@ function runHeuristicAtsAnalysis(text) {
       recommendation: 'Add a 10-digit mobile or phone number next to your location in the header.',
     });
   }
+  if (!hasLinkedIn) {
+    issues.push({
+      severity: 'low',
+      category: 'Contact Information',
+      description: 'No LinkedIn or GitHub profile link detected.',
+      instance: '',
+      whyItMatters: 'Over 87% of recruiters use LinkedIn to verify candidates. Including a profile link provides social proof and makes it easy for hiring managers to learn more about you.',
+      howToFix: 'Add your LinkedIn profile URL (linkedin.com/in/yourname) to your contact header.',
+      recommendation: 'Add your LinkedIn profile URL (linkedin.com/in/yourname) to your contact header.',
+    });
+  }
 
-  const hasExp = /experience|work history|employment|projects/i.test(text);
-  const hasEdu = /education|university|college|degree|bachelor|master/i.test(text);
-  const hasSkills = /skills|technologies|proficiencies|languages/i.test(text);
+  // ──────────────────────────────────────────────────────────────────────
+  // CHECK 2: Section Header Detection (Bug #3 fix: require heading-like patterns)
+  //
+  // Instead of matching casual word mentions anywhere in text, we require
+  // the keyword to appear at the START of a line (possibly with bullets/symbols)
+  // or as an ALL-CAPS/Title-Case standalone heading line.
+  // ──────────────────────────────────────────────────────────────────────
+  function hasHeadingFor(patterns) {
+    return lines.some((line) => {
+      // Strip leading bullets, dashes, numbers
+      const cleaned = line.replace(/^[\s•\-*#>\d.]+/, '').trim();
+      if (cleaned.length === 0 || cleaned.length > 60) return false; // too long = not a heading
+      const lower = cleaned.toLowerCase();
+      return patterns.some((p) => lower.startsWith(p) || lower === p);
+    });
+  }
+
+  const hasExp = hasHeadingFor(['experience', 'work experience', 'work history', 'employment', 'professional experience', 'career history']);
+  const hasEdu = hasHeadingFor(['education', 'academic background', 'academic history', 'qualifications']);
+  const hasSkills = hasHeadingFor(['skills', 'technical skills', 'technologies', 'proficiencies', 'core competencies', 'competencies']);
+  const hasSummary = hasHeadingFor(['summary', 'professional summary', 'profile', 'about me', 'objective', 'career objective']);
 
   if (!hasExp) {
     missingSections.push('Work Experience');
@@ -460,17 +519,36 @@ function runHeuristicAtsAnalysis(text) {
       recommendation: 'Create a distinct "Skills" section grouping technical, domain, and tool proficiencies.',
     });
   }
+  if (!hasSummary) {
+    issues.push({
+      severity: 'low',
+      category: 'Section Headers',
+      description: 'No "Professional Summary" or "Profile" section detected.',
+      instance: '',
+      whyItMatters: 'A concise professional summary at the top helps recruiters quickly understand your value proposition. Without one, they must piece together your story from scattered bullet points.',
+      howToFix: 'Add a 2-3 sentence "Professional Summary" at the top highlighting your experience level, specialization, and key achievement.',
+      recommendation: 'Add a 2-3 sentence "Professional Summary" at the top highlighting your experience level, specialization, and key achievement.',
+    });
+  }
 
-  // Check 3: Passive Voice & Weak Action Verbs
+  // ──────────────────────────────────────────────────────────────────────
+  // CHECK 3: Passive Voice & Weak Action Verbs (expanded list)
+  // ──────────────────────────────────────────────────────────────────────
   const weakPhrases = [
     { phrase: 'was responsible for', rec: 'Replace with active verb like "Led", "Managed", or "Directed"' },
     { phrase: 'worked on', rec: 'Use impactful verbs like "Engineered", "Developed", or "Architected"' },
     { phrase: 'helped with', rec: 'Use decisive verbs like "Collaborated on", "Facilitated", or "Supported"' },
     { phrase: 'handled', rec: 'Use strong verbs like "Orchestrated", "Administered", or "Executed"' },
+    { phrase: 'assisted with', rec: 'Use action verbs like "Contributed to", "Co-led", or "Drove"' },
+    { phrase: 'involved in', rec: 'Specify your exact role: "Designed", "Implemented", or "Coordinated"' },
+    { phrase: 'participated in', rec: 'State your contribution directly: "Delivered", "Presented", or "Contributed"' },
+    { phrase: 'tasked with', rec: 'Lead with the outcome: "Achieved", "Completed", or "Executed"' },
+    { phrase: 'duties included', rec: 'Replace with accomplishment-driven bullets starting with strong verbs' },
+    { phrase: 'in charge of', rec: 'Use "Directed", "Oversaw", or "Managed" instead' },
   ];
 
   weakPhrases.forEach((w) => {
-    if (text.toLowerCase().includes(w.phrase)) {
+    if (lowerText.includes(w.phrase)) {
       issues.push({
         severity: 'medium',
         category: 'Action Verbs & Metrics',
@@ -483,22 +561,44 @@ function runHeuristicAtsAnalysis(text) {
     }
   });
 
-  // Check 4: Quantifiable Metrics (% / $ / numbers)
-  const hasNumbersOrMetrics = /\b\d+(%|\+|\$|k|M)?\b/.test(text);
-  if (!hasNumbersOrMetrics) {
+  // ──────────────────────────────────────────────────────────────────────
+  // CHECK 4: Quantifiable Metrics (Bug #2 fix: exclude bare year numbers)
+  //
+  // We specifically look for numbers that indicate performance metrics:
+  //   - Percentages: 18%, 200%
+  //   - Dollar amounts: $50K, $1.2M
+  //   - Large operational numbers NOT resembling years: 50K+, 2.1M
+  //   - Numbers with context words: "increased by 30", "reduced to 48ms"
+  //   - Comparative phrases: "3x faster", "10x improvement"
+  //
+  // We explicitly EXCLUDE: 4-digit year numbers (2015-2029), phone digits,
+  // and standalone small numbers that are likely dates or list items.
+  // ──────────────────────────────────────────────────────────────────────
+  const metricsPatterns = [
+    /\d+(\.\d+)?\s*%/,                    // 18%, 200%, 3.5%
+    /\$\s*\d+/,                            // $50, $420K
+    /\d+(\.\d+)?\s*(k|K|M|B)\b/,          // 50K, 2.1M, 1B
+    /\b(increased|decreased|reduced|improved|grew|boosted|saved|generated|achieved|delivered|processed|cut)\b[^.]{0,30}\d+/i,
+    /\d+\s*x\b/i,                          // 3x, 10x
+    /\d+(\.\d+)?\s*(ms|seconds|minutes|hours|users|customers|clients|employees|engineers|team members)/i,
+  ];
+  const hasRealMetrics = metricsPatterns.some((p) => p.test(text));
+  if (!hasRealMetrics) {
     issues.push({
-      severity: 'medium',
+      severity: 'high',
       category: 'Action Verbs & Metrics',
-      description: 'Missing quantifiable metrics (percentages, dollar amounts, or numbers) to prove impact.',
+      description: 'No quantifiable impact metrics found (percentages, dollar amounts, scale numbers).',
       instance: '',
-      whyItMatters: 'Resumes with concrete numbers receive up to 40% higher response rates because metrics provide objective, verifiable proof of your achievements.',
-      howToFix: 'Quantify 2-3 bullet points with measurable results (e.g. "Increased revenue by 18%", "Reduced load time by 300ms").',
-      recommendation: 'Quantify 2-3 bullet points with measurable results (e.g. "Increased revenue by 18%", "Reduced load time by 300ms").',
+      whyItMatters: 'Resumes with concrete numbers receive up to 40% higher response rates because metrics provide objective, verifiable proof of your achievements. Without them, your impact claims are unsubstantiated.',
+      howToFix: 'Quantify at least 3-4 bullet points with measurable results (e.g. "Increased revenue by 18%", "Reduced API latency from 340ms to 48ms", "Managed team of 12 engineers").',
+      recommendation: 'Quantify at least 3-4 bullet points with measurable results (e.g. "Increased revenue by 18%", "Reduced API latency from 340ms to 48ms", "Managed team of 12 engineers").',
     });
   }
 
-  // Check 5: Formatting / Non-standard graphic symbols
-  const badSymbols = text.match(/[★■▲●◆▶✓✔✕✖]/g);
+  // ──────────────────────────────────────────────────────────────────────
+  // CHECK 5: Non-standard graphic symbols
+  // ──────────────────────────────────────────────────────────────────────
+  const badSymbols = text.match(/[★■▲●◆▶✓✔✕✖⬤◾◼⚫🔵🟢🔴❖⯈➤➜→←↑↓⇒]/g);
   if (badSymbols && badSymbols.length > 0) {
     issues.push({
       severity: 'low',
@@ -511,11 +611,113 @@ function runHeuristicAtsAnalysis(text) {
     });
   }
 
+  // ──────────────────────────────────────────────────────────────────────
+  // CHECK 6: Structural / Formatting Analysis (Bug #4 fix: NEW checks)
+  // ──────────────────────────────────────────────────────────────────────
+
+  // 6a: Dense paragraph detection — resumes should use bullet points, not prose
+  const longParagraphLines = lines.filter((l) => l.length > 150);
+  const bulletLines = lines.filter((l) => /^\s*[•\-*–—]\s/.test(l));
+  if (longParagraphLines.length >= 2 && bulletLines.length < 3) {
+    issues.push({
+      severity: 'high',
+      category: 'Formatting & Structure',
+      description: 'Resume uses dense paragraph blocks instead of bullet points.',
+      instance: '',
+      whyItMatters: 'Recruiters spend 6-7 seconds on initial resume scans. Dense paragraphs are nearly impossible to skim. ATS systems also struggle to parse role descriptions from continuous prose.',
+      howToFix: 'Break work descriptions into concise bullet points (1-2 lines each), each starting with a strong action verb.',
+      recommendation: 'Break work descriptions into concise bullet points (1-2 lines each), each starting with a strong action verb.',
+    });
+  }
+
+  // 6b: No bullet points at all
+  if (bulletLines.length === 0 && lines.length > 5) {
+    issues.push({
+      severity: 'high',
+      category: 'Formatting & Structure',
+      description: 'No bullet points detected anywhere in the resume.',
+      instance: '',
+      whyItMatters: 'Bullet points are the universal format for resume accomplishments. Without them, your achievements blend into unstructured text that both ATS parsers and human reviewers will skip.',
+      howToFix: 'Structure each role\'s accomplishments as 3-5 bullet points, each beginning with an action verb.',
+      recommendation: 'Structure each role\'s accomplishments as 3-5 bullet points, each beginning with an action verb.',
+    });
+  }
+
+  // 6c: Resume too short (fewer than 8 meaningful lines suggests incomplete content)
+  if (lines.length < 8) {
+    issues.push({
+      severity: 'medium',
+      category: 'Content Quality',
+      description: `Resume content is unusually short (${lines.length} lines). Most competitive resumes have 20-50+ lines of content.`,
+      instance: '',
+      whyItMatters: 'An extremely brief resume signals lack of experience or effort to recruiters. ATS keyword matching also suffers with insufficient text.',
+      howToFix: 'Expand your resume with detailed accomplishments, skills, and relevant projects. Aim for at least 1 full page of substantive content.',
+      recommendation: 'Expand your resume with detailed accomplishments, skills, and relevant projects. Aim for at least 1 full page of substantive content.',
+    });
+  }
+
+  // 6d: "Objective statement" anti-pattern
+  if (/\b(seeking a|looking for a|desire a|objective|career objective)\b/i.test(text) && !/professional summary/i.test(text)) {
+    issues.push({
+      severity: 'medium',
+      category: 'Content Quality',
+      description: 'Uses an outdated "Objective" statement instead of a Professional Summary.',
+      instance: '',
+      whyItMatters: 'Objective statements are considered outdated by 95%+ of modern recruiters. They focus on what YOU want rather than what value YOU bring — the opposite of what hiring managers care about.',
+      howToFix: 'Replace the objective with a 2-3 sentence "Professional Summary" highlighting your experience, specialization, and a key measurable achievement.',
+      recommendation: 'Replace the objective with a 2-3 sentence "Professional Summary" highlighting your experience, specialization, and a key measurable achievement.',
+    });
+  }
+
+  // 6e: "References available upon request" — wasted space
+  if (/references\s+(available|upon|on)\s+(request|demand)/i.test(text)) {
+    issues.push({
+      severity: 'low',
+      category: 'Content Quality',
+      description: '"References available upon request" wastes valuable resume space.',
+      instance: 'References available upon request',
+      whyItMatters: 'This phrase is universally considered filler. Employers assume references are available — stating it wastes a line that could showcase an achievement instead.',
+      howToFix: 'Remove this line entirely and use the space for an additional accomplishment or skill.',
+      recommendation: 'Remove this line entirely and use the space for an additional accomplishment or skill.',
+    });
+  }
+
+  // 6f: Run-on sentences / lack of punctuation in long content
+  const longUnpunctuatedLines = lines.filter((l) => l.length > 100 && !/[.,;:!?]/.test(l));
+  if (longUnpunctuatedLines.length >= 1) {
+    issues.push({
+      severity: 'medium',
+      category: 'Readability',
+      description: `${longUnpunctuatedLines.length} long line(s) with no punctuation detected — likely run-on sentences.`,
+      instance: longUnpunctuatedLines[0].substring(0, 80) + '...',
+      whyItMatters: 'Run-on sentences are difficult to parse for both humans and ATS keyword extractors. They reduce readability and make your accomplishments harder to identify.',
+      howToFix: 'Break long sentences into shorter, punchy bullet points with proper punctuation.',
+      recommendation: 'Break long sentences into shorter, punchy bullet points with proper punctuation.',
+    });
+  }
+
+  // 6g: First-person pronouns ("I", "me", "my") — resumes should avoid these
+  const firstPersonCount = (text.match(/\bI\b/g) || []).length;
+  if (firstPersonCount >= 3) {
+    issues.push({
+      severity: 'medium',
+      category: 'Readability',
+      description: `Resume uses first-person pronouns ("I") ${firstPersonCount} times.`,
+      instance: '',
+      whyItMatters: 'Professional resumes use implied first-person ("Managed a team of 8") rather than explicit ("I managed a team of 8"). Explicit first-person sounds less professional and wastes character space.',
+      howToFix: 'Remove "I", "me", "my" — start bullets directly with action verbs (e.g. "Developed...", "Led...", "Reduced...").',
+      recommendation: 'Remove "I", "me", "my" — start bullets directly with action verbs (e.g. "Developed...", "Led...", "Reduced...").',
+    });
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // SCORE CALCULATION
+  // ──────────────────────────────────────────────────────────────────────
   const { score, scoreBreakdown } = calculateResumeStrengthScore(issues, missingSections);
 
   const summary = issues.length === 0
     ? 'Outstanding resume strength and ATS readability. Content, metrics, and formatting meet recruiter standards.'
-    : `Overall Resume Strength Score: ${score}/100. Identified ${issues.length} area(s) for improvement across ATS compatibility, grammar, and impact metrics.`;
+    : `Overall Resume Strength Score: ${score}/100. Identified ${issues.length} area(s) for improvement across ATS compatibility, content quality, and formatting.`;
 
   return {
     score,
@@ -604,10 +806,12 @@ Return a valid JSON object with:
         const missingSections = Array.isArray(aiResponse.missingSections) ? aiResponse.missingSections : [];
         const calculatedScores = calculateResumeStrengthScore(issues, missingSections);
 
+        // Bug #1 fix: ALWAYS use deterministic deduction-based score.
+        // Never let Claude's volunteered holistic score override our calculation.
         analysisResult = {
-          score: typeof aiResponse.score === 'number' ? aiResponse.score : calculatedScores.score,
-          scoreBreakdown: aiResponse.scoreBreakdown || calculatedScores.scoreBreakdown,
-          summary: aiResponse.summary || calculatedScores.summary,
+          score: calculatedScores.score,
+          scoreBreakdown: calculatedScores.scoreBreakdown,
+          summary: aiResponse.summary || `Overall Resume Strength Score: ${calculatedScores.score}/100. Identified ${issues.length} area(s) for improvement.`,
           issues: issues.map((iss) => ({
             ...iss,
             whyItMatters: iss.whyItMatters || 'This issue affects ATS parsing indexing or recruiter readability.',
