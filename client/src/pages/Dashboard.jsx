@@ -172,65 +172,27 @@ export default function Dashboard() {
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold font-display text-surface-900">
-                  No resumes created yet
+                  You haven't created any resumes yet
                 </h4>
                 <p className="text-xs text-surface-500 max-w-sm mx-auto">
-                  Create a new ATS resume or import an existing PDF/DOCX file.
+                  Create your first ATS-optimized resume or import an existing PDF/DOCX document to get started.
                 </p>
               </div>
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-3 pt-2">
                 <Button
-                  variant="outline"
+                  variant="primary"
                   size="md"
-                  onClick={() => setShowImportModal(true)}
-                  leftIcon={<Upload className="w-4 h-4" />}
+                  onClick={() => setShowModal(true)}
+                  leftIcon={<Plus className="w-4 h-4 stroke-[2.5]" />}
+                  className="shadow-soft-sm"
                 >
-                  Import Resume
-                </Button>
-                <Button variant="primary" size="md" onClick={() => setShowModal(true)} leftIcon={<span>+</span>}>
-                  New Resume
+                  Create your first resume
                 </Button>
               </div>
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* + Create New Resume Card Tile */}
-              <div
-                onClick={() => setShowModal(true)}
-                className="rounded-2xl border-2 border-dashed border-brand-200 hover:border-brand-400 bg-brand-50/30 hover:bg-brand-50/70 p-6 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer transition-all duration-200 group min-h-[220px]"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-white border border-brand-200 flex items-center justify-center text-brand-600 shadow-soft-xs group-hover:scale-110 transition-transform">
-                  <Plus className="w-6 h-6 stroke-[2.5]" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-bold font-display text-brand-700">
-                    Create New Resume
-                  </h4>
-                  <p className="text-[11px] text-surface-500">
-                    Start a fresh document with ATS layout
-                  </p>
-                </div>
-              </div>
-
-              {/* Import Resume Card Tile */}
-              <div
-                onClick={() => setShowImportModal(true)}
-                className="rounded-2xl border-2 border-dashed border-surface-300 hover:border-brand-400 bg-surface-50/50 hover:bg-brand-50/40 p-6 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer transition-all duration-200 group min-h-[220px]"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-white border border-surface-200 group-hover:border-brand-200 flex items-center justify-center text-surface-600 group-hover:text-brand-600 shadow-soft-xs group-hover:scale-110 transition-transform">
-                  <Upload className="w-6 h-6 stroke-[2.2]" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-bold font-display text-surface-900 group-hover:text-brand-700">
-                    Import Resume
-                  </h4>
-                  <p className="text-[11px] text-surface-500">
-                    Upload PDF or DOCX file
-                  </p>
-                </div>
-              </div>
-
-              {/* Resume Cards */}
+              {/* Saved Resume Cards */}
               {resumes.map((res) => (
                 <Card
                   key={res.id}
