@@ -16,7 +16,7 @@ John Smith
 john.smith@email.com | (555) 123-4567 | linkedin.com/in/johnsmith
 
 Professional Summary
-Results-driven Senior Software Engineer with 8+ years of experience designing scalable distributed systems. Led engineering teams delivering high-throughput real-time streaming platforms.
+Results-driven Senior Software Engineer with 8+ years of professional experience designing, building, and scaling distributed cloud systems. Proven track record of leading high-performing engineering teams delivering resilient, high-throughput real-time streaming platforms and enterprise microservice architectures for global clients.
 
 Work Experience
 
@@ -35,9 +35,9 @@ Education
 Bachelor of Science in Computer Science — Stanford University (2015)
 
 Skills
-Languages: Python, Java, Go, TypeScript, SQL
-Frameworks: React, Node.js, Spring Boot
-Infrastructure: AWS, GCP, Kubernetes, Docker
+Languages: Python, Java, Go, TypeScript, SQL, C++
+Frameworks: React, Node.js, Spring Boot, Express, Django
+Infrastructure: AWS, GCP, Kubernetes, Docker, Terraform
 `;
 
 const WEAK_VERBS_NO_METRICS = `

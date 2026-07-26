@@ -97,6 +97,18 @@ export function runAtsRulesEngine(rawText) {
     });
   }
 
+  // Rule: SEC-SUMMARY — Missing "Professional Summary" or "Profile" header
+  const summaryKeywords = [
+    'summary', 'professional summary', 'profile', 'executive summary', 'about me',
+  ];
+  if (!hasHeadingLine(summaryKeywords)) {
+    deductions.push({
+      rule: 'SEC-SUMMARY',
+      points: -5,
+      reason: 'No "Professional Summary" or "Profile" section header found. ATS candidate overview cards use summary sections to summarize candidate level and domain expertise.',
+    });
+  }
+
   // Rule: SEC-NONSTANDARD — Non-standard / creative section headers
   // Detect lines that look like section headers (short, possibly all-caps or
   // title-case, no date patterns) but don't match any canonical heading.
@@ -169,6 +181,16 @@ export function runAtsRulesEngine(rawText) {
       rule: 'CONTACT-PHONE',
       points: -5,
       reason: 'No phone number pattern detected. Most ATS systems flag applications without a contact phone number.',
+    });
+  }
+
+  // Rule: CONTACT-LINKEDIN — No LinkedIn or GitHub profile link
+  const hasLinkedIn = /linkedin\.com/i.test(text) || /github\.com/i.test(text);
+  if (!hasLinkedIn) {
+    deductions.push({
+      rule: 'CONTACT-LINKEDIN',
+      points: -5,
+      reason: 'No LinkedIn or GitHub profile link detected in header. Over 87% of recruiters search for candidate LinkedIn URLs during ATS screening.',
     });
   }
 

@@ -42,14 +42,28 @@ export function runContentQualityRulesEngine(rawText) {
     l.replace(/^\s*[•\-*–—✦★▶✓✔>\d.\)]+\s*/, '').trim()
   );
 
-  // Fallback: If no explicit bullet symbols are present, use non-heading narrative lines
+  // Fallback: If no explicit bullet symbols are present, split text into sentence statements
   if (rawBulletTexts.length === 0) {
-    rawBulletTexts = lines.filter((l) => {
-      if (l.length < 25) return false;
-      if (/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(l)) return false; // contact line
-      if (/\b(?:19|20)\d{2}\b/.test(l) && l.length < 50) return false; // date/header line
-      if (/^(experience|work experience|education|skills|summary|professional summary|projects|certifications)/i.test(l)) return false;
-      return true;
+    rawBulletTexts = text
+      .split(/[.!?\n]+/)
+      .map((s) => s.trim())
+      .filter((s) => {
+        if (s.length < 20) return false;
+        if (/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(s)) return false; // contact line
+        if (/\b(?:19|20)\d{2}\b/.test(s) && s.length < 40) return false; // header/date line
+        return true;
+      });
+  }
+
+  // ────────────────────────────────────────────────────────────────────────
+  // RULE 0: No Bullet Structure (Dense Paragraph / Prose Resume)
+  // Deduction: -20
+  // ────────────────────────────────────────────────────────────────────────
+  if (explicitBulletLines.length === 0 && text.length > 100) {
+    deductions.push({
+      rule: 'NO-BULLET-STRUCTURE',
+      points: -20,
+      reason: 'No explicit bullet points detected. Professional resumes must use bulleted accomplishment statements rather than dense prose paragraphs.',
     });
   }
 
@@ -81,29 +95,35 @@ export function runContentQualityRulesEngine(rawText) {
     deductions.push({
       rule: 'BULLET-NO-METRICS',
       points: -penalty,
-      reason: `${noMetricsCount} bullet point(s) lack quantifiable metrics (numbers, %, $, or time figures). Adding concrete data increases recruiter response rates by up to 40%.`,
+      reason: `${noMetricsCount} bullet point(s) or statement(s) lack quantifiable metrics (numbers, %, $, or time figures). Adding concrete data increases recruiter response rates by up to 40%.`,
     });
   }
 
   // ────────────────────────────────────────────────────────────────────────
-  // RULE 2: Bullet Points Starting With Weak Action Verbs
+  // RULE 2: Bullet Points / Phrases With Weak Action Verbs
   // Deduction: -2 per instance, capped at -10 max
   // ────────────────────────────────────────────────────────────────────────
-  const weakStartRegex = /^(?:was\s+)?(?:responsible\s+for|worked\s+on|helped\s+(?:with|to|on)?|assisted\s+(?:with|in|to)?|involved\s+in|handled|tasked\s+with|duties\s+included|in\s+charge\s+of|participated\s+in)\b/i;
+  const weakStartRegex = /(?:^|\b)(?:was\s+)?(?:responsible\s+for|worked\s+on|helped\s+(?:with|to|on)?|assisted\s+(?:with|in|to)?|involved\s+in|handled|tasked\s+with|duties\s+included|in\s+charge\s+of|participated\s+in)\b/gi;
 
   let weakVerbCount = 0;
-  rawBulletTexts.forEach((bullet) => {
-    if (weakStartRegex.test(bullet)) {
-      weakVerbCount++;
-    }
-  });
+  if (explicitBulletLines.length > 0) {
+    rawBulletTexts.forEach((bullet) => {
+      if (weakStartRegex.test(bullet)) {
+        weakVerbCount++;
+      }
+    });
+  } else {
+    // For non-bulleted resumes, scan the entire text for weak phrases
+    const matches = text.match(weakStartRegex);
+    weakVerbCount = matches ? matches.length : 0;
+  }
 
   if (weakVerbCount > 0) {
     const penalty = Math.min(10, weakVerbCount * 2);
     deductions.push({
       rule: 'BULLET-WEAK-VERB',
       points: -penalty,
-      reason: `${weakVerbCount} bullet point(s) start with weak or passive verbs (e.g., "Responsible for", "Worked on", "Helped with"). Start bullets with decisive action verbs (e.g., "Led", "Engineered", "Architected").`,
+      reason: `${weakVerbCount} statement(s) contain weak or passive verbs (e.g., "Responsible for", "Worked on", "Helped with"). Start statements with decisive action verbs (e.g., "Led", "Engineered", "Architected").`,
     });
   }
 
@@ -133,14 +153,19 @@ export function runContentQualityRulesEngine(rawText) {
   // ════════════════════════════════════════════════════════════════════════
 
   // ────────────────────────────────────────────────────────────────────────
-  // RULE 4: Overall Word Count Threshold (<150 words)
-  // Deduction: -10
+  // RULE 4: Overall Word Count Threshold (<200 words: -10, <120 words: -15)
   // ────────────────────────────────────────────────────────────────────────
-  if (totalWordCount < 150) {
+  if (totalWordCount < 120) {
+    deductions.push({
+      rule: 'CONTENT-SPARSE',
+      points: -15,
+      reason: `Total resume content is critically sparse (${totalWordCount} words; target is 200–600 words). Thin content severely limits ATS keyword indexing and signals a lack of detail.`,
+    });
+  } else if (totalWordCount < 200) {
     deductions.push({
       rule: 'CONTENT-SPARSE',
       points: -10,
-      reason: `Total resume content is unusually sparse (${totalWordCount} words; minimum recommended is 150+ words). Thin content limits ATS keyword indexing and signals a lack of detail.`,
+      reason: `Total resume content is below recommended length (${totalWordCount} words; target is 200–600 words). Expand accomplishments and skills to improve ATS keyword density.`,
     });
   }
 
@@ -157,7 +182,6 @@ export function runContentQualityRulesEngine(rawText) {
     const isSkillsHeading = skillsHeadings.some((h) => cleaned === h || cleaned.startsWith(h + ':') || cleaned.startsWith(h + ' '));
 
     if (isSkillsHeading) {
-      // Check if subsequent lines exist and contain text
       const nextLines = lines.slice(index + 1, index + 6);
       const contentAfter = nextLines.join(' ').trim();
       if (contentAfter.length >= 10) {
@@ -166,10 +190,12 @@ export function runContentQualityRulesEngine(rawText) {
     }
   });
 
-  // Fallback: If no explicit header, check if common technical/domain terms appear anywhere
+  // Fallback: Check for distinct skill items (require at least 4 distinct terms)
   if (!hasSkillsContent) {
-    const commonSkillsPattern = /\b(javascript|typescript|python|java|c\+\+|react|node|html|css|sql|aws|docker|kubernetes|git|agile|scrum|marketing|excel|communication|sales|figma)\b/i;
-    if (commonSkillsPattern.test(text)) {
+    const commonSkillsPattern = /\b(javascript|typescript|python|java|c\+\+|react|node|html|css|sql|aws|docker|kubernetes|git|agile|scrum|marketing|excel|communication|sales|figma|analytics|tableau)\b/gi;
+    const matches = text.match(commonSkillsPattern);
+    const uniqueSkills = matches ? new Set(matches.map((m) => m.toLowerCase())) : new Set();
+    if (uniqueSkills.size >= 4) {
       hasSkillsContent = true;
     }
   }
@@ -178,7 +204,7 @@ export function runContentQualityRulesEngine(rawText) {
     deductions.push({
       rule: 'CONTENT-NO-SKILLS',
       points: -10,
-      reason: 'No dedicated Skills section or skill listings detected. ATS algorithms and recruiters rely on explicit skill lists to evaluate role qualifications.',
+      reason: 'No dedicated Skills section or structured skill listings detected. ATS algorithms and recruiters rely on explicit skill lists to evaluate role qualifications.',
     });
   }
 
