@@ -91,6 +91,21 @@ async function runAnalyzeTests() {
     throw new Error('Database persistence check failed for ats_analysis');
   }
 
+  // Verify ATS Rules Engine result is present and well-formed
+  const atsEngine = analyzeData.analysis.atsRulesEngine;
+  if (!atsEngine || typeof atsEngine.atsScore !== 'number' || !Array.isArray(atsEngine.deductions)) {
+    throw new Error('ATS Rules Engine result missing or malformed in API response');
+  }
+  console.log(`\nATS Rules Engine Score: ${atsEngine.atsScore}/100`);
+  console.log(`ATS Rules Engine Deductions (${atsEngine.deductions.length}):`);
+  atsEngine.deductions.forEach((d) => {
+    if (!d.rule || typeof d.points !== 'number' || !d.reason) {
+      throw new Error(`Deduction missing required fields: ${JSON.stringify(d)}`);
+    }
+    console.log(`  [${d.rule}] ${d.points} pts — ${d.reason.substring(0, 80)}`);
+  });
+  console.log('✅ ATS Rules Engine response verified');
+
   console.log('\n=== 6. Test Ownership Check (User 2 on User 1 Resume - Expect 404 Access Denied) ===');
   const reg2Res = await fetch(`${baseURL}/auth/register`, {
     method: 'POST',

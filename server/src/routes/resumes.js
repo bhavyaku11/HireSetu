@@ -4,6 +4,7 @@ import { authenticateToken } from '../middleware/auth.js';
 import { handleFileUpload } from '../middleware/upload.js';
 import { extractTextFromBuffer } from '../utils/extractor.js';
 import { generateJsonCompletion } from '../services/aiService.js';
+import { runAtsRulesEngine } from '../services/atsRulesEngine.js';
 
 const router = express.Router();
 
@@ -764,6 +765,9 @@ router.post('/:id/analyze', async (req, res) => {
       });
     }
 
+    // Run deterministic ATS rules engine (zero AI involvement)
+    const atsRulesResult = runAtsRulesEngine(textToAnalyze);
+
     let analysisResult;
 
     try {
@@ -801,13 +805,10 @@ Return a valid JSON object with:
       if (aiResponse.error) {
         analysisResult = runHeuristicAtsAnalysis(textToAnalyze);
       } else {
-        // Calculate deterministic Resume Strength Score & sub-breakdowns
         const issues = Array.isArray(aiResponse.issues) ? aiResponse.issues : [];
         const missingSections = Array.isArray(aiResponse.missingSections) ? aiResponse.missingSections : [];
         const calculatedScores = calculateResumeStrengthScore(issues, missingSections);
 
-        // Bug #1 fix: ALWAYS use deterministic deduction-based score.
-        // Never let Claude's volunteered holistic score override our calculation.
         analysisResult = {
           score: calculatedScores.score,
           scoreBreakdown: calculatedScores.scoreBreakdown,
@@ -825,6 +826,21 @@ Return a valid JSON object with:
       console.warn('Claude API request failed, running heuristic ATS & strength analysis fallback:', aiErr.message);
       analysisResult = runHeuristicAtsAnalysis(textToAnalyze);
     }
+
+    // Override the ATS sub-score with the deterministic rules engine result.
+    // This ensures ATS parsability is never subject to AI variability.
+    analysisResult.scoreBreakdown.atsScore = atsRulesResult.atsScore;
+    analysisResult.atsRulesEngine = atsRulesResult;
+
+    // Recalculate the overall score as a weighted composite:
+    //   ATS parsability (40%) + Content quality (35%) + Grammar (25%)
+    const weightedOverall = Math.round(
+      (atsRulesResult.atsScore * 0.40) +
+      (analysisResult.scoreBreakdown.contentScore * 0.35) +
+      (analysisResult.scoreBreakdown.grammarScore * 0.25)
+    );
+    analysisResult.score = Math.max(5, Math.min(100, weightedOverall));
+    analysisResult.summary = `Overall Resume Strength Score: ${analysisResult.score}/100. ATS Parsability: ${atsRulesResult.atsScore}/100. Identified ${analysisResult.issues.length} issue(s) and ${atsRulesResult.deductions.length} ATS rule deduction(s).`;
 
     const jsonString = JSON.stringify(analysisResult);
     await pool.query('UPDATE resumes SET ats_analysis = ? WHERE id = ? AND user_id = ?', [
