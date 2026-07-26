@@ -140,9 +140,12 @@ export default function Profile() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Client-side file type check
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
+    // Client-side file type check (check both mime type and extension)
+    const fileExt = file.name ? file.name.split('.').pop().toLowerCase() : '';
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/x-png', 'image/pjpeg'];
+
+    if (!allowedTypes.includes(file.type) && !allowedExts.includes(fileExt)) {
       setAvatarError('Only JPEG, PNG, and WebP images are allowed.');
       return;
     }
