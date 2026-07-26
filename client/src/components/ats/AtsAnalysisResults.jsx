@@ -34,9 +34,16 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
         },
       });
 
-      const data = await response.json();
+      let data = {};
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (jsonErr) {
+        data = {};
+      }
+
       if (!response.ok) {
-        throw new Error(data.message || 'Resume strength analysis request failed');
+        throw new Error(data.message || `Analysis request failed (${response.status}). Please try again.`);
       }
 
       setAnalysis(data.analysis);
