@@ -9,6 +9,7 @@ import SkillsForm from '../components/builder/SkillsForm';
 import ResumePreview from '../components/builder/ResumePreview';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
+import UserDropdown from '../components/ui/UserDropdown';
 
 const ACTIVE_SECTIONS = [
   { id: 'personal_info', label: 'Personal Info', icon: '👤', sortOrder: 1 },
@@ -224,6 +225,7 @@ export default function Builder() {
               </Button>
             </div>
           )}
+          <UserDropdown />
         </div>
       </header>
 

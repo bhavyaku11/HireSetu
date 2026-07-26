@@ -7,6 +7,7 @@ import Badge, { Pill } from '../components/ui/Badge';
 import Input from '../components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
 import ImportModal from '../components/dashboard/ImportModal';
+import UserDropdown from '../components/ui/UserDropdown';
 import logoMark from '../assets/logo-mark.png';
 
 export default function Dashboard() {
@@ -101,9 +102,7 @@ export default function Dashboard() {
           </Link>
 
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              Sign Out
-            </Button>
+            <UserDropdown />
           </div>
         </div>
       </header>

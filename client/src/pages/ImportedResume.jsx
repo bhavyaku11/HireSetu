@@ -7,6 +7,7 @@ import Badge, { Pill } from '../components/ui/Badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
 import AtsParseView from '../components/ats/AtsParseView';
 import AtsAnalysisResults from '../components/ats/AtsAnalysisResults';
+import UserDropdown from '../components/ui/UserDropdown';
 import logoMark from '../assets/logo-mark.png';
 
 export default function ImportedResume() {
@@ -117,9 +118,7 @@ export default function ImportedResume() {
             <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
               Dashboard
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              Sign Out
-            </Button>
+            <UserDropdown />
           </div>
         </div>
       </header>

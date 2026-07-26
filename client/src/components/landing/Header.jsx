@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
+import UserDropdown from '../ui/UserDropdown';
 import logoMark from '../../assets/logo-mark.png';
 
 const NAV_LINKS = [
@@ -10,6 +12,7 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+  const { isAuthenticated } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -56,18 +59,24 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* ── Desktop CTA Buttons ───────────────────── */}
+          {/* ── Desktop CTA / Profile Avatar ─────────── */}
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-[13px]">
-                Log in
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="primary" size="sm" className="text-[13px] shadow-soft-sm">
-                Get Started →
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <UserDropdown />
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="text-[13px]">
+                    Log in
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="primary" size="sm" className="text-[13px] shadow-soft-sm">
+                    Get Started →
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* ── Mobile Hamburger ─────────────────────── */}
