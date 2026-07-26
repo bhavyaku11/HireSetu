@@ -2,6 +2,7 @@ import express from 'express';
 import pool from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { handleFileUpload } from '../middleware/upload.js';
+import { extractTextFromBuffer } from '../utils/extractor.js';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ const ALLOWED_SECTION_TYPES = [
 // Helper to check if resume exists and belongs to requesting user
 const verifyResumeOwnership = async (resumeId, userId) => {
   const [rows] = await pool.query(
-    'SELECT id, user_id, title, created_at, updated_at FROM resumes WHERE id = ? AND user_id = ?',
+    'SELECT id, user_id, title, raw_extracted_text, created_at, updated_at FROM resumes WHERE id = ? AND user_id = ?',
     [resumeId, userId]
   );
   return rows.length > 0 ? rows[0] : null;
@@ -284,14 +285,35 @@ router.post(
   handleFileUpload,
   async (req, res) => {
     try {
+      const resumeId = req.params.id;
+
+      // Extract raw text content from the uploaded file buffer
+      const rawText = await extractTextFromBuffer(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
+
+      // Store extracted raw text in resumes database table
+      await pool.query(
+        'UPDATE resumes SET raw_extracted_text = ? WHERE id = ? AND user_id = ?',
+        [rawText, resumeId, req.user.id]
+      );
+
       return res.status(200).json({
-        message: 'File uploaded successfully',
+        message: 'File uploaded and text extracted successfully',
         filename: req.file.originalname,
         size: req.file.size,
+        rawText,
       });
     } catch (error) {
-      console.error('Error importing resume file:', error);
-      return res.status(500).json({ message: 'Internal server error during resume import' });
+      if (error.code === 'NO_EXTRACTABLE_TEXT' || error.code === 'UNSUPPORTED_FILE_TYPE') {
+        return res.status(400).json({ message: error.message });
+      }
+      console.error('Error importing and extracting resume file:', error);
+      return res.status(400).json({
+        message: "We couldn't read text from this file, try a different format",
+      });
     }
   }
 );

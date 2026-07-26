@@ -14,4 +14,18 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
+async function ensureSchemaUpdates() {
+  try {
+    const [columns] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'raw_extracted_text'");
+    if (columns.length === 0) {
+      await pool.query('ALTER TABLE resumes ADD COLUMN raw_extracted_text LONGTEXT NULL');
+      console.log('Successfully added raw_extracted_text column to resumes table');
+    }
+  } catch (err) {
+    console.error('Schema update check warning:', err.message);
+  }
+}
+
+ensureSchemaUpdates();
+
 export default pool;

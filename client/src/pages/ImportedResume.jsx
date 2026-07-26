@@ -20,6 +20,7 @@ export default function ImportedResume() {
   const stateData = location.state || {};
   const filename = stateData.filename || 'Uploaded_Resume.pdf';
   const size = stateData.size || 0;
+  const rawText = stateData.rawText || (resume && resume.raw_extracted_text) || '';
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -126,15 +127,15 @@ export default function ImportedResume() {
                 <div className="space-y-1.5 flex-1">
                   <div className="inline-flex items-center gap-2">
                     <Pill variant="success" size="sm">
-                      Upload Confirmed
+                      Text Extraction Complete
                     </Pill>
                     <span className="text-xs font-semibold text-surface-400">ID #{resumeId}</span>
                   </div>
                   <h2 className="text-2xl font-extrabold font-display text-surface-900 tracking-tight">
-                    Resume Uploaded Successfully!
+                    Resume Uploaded & Processed!
                   </h2>
                   <p className="text-sm text-surface-600">
-                    Your file has been validated and uploaded to HireSetu.
+                    Text extracted successfully from your uploaded resume.
                   </p>
                 </div>
               </div>
@@ -165,17 +166,38 @@ export default function ImportedResume() {
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Status Notice */}
-                <div className="p-4 bg-brand-50/60 border border-brand-200/70 rounded-xl flex items-start gap-3">
-                  <span className="text-brand-600 text-lg">💡</span>
-                  <div className="text-xs text-brand-900 space-y-0.5">
-                    <p className="font-bold font-display">Next Step: Text Extraction & Parsing</p>
-                    <p className="text-brand-700">
-                      File validation is complete. Automatic content parsing and field extraction will be integrated in the next phase.
-                    </p>
+              {/* Extracted Raw Text Display */}
+              <div className="rounded-2xl border border-surface-200 bg-white p-6 space-y-4 shadow-soft-xs">
+                <div className="flex items-center justify-between border-b border-surface-100 pb-3">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-brand-600" />
+                    <h4 className="text-sm font-bold font-display text-surface-900">
+                      Extracted Resume Text
+                    </h4>
                   </div>
+                  {rawText && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="neutral" size="sm">
+                        {rawText.length} characters
+                      </Badge>
+                      <Badge variant="neutral" size="sm">
+                        {rawText.split(/\s+/).filter(Boolean).length} words
+                      </Badge>
+                    </div>
+                  )}
                 </div>
+
+                {rawText ? (
+                  <div className="bg-surface-900 text-surface-100 rounded-xl p-5 font-mono text-xs leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap selection:bg-brand-500 selection:text-white border border-surface-800">
+                    {rawText}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center text-surface-500 bg-surface-50 rounded-xl border border-dashed border-surface-200 text-xs font-medium">
+                    No extracted text preview available.
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}

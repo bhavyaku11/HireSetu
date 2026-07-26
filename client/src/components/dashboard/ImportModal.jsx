@@ -121,6 +121,7 @@ export default function ImportModal({ isOpen, onClose }) {
         state: {
           filename: uploadData.filename || selectedFile.name,
           size: uploadData.size || selectedFile.size,
+          rawText: uploadData.rawText || '',
           resumeTitle: defaultTitle,
         },
       });
