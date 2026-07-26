@@ -71,7 +71,12 @@ router.post('/register', async (req, res) => {
       user: {
         id: userId,
         name: name.trim(),
-        email: normalizedEmail
+        email: normalizedEmail,
+        profile_image_url: null,
+        linkedin_url: null,
+        github_url: null,
+        portfolio_url: null,
+        bio: null,
       }
     });
   } catch (error) {
@@ -97,7 +102,10 @@ router.post('/login', async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     // Check if user exists
-    const [users] = await pool.query('SELECT id, name, email, password_hash FROM users WHERE email = ?', [normalizedEmail]);
+    const [users] = await pool.query(
+      'SELECT id, name, email, password_hash, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE email = ?',
+      [normalizedEmail]
+    );
     if (users.length === 0) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -124,7 +132,13 @@ router.post('/login', async (req, res) => {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        profile_image_url: user.profile_image_url,
+        linkedin_url: user.linkedin_url,
+        github_url: user.github_url,
+        portfolio_url: user.portfolio_url,
+        bio: user.bio,
+        created_at: user.created_at,
       }
     });
   } catch (error) {
