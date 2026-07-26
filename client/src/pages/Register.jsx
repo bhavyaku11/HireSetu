@@ -40,11 +40,13 @@ export default function Register() {
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters long';
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
@@ -149,6 +151,18 @@ export default function Register() {
               placeholder="At least 8 characters"
               error={errors.password}
               helperText="Password must be at least 8 characters long."
+            />
+
+            <Input
+              label="Confirm Password"
+              type="password"
+              name="confirmPassword"
+              isRequired
+              leftIcon={<span>🔒</span>}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Re-enter your password"
+              error={errors.confirmPassword}
             />
 
             <div className="pt-2">
