@@ -130,13 +130,17 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
           </div>
         </div>
 
-        {/* Sub-Metrics Progress Bars */}
+        {/* Sub-Metrics Progress Bars with Category Weights */}
         <div className="space-y-3.5 pt-1">
-          {/* ATS Readability */}
+          {/* 1. ATS Parsability (40% Weight, Rule-Based) */}
           <div className="space-y-1">
-            <div className="flex justify-between text-xs font-bold font-display">
-              <span className="text-surface-700">ATS Parsing & Structure</span>
-              <span className="text-surface-900">{atsScore}%</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold font-display">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-surface-800">ATS Parsability & Structure</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-brand-100 text-brand-700">40% Weight</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-surface-200 text-surface-600">Rule-Based</span>
+              </div>
+              <span className="text-surface-900">{atsScore}/100</span>
             </div>
             <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
               <div
@@ -146,30 +150,38 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
             </div>
           </div>
 
-          {/* Grammar & Readability */}
+          {/* 2. Content Quality (35% Weight, Rule-Based) */}
           <div className="space-y-1">
-            <div className="flex justify-between text-xs font-bold font-display">
-              <span className="text-surface-700">Grammar & Readability</span>
-              <span className="text-surface-900">{grammarScore}%</span>
-            </div>
-            <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-sky-500 h-2 rounded-full transition-all duration-700 ease-out"
-                style={{ width: `${grammarScore}%` }}
-              ></div>
-            </div>
-          </div>
-
-          {/* Impact & Action Verbs */}
-          <div className="space-y-1">
-            <div className="flex justify-between text-xs font-bold font-display">
-              <span className="text-surface-700">Action Verbs & Metrics</span>
-              <span className="text-surface-900">{contentScore}%</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold font-display">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-surface-800">Content Quality & Metrics</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 text-emerald-700">35% Weight</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-surface-200 text-surface-600">Rule-Based</span>
+              </div>
+              <span className="text-surface-900">{contentScore}/100</span>
             </div>
             <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
               <div
                 className="bg-emerald-500 h-2 rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${contentScore}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* 3. Grammar & Readability (25% Weight, AI-Judged) */}
+          <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold font-display">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-surface-800">Grammar & Readability</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-sky-100 text-sky-700">25% Weight</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">AI-Judged</span>
+              </div>
+              <span className="text-surface-900">{grammarScore}/100</span>
+            </div>
+            <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-sky-500 h-2 rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${grammarScore}%` }}
               ></div>
             </div>
           </div>

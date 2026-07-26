@@ -769,33 +769,34 @@ router.post('/:id/analyze', async (req, res) => {
     let analysisResult;
 
     try {
-      const prompt = `Perform a comprehensive HR & ATS Resume Audit on the following resume text.
+      const prompt = `You are a strict, expert Grammar, Proofreading, and Readability Auditor for resumes.
+Evaluate ONLY the Grammar, Spelling, Tone, and Readability of the following resume text.
 
 Resume Text:
 ---
 ${textToAnalyze}
 ---
 
-Evaluate the resume across 4 dimensions:
-1. ATS Compatibility & Formatting (section headers, graphic symbols, columns)
-2. Grammar & Spelling (flag specific instances with quotes and brief explanation)
-3. Readability & Tone (passive voice, overly long bullet points, sentence flow)
-4. Impact & Metrics (weak action verbs, missing quantifiable metrics like %, $, numbers)
+Your Task:
+1. Actively look for and flag all real issues: grammar mistakes, spelling errors, passive voice, run-on sentences, awkward phrasing, or vague language.
+2. CRITICAL SCORING INSTRUCTION: Do not default to a high score. Only give a high grammar/readability score if the writing is genuinely clean and professional. Flag every issue you find, however minor.
+3. Output a 0-100 score for Grammar & Readability ONLY (do NOT attempt to score ATS compatibility or overall resume strength — score ONLY writing quality). Every point lost must be justified by the flagged issues.
 
 Return a valid JSON object with:
-- summary: string (1-2 sentence executive overview)
+- grammarScore: number (0-100, strict score for Grammar & Readability only)
+- summary: string (1-2 sentence executive overview of writing quality)
 - issues: array of objects with fields:
   - severity: "high"|"medium"|"low"
-  - category: "Grammar & Spelling"|"Readability"|"Action Verbs & Metrics"|"ATS Compatibility"|"Section Headers"|"Contact Information"
+  - category: "Grammar & Spelling"|"Readability"|"Tone & Clarity"
   - description: string (short description of WHAT is wrong)
   - instance: string (exact quote or phrase from resume that needs fixing, or empty string if general)
-  - whyItMatters: string (concise explanation of WHY this matters to ATS parsers or recruiters)
+  - whyItMatters: string (concise explanation of WHY this matters to recruiters)
   - howToFix: string (actionable one-liner guide on HOW to fix it)
   - recommendation: string (alias of howToFix)
 - missingSections: array of strings`;
 
       const aiResponse = await generateJsonCompletion(prompt, {
-        systemPrompt: 'You are an expert HR Technology, Grammar, and ATS Resume Auditor.',
+        systemPrompt: 'You are a strict, objective HR Proofreader and Writing Auditor.',
         maxTokens: 1600,
         temperature: 0.2,
       });
@@ -807,15 +808,23 @@ Return a valid JSON object with:
         const missingSections = Array.isArray(aiResponse.missingSections) ? aiResponse.missingSections : [];
         const calculatedScores = calculateResumeStrengthScore(issues, missingSections);
 
+        const aiGrammar = typeof aiResponse.grammarScore === 'number'
+          ? Math.max(0, Math.min(100, Math.round(aiResponse.grammarScore)))
+          : calculatedScores.scoreBreakdown.grammarScore;
+
         analysisResult = {
           score: calculatedScores.score,
-          scoreBreakdown: calculatedScores.scoreBreakdown,
-          summary: aiResponse.summary || `Overall Resume Strength Score: ${calculatedScores.score}/100. Identified ${issues.length} area(s) for improvement.`,
+          scoreBreakdown: {
+            atsScore: calculatedScores.scoreBreakdown.atsScore,
+            contentScore: calculatedScores.scoreBreakdown.contentScore,
+            grammarScore: aiGrammar,
+          },
+          summary: aiResponse.summary || `Grammar & Readability Audit completed. Identified ${issues.length} area(s) for improvement.`,
           issues: issues.map((iss) => ({
             ...iss,
-            whyItMatters: iss.whyItMatters || 'This issue affects ATS parsing indexing or recruiter readability.',
-            howToFix: iss.howToFix || iss.recommendation || 'Apply standard formatting or clearer wording to resolve.',
-            recommendation: iss.recommendation || iss.howToFix || 'Apply standard formatting or clearer wording to resolve.',
+            whyItMatters: iss.whyItMatters || 'Grammar and readability directly impact recruiter first impressions.',
+            howToFix: iss.howToFix || iss.recommendation || 'Apply standard grammar and clear active phrasing to resolve.',
+            recommendation: iss.recommendation || iss.howToFix || 'Apply standard grammar and clear active phrasing to resolve.',
           })),
           missingSections,
         };
@@ -829,21 +838,34 @@ Return a valid JSON object with:
     const atsRulesResult = runAtsRulesEngine(textToAnalyze);
     const contentQualityRulesResult = runContentQualityRulesEngine(textToAnalyze);
 
-    // Override sub-scores with deterministic rules engine results.
-    analysisResult.scoreBreakdown.atsScore = atsRulesResult.atsScore;
-    analysisResult.scoreBreakdown.contentScore = contentQualityRulesResult.contentQualityScore;
+    // Final Resume Strength Score composition:
+    //   - ATS Parsability (Part 32, rule-based): 40% weight
+    //   - Content Quality (Part 33, rule-based): 35% weight
+    //   - Grammar & Readability (AI-judged):     25% weight
+    const atsScore = atsRulesResult.atsScore;
+    const contentScore = contentQualityRulesResult.contentQualityScore;
+    const grammarScore = analysisResult.scoreBreakdown?.grammarScore ?? 100;
+
+    const weightedOverall = Math.round(
+      (atsScore * 0.40) +
+      (contentScore * 0.35) +
+      (grammarScore * 0.25)
+    );
+
+    analysisResult.score = Math.max(5, Math.min(100, weightedOverall));
+    analysisResult.scoreBreakdown = {
+      atsScore,
+      contentScore,
+      grammarScore,
+      weights: {
+        ats: '40%',
+        content: '35%',
+        grammar: '25%',
+      },
+    };
     analysisResult.atsRulesEngine = atsRulesResult;
     analysisResult.contentQualityRulesEngine = contentQualityRulesResult;
-
-    // Recalculate overall score as a weighted composite:
-    //   ATS Parsability (40%) + Content Quality (35%) + Grammar (25%)
-    const weightedOverall = Math.round(
-      (atsRulesResult.atsScore * 0.40) +
-      (contentQualityRulesResult.contentQualityScore * 0.35) +
-      (analysisResult.scoreBreakdown.grammarScore * 0.25)
-    );
-    analysisResult.score = Math.max(5, Math.min(100, weightedOverall));
-    analysisResult.summary = `Overall Resume Strength Score: ${analysisResult.score}/100. ATS Parsability: ${atsRulesResult.atsScore}/100. Content Quality: ${contentQualityRulesResult.contentQualityScore}/100. Identified ${analysisResult.issues.length} issue(s), ${atsRulesResult.deductions.length} ATS rule deduction(s), and ${contentQualityRulesResult.deductions.length} Content Quality deduction(s).`;
+    analysisResult.summary = `Overall Resume Strength: ${analysisResult.score}/100 [ATS: ${atsScore}/100 (40%), Content: ${contentScore}/100 (35%), Grammar: ${grammarScore}/100 (25%)]. Identified ${analysisResult.issues.length} issue(s).`;
 
     const jsonString = JSON.stringify(analysisResult);
     await pool.query('UPDATE resumes SET ats_analysis = ? WHERE id = ? AND user_id = ?', [
