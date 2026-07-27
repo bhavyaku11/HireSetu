@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import JdMatchScoreMeter from './JdMatchScoreMeter';
+import JdQualitativeGapsCard from './JdQualitativeGapsCard';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 
@@ -301,6 +302,14 @@ export default function JdMatchDiffView({
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Full-width Qualitative AI Gap Analysis Component */}
+          <div className="lg:col-span-12">
+            <JdQualitativeGapsCard
+              skillGaps={matchData?.skillGaps}
+              experienceGaps={matchData?.experienceGaps}
+            />
           </div>
         </div>
       )}

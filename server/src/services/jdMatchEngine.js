@@ -329,10 +329,90 @@ export async function calculateJdMatch(jdText, resumeContent, options = {}) {
     ? Math.round((matchedKeywords.length / totalKeywordsFound) * 100)
     : 0;
 
+  // 6. Qualitative AI Gap Analysis (skill gaps & experience relevance gaps)
+  let qualitativeGaps = { skillGaps: [], experienceGaps: [] };
+  if (useAiExtraction) {
+    qualitativeGaps = await analyzeQualitativeGaps(jdText, resumeContent);
+  }
+
   return {
     matchPercentage,
     matchedKeywords,
     missingKeywords,
     totalKeywordsFound,
+    skillGaps: qualitativeGaps.skillGaps || [],
+    experienceGaps: qualitativeGaps.experienceGaps || [],
   };
+}
+
+/**
+ * Qualitative AI Gap Analysis identifying Skill Gaps and Experience Relevance Gaps
+ *
+ * @param {string} jdText - Job Description text
+ * @param {string|Object} resumeContent - Resume raw text or sections object
+ * @returns {Promise<{ skillGaps: Array<{ gap: string, why: string }>, experienceGaps: Array<{ gap: string, why: string }> }>}
+ */
+export async function analyzeQualitativeGaps(jdText, resumeContent) {
+  if (!jdText || typeof jdText !== 'string' || jdText.trim().length < 50) {
+    return { skillGaps: [], experienceGaps: [] };
+  }
+
+  const flattenedResume = flattenResumeContent(resumeContent);
+  if (!flattenedResume || flattenedResume.trim().length === 0) {
+    return { skillGaps: [], experienceGaps: [] };
+  }
+
+  try {
+    const prompt = `Analyze the provided Job Description against the Candidate's Resume to conduct a qualitative gap analysis.
+
+Identify TWO categories of gaps:
+1. "skillGaps": Skills, tools, or qualifications the JD explicitly or implicitly requires that are NOT reflected anywhere in the resume (beyond simple keyword absence — e.g. the JD requires "5+ years of backend development" and the resume shows only 1 year, or missing domain expertise).
+2. "experienceGaps": Core job requirements or responsibilities that the candidate's resume does not clearly demonstrate, even if related keywords exist.
+
+CRITICAL CONSTRAINTS:
+- Only flag genuine gaps. Do not invent gaps that aren't actually supported by the job description or resume content.
+- For each gap identified, include a short "why" explanation detailing why this gap matters for candidate evaluation.
+- If there are no genuine gaps in a category, return an empty array [] for that category.
+
+Output MUST be a valid JSON object matching this exact structure:
+{
+  "skillGaps": [
+    { "gap": "Summary of skill gap", "why": "Short explanation of why this gap matters" }
+  ],
+  "experienceGaps": [
+    { "gap": "Summary of experience relevance gap", "why": "Short explanation of why this gap matters" }
+  ]
+}
+
+Job Description:
+"""
+${jdText.substring(0, 4000)}
+"""
+
+Candidate Resume Content:
+"""
+${flattenedResume.substring(0, 6000)}
+"""`;
+
+    const aiResult = await generateJsonCompletion(prompt, {
+      systemPrompt: 'You are a senior technical recruiter and ATS evaluator conducting qualitative candidate gap analysis.',
+      temperature: 0.2,
+      maxTokens: 1024,
+    });
+
+    if (aiResult && typeof aiResult === 'object') {
+      const skillGaps = Array.isArray(aiResult.skillGaps)
+        ? aiResult.skillGaps.filter((item) => item && item.gap && item.why)
+        : [];
+      const experienceGaps = Array.isArray(aiResult.experienceGaps)
+        ? aiResult.experienceGaps.filter((item) => item && item.gap && item.why)
+        : [];
+
+      return { skillGaps, experienceGaps };
+    }
+  } catch (err) {
+    console.warn('AI qualitative gap analysis warning (returning empty fallback):', err.message);
+  }
+
+  return { skillGaps: [], experienceGaps: [] };
 }
