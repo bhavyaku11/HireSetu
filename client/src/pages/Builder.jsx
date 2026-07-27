@@ -227,14 +227,15 @@ export default function Builder() {
               </Button>
             </div>
           )}
-          <Button
-            variant={activeTab === 'job_description' ? 'primary' : 'outline'}
-            size="sm"
-            onClick={() => setActiveTab('job_description')}
-            leftIcon={<span>🎯</span>}
-          >
-            Match to Job
-          </Button>
+          <Link to={`/builder/${resumeId}/match`}>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<span>🎯</span>}
+            >
+              Match to Job
+            </Button>
+          </Link>
           <UserDropdown />
         </div>
       </header>

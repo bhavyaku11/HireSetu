@@ -7,6 +7,7 @@ import { generateJsonCompletion } from '../services/aiService.js';
 import { runAtsRulesEngine } from '../services/atsRulesEngine.js';
 import { runContentQualityRulesEngine } from '../services/contentQualityRulesEngine.js';
 import { mapRawTextToSections } from '../services/resumeMapper.js';
+import { calculateJdMatch } from '../services/jdMatchEngine.js';
 
 const router = express.Router();
 
@@ -1046,6 +1047,79 @@ router.get('/:id/job-descriptions', async (req, res) => {
   } catch (error) {
     console.error('Error fetching job descriptions:', error);
     return res.status(500).json({ message: 'Internal server error fetching job descriptions' });
+  }
+});
+
+/**
+ * @route   POST /api/resumes/:id/job-descriptions/:jdId/match
+ * @desc    Run deterministic JD match engine for a resume against a saved job description
+ * @access  Private
+ */
+router.post(['/:id/job-descriptions/:jdId/match', '/:id/match'], async (req, res) => {
+  try {
+    const resumeId = req.params.id;
+    const jdParam = req.params.jdId || req.body.jdId || 'latest';
+
+    const resume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    // 1. Fetch Job Description
+    let jdRows = [];
+    if (jdParam && jdParam !== 'latest' && !isNaN(parseInt(jdParam, 10))) {
+      [jdRows] = await pool.query(
+        'SELECT id, resume_id, title, raw_text, created_at FROM job_descriptions WHERE id = ? AND resume_id = ?',
+        [parseInt(jdParam, 10), resumeId]
+      );
+    }
+
+    if (jdRows.length === 0) {
+      [jdRows] = await pool.query(
+        'SELECT id, resume_id, title, raw_text, created_at FROM job_descriptions WHERE resume_id = ? ORDER BY created_at DESC LIMIT 1',
+        [resumeId]
+      );
+    }
+
+    if (jdRows.length === 0) {
+      return res.status(404).json({ message: 'No saved job description found for this resume. Please save a job description first.' });
+    }
+
+    const targetJd = jdRows[0];
+
+    // 2. Fetch Resume Sections
+    const [sections] = await pool.query(
+      'SELECT section_type, content FROM resume_sections WHERE resume_id = ?',
+      [resumeId]
+    );
+
+    const resumeContentObj = {
+      rawText: resume.raw_extracted_text || '',
+      sections: {},
+    };
+
+    sections.forEach((sec) => {
+      let parsed = sec.content;
+      if (typeof parsed === 'string') {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch (e) {}
+      }
+      resumeContentObj.sections[sec.section_type] = parsed;
+    });
+
+    // 3. Calculate Deterministic Match
+    const matchResults = await calculateJdMatch(targetJd.raw_text, resumeContentObj);
+
+    return res.status(200).json({
+      message: 'JD keyword match calculation complete',
+      ...matchResults,
+      job_description: targetJd,
+      jobDescription: targetJd,
+    });
+  } catch (error) {
+    console.error('Error running JD match engine:', error);
+    return res.status(500).json({ message: 'Internal server error calculating JD match' });
   }
 });
 

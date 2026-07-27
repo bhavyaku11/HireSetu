@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
+import JdMatch from './pages/JdMatch';
 import ImportedResume from './pages/ImportedResume';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/builder/:resumeId" element={<Builder />} />
+              <Route path="/builder/:resumeId/match" element={<JdMatch />} />
               <Route path="/imported/:resumeId" element={<ImportedResume />} />
             </Route>
 
