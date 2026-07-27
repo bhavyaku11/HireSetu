@@ -8,6 +8,8 @@ import { runAtsRulesEngine } from '../services/atsRulesEngine.js';
 import { runContentQualityRulesEngine } from '../services/contentQualityRulesEngine.js';
 import { mapRawTextToSections } from '../services/resumeMapper.js';
 import { calculateJdMatch } from '../services/jdMatchEngine.js';
+import { generateResumeHtml } from '../utils/pdfRender.js';
+import { generatePdfFromHtml } from '../services/pdfService.js';
 
 const router = express.Router();
 
@@ -1216,5 +1218,60 @@ router.post('/:id/tailor', async (req, res) => {
   }
 });
 
-export default router;
+/**
+ * @route   GET /api/resumes/:id/export
+ * @desc    Export a resume as ATS-parsable PDF via Puppeteer
+ * @access  Private
+ */
+router.get('/:id/export', async (req, res) => {
+  try {
+    const resumeId = req.params.id;
 
+    // Verify ownership
+    const resume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found or access denied' });
+    }
+
+    // Fetch sections
+    const [sections] = await pool.query(
+      'SELECT id, section_type, content, sort_order FROM resume_sections WHERE resume_id = ? ORDER BY sort_order ASC',
+      [resumeId]
+    );
+
+    // Reconstruct sectionsData map
+    const sectionsData = {
+      personal_info: {},
+      education: { items: [] },
+      experience: { items: [] },
+      projects: { items: [] },
+      skills: { categories: [] },
+    };
+
+    sections.forEach((sec) => {
+      sectionsData[sec.section_type] = typeof sec.content === 'string' ? JSON.parse(sec.content) : sec.content;
+    });
+
+    // Generate HTML
+    const html = generateResumeHtml(resume, sectionsData);
+
+    // Generate PDF
+    const pdfBuffer = await generatePdfFromHtml(html);
+
+    // Construct filename
+    let filename = 'Resume';
+    if (sectionsData.personal_info && sectionsData.personal_info.fullName) {
+      filename = sectionsData.personal_info.fullName.trim().replace(/[^a-zA-Z0-9]/g, '_') + '_Resume';
+    }
+
+    // Send the PDF buffer
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Error exporting PDF:', error);
+    return res.status(500).json({ message: 'Internal server error exporting PDF' });
+  }
+});
+
+export default router;

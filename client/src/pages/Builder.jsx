@@ -11,6 +11,7 @@ import JobDescriptionManager from '../components/builder/JobDescriptionManager';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import UserDropdown from '../components/ui/UserDropdown';
+import { usePdfExport } from '../hooks/usePdfExport';
 
 const ACTIVE_SECTIONS = [
   { id: 'personal_info', label: 'Personal Info', icon: '👤', sortOrder: 1 },
@@ -34,6 +35,7 @@ export default function Builder() {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useAuth();
+  const { exportPdf, isExporting } = usePdfExport();
 
   const [showImportNotice, setShowImportNotice] = useState(!!location.state?.importedNotice);
   const [resume, setResume] = useState(null);
@@ -227,6 +229,15 @@ export default function Builder() {
               </Button>
             </div>
           )}
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => exportPdf(resumeId)}
+            disabled={isExporting}
+            leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
+          >
+            {isExporting ? 'Generating...' : 'Download PDF'}
+          </Button>
           <Link to={`/builder/${resumeId}/match`}>
             <Button
               variant="outline"

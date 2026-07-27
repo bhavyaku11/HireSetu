@@ -5,11 +5,13 @@ import JdMatchDiffView from '../components/ats/JdMatchDiffView';
 import JobDescriptionManager from '../components/builder/JobDescriptionManager';
 import Button from '../components/ui/Button';
 import UserDropdown from '../components/ui/UserDropdown';
+import { usePdfExport } from '../hooks/usePdfExport';
 
 export default function JdMatch() {
   const { resumeId } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { exportPdf, isExporting } = usePdfExport();
 
   const [resume, setResume] = useState(null);
   const [savedJds, setSavedJds] = useState([]);
@@ -172,6 +174,15 @@ export default function JdMatch() {
         </div>
 
         <div className="flex items-center space-x-3">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => exportPdf(resumeId)}
+            disabled={isExporting}
+            leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
+          >
+            {isExporting ? 'Generating...' : 'Download PDF'}
+          </Button>
           <Link to="/dashboard">
             <Button variant="outline" size="sm">
               Dashboard
