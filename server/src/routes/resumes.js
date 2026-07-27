@@ -1,7 +1,7 @@
 import express from 'express';
 import pool from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
-import { handleFileUpload } from '../middleware/upload.js';
+import { handleFileUpload, handleOptionalJdUpload } from '../middleware/upload.js';
 import { extractTextFromBuffer } from '../utils/extractor.js';
 import { generateJsonCompletion } from '../services/aiService.js';
 import { runAtsRulesEngine } from '../services/atsRulesEngine.js';
@@ -955,6 +955,97 @@ Return a valid JSON object with:
   } catch (error) {
     console.error('Error running resume analysis:', error);
     return res.status(500).json({ message: 'Internal server error analyzing resume' });
+  }
+});
+
+/**
+ * @route   POST /api/resumes/:id/job-descriptions
+ * @desc    Save a job description (pasted text or extracted from uploaded file) for a resume
+ * @access  Private
+ */
+router.post('/:id/job-descriptions', handleOptionalJdUpload, async (req, res) => {
+  try {
+    const resumeId = req.params.id;
+    const resume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    let rawText = '';
+    let title = req.body && req.body.title ? req.body.title.trim() : '';
+
+    if (req.file) {
+      try {
+        rawText = await extractTextFromBuffer(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+      } catch (extractErr) {
+        return res.status(400).json({ message: extractErr.message || 'Failed to extract text from uploaded job description file.' });
+      }
+    } else if (req.body && (req.body.raw_text || req.body.rawText || req.body.text)) {
+      rawText = (req.body.raw_text || req.body.rawText || req.body.text).trim();
+    }
+
+    if (!rawText || rawText.trim().length < 50) {
+      return res.status(400).json({
+        message: 'Job description text must be at least 50 characters long.',
+      });
+    }
+
+    const cleanRawText = rawText.trim();
+    if (!title) {
+      const firstLine = cleanRawText.split('\n')[0].trim().substring(0, 60);
+      title = firstLine || 'Job Description';
+    }
+
+    const [result] = await pool.query(
+      'INSERT INTO job_descriptions (resume_id, title, raw_text) VALUES (?, ?, ?)',
+      [resumeId, title, cleanRawText]
+    );
+
+    const [inserted] = await pool.query(
+      'SELECT id, resume_id, title, raw_text, created_at FROM job_descriptions WHERE id = ?',
+      [result.insertId]
+    );
+
+    return res.status(201).json({
+      message: 'Job description saved successfully',
+      job_description: inserted[0],
+      jobDescription: inserted[0],
+    });
+  } catch (error) {
+    console.error('Error saving job description:', error);
+    return res.status(500).json({ message: 'Internal server error saving job description' });
+  }
+});
+
+/**
+ * @route   GET /api/resumes/:id/job-descriptions
+ * @desc    Get all saved job descriptions for a resume
+ * @access  Private
+ */
+router.get('/:id/job-descriptions', async (req, res) => {
+  try {
+    const resumeId = req.params.id;
+    const resume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    const [rows] = await pool.query(
+      'SELECT id, resume_id, title, raw_text, created_at FROM job_descriptions WHERE resume_id = ? ORDER BY created_at DESC',
+      [resumeId]
+    );
+
+    return res.status(200).json({
+      job_descriptions: rows,
+      jobDescriptions: rows,
+    });
+  } catch (error) {
+    console.error('Error fetching job descriptions:', error);
+    return res.status(500).json({ message: 'Internal server error fetching job descriptions' });
   }
 });
 

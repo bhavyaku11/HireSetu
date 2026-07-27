@@ -54,8 +54,10 @@ export async function extractTextFromBuffer(buffer, originalname = '', mimetype 
       error.code = 'NO_EXTRACTABLE_TEXT';
       throw error;
     }
+  } else if (mimetype === 'text/plain' || ext === 'txt') {
+    extractedText = buffer.toString('utf-8');
   } else {
-    const error = new Error('Unsupported file type for text extraction. Only PDF and DOCX are allowed.');
+    const error = new Error('Unsupported file type for text extraction. Only PDF, DOCX, and TXT files are allowed.');
     error.code = 'UNSUPPORTED_FILE_TYPE';
     throw error;
   }

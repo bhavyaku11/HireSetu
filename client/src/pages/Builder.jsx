@@ -7,6 +7,7 @@ import ExperienceForm from '../components/builder/ExperienceForm';
 import ProjectsForm from '../components/builder/ProjectsForm';
 import SkillsForm from '../components/builder/SkillsForm';
 import ResumePreview from '../components/builder/ResumePreview';
+import JobDescriptionManager from '../components/builder/JobDescriptionManager';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import UserDropdown from '../components/ui/UserDropdown';
@@ -17,6 +18,7 @@ const ACTIVE_SECTIONS = [
   { id: 'experience', label: 'Experience', icon: '💼', sortOrder: 3 },
   { id: 'projects', label: 'Projects', icon: '🚀', sortOrder: 4 },
   { id: 'skills', label: 'Skills', icon: '⚡', sortOrder: 5 },
+  { id: 'job_description', label: 'Match to Job', icon: '🎯', sortOrder: 6 },
 ];
 
 const COMING_SOON_SECTIONS = [
@@ -224,7 +226,14 @@ export default function Builder() {
                 Retry
               </Button>
             </div>
-          )}
+          <Button
+            variant={activeTab === 'job_description' ? 'primary' : 'outline'}
+            size="sm"
+            onClick={() => setActiveTab('job_description')}
+            leftIcon={<span>🎯</span>}
+          >
+            Match to Job
+          </Button>
           <UserDropdown />
         </div>
       </header>
@@ -354,6 +363,16 @@ export default function Builder() {
                 <SkillsForm
                   data={sectionsData.skills || { categories: [] }}
                   onChange={(newVal) => handleSectionChange('skills', newVal)}
+                />
+              )}
+
+              {activeTab === 'job_description' && (
+                <JobDescriptionManager
+                  resumeId={resumeId}
+                  token={token}
+                  onSelectJd={(selectedJd) => {
+                    console.log('Selected Job Description:', selectedJd);
+                  }}
                 />
               )}
             </div>
