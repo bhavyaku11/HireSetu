@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import Badge from '../ui/Badge';
 
 export default function JdQualitativeGapsCard({
-  skillGaps = [],
-  experienceGaps = [],
+  skillGaps,
+  experienceGaps,
+  loading = false,
 }) {
   const [expandedMap, setExpandedMap] = useState({});
+
+  // Normalize to always be arrays regardless of null/undefined from API
+  const safeSkillGaps = Array.isArray(skillGaps) ? skillGaps : [];
+  const safeExperienceGaps = Array.isArray(experienceGaps) ? experienceGaps : [];
 
   const toggleGap = (id) => {
     setExpandedMap((prev) => ({
@@ -14,7 +19,7 @@ export default function JdQualitativeGapsCard({
     }));
   };
 
-  const totalGaps = skillGaps.length + experienceGaps.length;
+  const totalGaps = safeSkillGaps.length + safeExperienceGaps.length;
 
   return (
     <div className="bg-white border border-surface-200 rounded-2xl p-6 shadow-soft-sm space-y-6">
@@ -29,9 +34,11 @@ export default function JdQualitativeGapsCard({
               <h3 className="text-base font-bold font-display text-surface-900">
                 Qualitative AI Gap Analysis
               </h3>
-              <Badge variant="neutral" size="sm">
-                {totalGaps} {totalGaps === 1 ? 'Gap' : 'Gaps'} Identified
-              </Badge>
+              {!loading && (
+                <Badge variant="neutral" size="sm">
+                  {totalGaps} {totalGaps === 1 ? 'Gap' : 'Gaps'} Identified
+                </Badge>
+              )}
             </div>
             <p className="text-xs text-surface-500">
               Evaluates skill depth & experience relevance requirements beyond basic keyword matching
@@ -44,7 +51,16 @@ export default function JdQualitativeGapsCard({
         </span>
       </div>
 
-      {totalGaps === 0 ? (
+      {loading ? (
+        <div className="p-8 text-center space-y-3">
+          <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs font-semibold text-surface-500">Running AI gap analysis...</p>
+        </div>
+      ) : skillGaps === undefined && experienceGaps === undefined ? (
+        <div className="p-6 rounded-2xl bg-surface-50 border border-dashed border-surface-200 text-center space-y-2">
+          <p className="text-xs text-surface-400">Run a job match to see AI-identified skill and experience gaps.</p>
+        </div>
+      ) : totalGaps === 0 ? (
         <div className="p-6 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 text-center space-y-2">
           <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg mx-auto font-bold">
             ✓
@@ -59,7 +75,7 @@ export default function JdQualitativeGapsCard({
       ) : (
         <div className="space-y-6">
           {/* 1. Skill Gaps Section */}
-          {skillGaps.length > 0 && (
+          {safeSkillGaps.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-surface-800 uppercase tracking-wider font-display flex items-center space-x-2">
@@ -72,7 +88,7 @@ export default function JdQualitativeGapsCard({
               </div>
 
               <div className="space-y-2.5">
-                {skillGaps.map((item, index) => {
+                {safeSkillGaps.map((item, index) => {
                   const gapId = `skill-${index}`;
                   const isExpanded = !!expandedMap[gapId];
 
@@ -129,7 +145,7 @@ export default function JdQualitativeGapsCard({
           )}
 
           {/* 2. Experience Relevance Gaps Section */}
-          {experienceGaps.length > 0 && (
+          {safeExperienceGaps.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-surface-800 uppercase tracking-wider font-display flex items-center space-x-2">
@@ -142,7 +158,7 @@ export default function JdQualitativeGapsCard({
               </div>
 
               <div className="space-y-2.5">
-                {experienceGaps.map((item, index) => {
+                  {safeExperienceGaps.map((item, index) => {
                   const gapId = `exp-${index}`;
                   const isExpanded = !!expandedMap[gapId];
 

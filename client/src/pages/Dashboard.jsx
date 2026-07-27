@@ -24,6 +24,7 @@ export default function Dashboard() {
 
   const fetchResumes = async () => {
     setLoading(true);
+    setError('');
     try {
       const response = await fetch('/api/resumes', {
         headers: {
@@ -33,9 +34,12 @@ export default function Dashboard() {
       const data = await response.json();
       if (response.ok) {
         setResumes(data.resumes || []);
+      } else {
+        setError(data.message || 'Failed to load your resumes.');
       }
     } catch (err) {
       console.error('Failed to fetch resumes:', err);
+      setError('Network error — could not load resumes. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -159,6 +163,16 @@ export default function Dashboard() {
               </Badge>
             </div>
           </div>
+
+          {error && (
+            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium flex items-center justify-between gap-3">
+              <span>⚠️ {error}</span>
+              <button
+                onClick={() => { setError(''); fetchResumes(); }}
+                className="shrink-0 text-rose-600 hover:text-rose-900 font-semibold underline"
+              >Retry</button>
+            </div>
+          )}
 
           {loading ? (
             <div className="p-16 text-center text-surface-500 space-y-3">

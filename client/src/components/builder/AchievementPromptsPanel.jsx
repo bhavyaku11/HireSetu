@@ -6,6 +6,7 @@ export default function AchievementPromptsPanel({
   title = '',
   questions = [],
   loading = false,
+  errorText = '',
   onAddBulletWithFocus = () => {},
   onDismiss = () => {},
 }) {
@@ -41,6 +42,11 @@ export default function AchievementPromptsPanel({
         <div className="p-4 text-center text-xs text-amber-800 space-x-2 flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
           <span>Generating reflective questions...</span>
+        </div>
+      ) : errorText ? (
+        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start space-x-2">
+          <span className="shrink-0">⚠️</span>
+          <span>{errorText}</span>
         </div>
       ) : questions.length === 0 ? (
         <p className="text-xs text-amber-800 italic">No prompts generated.</p>

@@ -17,6 +17,7 @@ export default function BulletListEditor({
     originalText: '',
     suggestedText: '',
     explanation: '',
+    errorText: '',
     loading: false,
   });
 
@@ -59,6 +60,7 @@ export default function BulletListEditor({
       originalText: text,
       suggestedText: '',
       explanation: '',
+      errorText: '',
       loading: true,
     });
 
@@ -83,13 +85,14 @@ export default function BulletListEditor({
           ...prev,
           suggestedText: data.suggestedText,
           explanation: data.explanation || 'Enhanced action verb phrasing and metric placeholders.',
+          errorText: '',
           loading: false,
         }));
       } else {
         setAiModalState((prev) => ({
           ...prev,
-          suggestedText: text,
-          explanation: data.message || 'Unable to improve text at this time.',
+          suggestedText: '',
+          errorText: data.message || 'AI rewrite unavailable. Please try again.',
           loading: false,
         }));
       }
@@ -97,8 +100,8 @@ export default function BulletListEditor({
       console.error('Error improving bullet with AI:', err);
       setAiModalState((prev) => ({
         ...prev,
-        suggestedText: text,
-        explanation: 'Network error invoking AI rewrite.',
+        suggestedText: '',
+        errorText: 'Network error — could not reach AI service. Please check your connection.',
         loading: false,
       }));
     }
@@ -202,6 +205,7 @@ export default function BulletListEditor({
         originalText={aiModalState.originalText}
         suggestedText={aiModalState.suggestedText}
         explanation={aiModalState.explanation}
+        errorText={aiModalState.errorText}
         type="bullet"
         loading={aiModalState.loading}
         onAccept={handleAcceptAiRewrite}

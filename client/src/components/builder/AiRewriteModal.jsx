@@ -8,6 +8,7 @@ export default function AiRewriteModal({
   originalText = '',
   suggestedText = '',
   explanation = '',
+  errorText = '',
   type = 'bullet',
   loading = false,
   onAccept = () => {},
@@ -67,6 +68,25 @@ export default function AiRewriteModal({
               Analyzing context and crafting stronger action phrasing...
             </p>
           </div>
+        ) : errorText ? (
+          <div className="space-y-4">
+            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-start space-x-3">
+              <span className="text-rose-500 text-lg shrink-0">⚠️</span>
+              <div>
+                <p className="text-xs font-bold text-rose-900 font-display">AI Rewrite Unavailable</p>
+                <p className="text-xs text-rose-700 mt-0.5">{errorText}</p>
+              </div>
+            </div>
+            <p className="text-[11px] text-surface-400 italic text-center">
+              Your original text has not been changed.
+            </p>
+            <div className="flex justify-end pt-2 border-t border-surface-100">
+              <Button variant="outline" size="sm" onClick={onDiscard}>
+                Close
+              </Button>
+            </div>
+          </div>
+
         ) : (
           <div className="space-y-5">
             {/* Explanation Note */}

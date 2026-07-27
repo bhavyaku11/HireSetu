@@ -65,7 +65,7 @@ export default function ExperienceForm({ data = { items: [] }, onChange }) {
 
     setPromptsState((prev) => ({
       ...prev,
-      [index]: { show: true, questions: [], loading: true },
+      [index]: { show: true, questions: [], loading: true, errorText: '' },
     }));
 
     try {
@@ -87,19 +87,19 @@ export default function ExperienceForm({ data = { items: [] }, onChange }) {
       if (response.ok && Array.isArray(resData.questions)) {
         setPromptsState((prev) => ({
           ...prev,
-          [index]: { show: true, questions: resData.questions, loading: false },
+          [index]: { show: true, questions: resData.questions, loading: false, errorText: '' },
         }));
       } else {
         setPromptsState((prev) => ({
           ...prev,
-          [index]: { show: true, questions: [], loading: false },
+          [index]: { show: true, questions: [], loading: false, errorText: resData.message || 'Could not generate prompts.' },
         }));
       }
     } catch (err) {
       console.error('Error fetching achievement prompts:', err);
       setPromptsState((prev) => ({
         ...prev,
-        [index]: { show: true, questions: [], loading: false },
+        [index]: { show: true, questions: [], loading: false, errorText: 'Network error — could not reach AI service.' },
       }));
     }
   };
@@ -258,6 +258,7 @@ export default function ExperienceForm({ data = { items: [] }, onChange }) {
                     title={item.role || item.company}
                     questions={promptState.questions}
                     loading={promptState.loading}
+                    errorText={promptState.errorText || ''}
                     onAddBulletWithFocus={(q) => handleAddBulletFromPrompt(index, q)}
                     onDismiss={() => handleDismissPrompts(index)}
                   />
