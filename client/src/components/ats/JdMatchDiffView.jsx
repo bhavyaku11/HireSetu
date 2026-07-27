@@ -111,6 +111,7 @@ export default function JdMatchDiffView({
   currentJd = null,
   onSelectJd = () => {},
   onAddJdClick = () => {},
+  onSaveTailoredVersion = () => {},
   matchData = null,
   loading = false,
 }) {
@@ -166,6 +167,18 @@ export default function JdMatchDiffView({
             <Badge variant="warning" size="sm">
               No saved JDs found
             </Badge>
+          )}
+
+          {currentJd && (
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => onSaveTailoredVersion(currentJd)}
+              leftIcon={<span>💾</span>}
+              title="Duplicate resume as an independent tailored copy for this job description"
+            >
+              Save as new version for this job
+            </Button>
           )}
 
           <Button size="sm" variant="outline" onClick={onAddJdClick}>

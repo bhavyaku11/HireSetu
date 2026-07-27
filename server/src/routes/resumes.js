@@ -51,7 +51,12 @@ router.use(authenticateToken);
 router.get('/', async (req, res) => {
   try {
     const [resumes] = await pool.query(
-      'SELECT id, title, created_at, updated_at FROM resumes WHERE user_id = ? ORDER BY updated_at DESC',
+      `SELECT r.id, r.user_id, r.title, r.tailored_for_jd_id, r.created_at, r.updated_at,
+              jd.title AS tailored_for_jd_title
+       FROM resumes r
+       LEFT JOIN job_descriptions jd ON r.tailored_for_jd_id = jd.id
+       WHERE r.user_id = ?
+       ORDER BY r.updated_at DESC`,
       [req.user.id]
     );
 
@@ -1120,6 +1125,94 @@ router.post(['/:id/job-descriptions/:jdId/match', '/:id/match'], async (req, res
   } catch (error) {
     console.error('Error running JD match engine:', error);
     return res.status(500).json({ message: 'Internal server error calculating JD match' });
+  }
+});
+
+/**
+ * @route   POST /api/resumes/:id/tailor
+ * @desc    Duplicate resume and all sections as a new tailored version for a job description
+ * @access  Private
+ */
+router.post('/:id/tailor', async (req, res) => {
+  try {
+    const resumeId = req.params.id;
+    const { jdId, title } = req.body || {};
+
+    const sourceResume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!sourceResume) {
+      return res.status(404).json({ message: 'Source resume not found' });
+    }
+
+    // Fetch target Job Description
+    let targetJd = null;
+    if (jdId && !isNaN(parseInt(jdId, 10))) {
+      const [jds] = await pool.query(
+        'SELECT id, title FROM job_descriptions WHERE id = ? AND resume_id = ?',
+        [parseInt(jdId, 10), resumeId]
+      );
+      if (jds.length > 0) targetJd = jds[0];
+    }
+
+    if (!targetJd) {
+      const [jds] = await pool.query(
+        'SELECT id, title FROM job_descriptions WHERE resume_id = ? ORDER BY created_at DESC LIMIT 1',
+        [resumeId]
+      );
+      if (jds.length > 0) targetJd = jds[0];
+    }
+
+    const tailoredTitle = title?.trim() || (targetJd?.title
+      ? `${sourceResume.title} - Tailored for ${targetJd.title}`
+      : `${sourceResume.title} (Tailored Version)`);
+
+    const tailoredJdId = targetJd ? targetJd.id : null;
+
+    // 1. Insert new duplicate resume record
+    const [resResult] = await pool.query(
+      `INSERT INTO resumes (user_id, title, raw_extracted_text, ats_analysis, tailored_for_jd_id)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        req.user.id,
+        tailoredTitle,
+        sourceResume.raw_extracted_text || null,
+        sourceResume.ats_analysis ? JSON.stringify(sourceResume.ats_analysis) : null,
+        tailoredJdId,
+      ]
+    );
+
+    const newResumeId = resResult.insertId;
+
+    // 2. Duplicate all sections from source resume
+    const [sourceSections] = await pool.query(
+      'SELECT section_type, content, sort_order FROM resume_sections WHERE resume_id = ?',
+      [resumeId]
+    );
+
+    for (const sec of sourceSections) {
+      const contentJson = typeof sec.content === 'string' ? sec.content : JSON.stringify(sec.content);
+      await pool.query(
+        'INSERT INTO resume_sections (resume_id, section_type, content, sort_order) VALUES (?, ?, ?, ?)',
+        [newResumeId, sec.section_type, contentJson, sec.sort_order]
+      );
+    }
+
+    const [newResumeRows] = await pool.query(
+      `SELECT r.id, r.user_id, r.title, r.tailored_for_jd_id, r.created_at, r.updated_at,
+              jd.title AS tailored_for_jd_title
+       FROM resumes r
+       LEFT JOIN job_descriptions jd ON r.tailored_for_jd_id = jd.id
+       WHERE r.id = ?`,
+      [newResumeId]
+    );
+
+    return res.status(201).json({
+      message: 'Tailored resume version created successfully',
+      resumeId: newResumeId,
+      resume: newResumeRows[0],
+    });
+  } catch (error) {
+    console.error('Error creating tailored resume version:', error);
+    return res.status(500).json({ message: 'Internal server error creating tailored resume' });
   }
 });
 

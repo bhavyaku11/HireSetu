@@ -114,6 +114,36 @@ export default function JdMatch() {
     }
   };
 
+  const handleSaveTailoredVersion = async (targetJd) => {
+    if (!resumeId || !token) return;
+    setMatchLoading(true);
+
+    try {
+      const res = await fetch(`/api/resumes/${resumeId}/tailor`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          jdId: targetJd?.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.resumeId) {
+        navigate(`/builder/${data.resumeId}`);
+      } else {
+        setError(data.message || 'Failed to create tailored resume version');
+      }
+    } catch (err) {
+      console.error('Error saving tailored resume:', err);
+      setError('Network error saving tailored version');
+    } finally {
+      setMatchLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-brand-canvas text-surface-900 flex items-center justify-center font-body">
@@ -164,6 +194,7 @@ export default function JdMatch() {
           currentJd={currentJd}
           onSelectJd={handleSelectJd}
           onAddJdClick={() => setShowAddModal(true)}
+          onSaveTailoredVersion={handleSaveTailoredVersion}
           matchData={matchData}
           loading={matchLoading}
         />

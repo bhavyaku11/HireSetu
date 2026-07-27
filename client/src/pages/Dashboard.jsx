@@ -201,13 +201,19 @@ export default function Dashboard() {
                   className="flex flex-col justify-between space-y-4"
                 >
                   <CardHeader>
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-2 flex-wrap">
                       <Pill variant="primary" size="sm">
                         ID #{res.id}
                       </Pill>
-                      <Badge variant="success" size="sm" dot>
-                        Saved
-                      </Badge>
+                      {res.tailored_for_jd_title || res.tailoredForJdTitle ? (
+                        <Badge variant="primary" size="sm">
+                          ✨ Tailored for: {res.tailored_for_jd_title || res.tailoredForJdTitle}
+                        </Badge>
+                      ) : (
+                        <Badge variant="neutral" size="sm">
+                          Base Resume
+                        </Badge>
+                      )}
                     </div>
                     <CardTitle className="pt-1 truncate">{res.title}</CardTitle>
                     <CardDescription>

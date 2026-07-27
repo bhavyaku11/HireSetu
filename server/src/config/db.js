@@ -45,10 +45,15 @@ async function ensureSchemaUpdates() {
         title VARCHAR(255) NULL,
         raw_text LONGTEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE,
-        INDEX idx_jd_resume_id (resume_id)
+        FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
+
+    const [tailoredCols] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'tailored_for_jd_id'");
+    if (tailoredCols.length === 0) {
+      await pool.query('ALTER TABLE resumes ADD COLUMN tailored_for_jd_id INT NULL');
+      console.log('Successfully added tailored_for_jd_id column to resumes table');
+    }
   } catch (err) {
     console.error('Schema update check warning:', err.message);
   }

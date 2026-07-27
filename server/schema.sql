@@ -24,10 +24,13 @@ CREATE TABLE IF NOT EXISTS resumes (
     title VARCHAR(255) NOT NULL,
     raw_extracted_text LONGTEXT NULL,
     ats_analysis JSON NULL,
+    tailored_for_jd_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_resumes_user_id (user_id)
+    FOREIGN KEY (tailored_for_jd_id) REFERENCES job_descriptions(id) ON DELETE SET NULL,
+    INDEX idx_resumes_user_id (user_id),
+    INDEX idx_resumes_tailored_jd (tailored_for_jd_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Resume Sections Table
