@@ -180,6 +180,7 @@ export default function ExperienceForm({ data = { items: [] }, onChange }) {
                   bullets={item.bullets || []}
                   onChange={(newBullets) => handleItemChange(index, 'bullets', newBullets)}
                   label="Key Achievements & Responsibilities"
+                  context={{ jobTitle: item.role, company: item.company }}
                 />
               </div>
             </Card>
