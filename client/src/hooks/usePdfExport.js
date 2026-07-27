@@ -4,11 +4,13 @@ import { useAuth } from '../context/AuthContext';
 export function usePdfExport() {
   const { token } = useAuth();
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState(null);
 
   const exportPdf = async (resumeId) => {
     if (!token || !resumeId) return;
 
     setIsExporting(true);
+    setExportError(null);
     try {
       const response = await fetch(`/api/resumes/${resumeId}/export`, {
         method: 'GET',
@@ -18,7 +20,9 @@ export function usePdfExport() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate PDF');
+        let msg = 'Failed to generate PDF';
+        try { const d = await response.json(); msg = d.message || msg; } catch (_) {}
+        throw new Error(msg);
       }
 
       const blob = await response.blob();
@@ -44,11 +48,12 @@ export function usePdfExport() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      setExportError(error.message || 'Failed to generate PDF. Please try again.');
     } finally {
       setIsExporting(false);
     }
   };
 
-  return { exportPdf, isExporting };
+  return { exportPdf, isExporting, exportError, clearExportError: () => setExportError(null) };
 }
+

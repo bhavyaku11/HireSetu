@@ -114,6 +114,7 @@ export default function JdMatchDiffView({
   onSaveTailoredVersion = () => {},
   matchData = null,
   loading = false,
+  tailorLoading = false,
 }) {
   const { matchPercentage = 0, matchedKeywords = [], missingKeywords = [], totalKeywordsFound = 0 } = matchData || {};
 
@@ -174,10 +175,11 @@ export default function JdMatchDiffView({
               size="sm"
               variant="primary"
               onClick={() => onSaveTailoredVersion(currentJd)}
-              leftIcon={<span>💾</span>}
+              disabled={tailorLoading}
+              leftIcon={tailorLoading ? <span className="animate-spin inline-block">⏳</span> : <span>💾</span>}
               title="Duplicate resume as an independent tailored copy for this job description"
             >
-              Save as new version for this job
+              {tailorLoading ? 'Creating...' : 'Save as new version for this job'}
             </Button>
           )}
 

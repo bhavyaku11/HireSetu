@@ -35,7 +35,7 @@ export default function Builder() {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useAuth();
-  const { exportPdf, isExporting } = usePdfExport();
+  const { exportPdf, isExporting, exportError, clearExportError } = usePdfExport();
 
   const [showImportNotice, setShowImportNotice] = useState(!!location.state?.importedNotice);
   const [resume, setResume] = useState(null);
@@ -211,18 +211,18 @@ export default function Builder() {
         <div className="flex items-center space-x-4">
           {saveStatus === 'Saving...' && (
             <Badge variant="warning" size="md" dot>
-              Saving...
+              <span className="hidden sm:inline">Saving...</span>
             </Badge>
           )}
           {saveStatus === 'All changes saved' && (
             <Badge variant="success" size="md" dot>
-              All changes saved
+              <span className="hidden sm:inline">All changes saved</span>
             </Badge>
           )}
           {saveStatus === 'Failed to save' && (
             <div className="flex items-center space-x-2">
               <Badge variant="danger" size="md" dot>
-                Failed to save
+                <span className="hidden sm:inline">Failed to save</span>
               </Badge>
               <Button size="sm" variant="outline" onClick={handleRetrySave}>
                 Retry
@@ -236,9 +236,10 @@ export default function Builder() {
             disabled={isExporting}
             leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
           >
-            {isExporting ? 'Generating...' : 'Download PDF'}
+            <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Download PDF'}</span>
+            <span className="sm:hidden">{isExporting ? '⏳' : '📄'}</span>
           </Button>
-          <Link to={`/builder/${resumeId}/match`}>
+          <Link to={`/builder/${resumeId}/match`} className="hidden sm:block">
             <Button
               variant="outline"
               size="sm"
@@ -250,6 +251,14 @@ export default function Builder() {
           <UserDropdown />
         </div>
       </header>
+
+      {/* PDF Export Error Banner */}
+      {exportError && (
+        <div className="bg-rose-50 border-b border-rose-200 px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+          <span className="text-rose-700 text-xs font-semibold">⚠️ {exportError}</span>
+          <button onClick={clearExportError} className="text-rose-400 hover:text-rose-700 font-bold text-lg leading-none">×</button>
+        </div>
+      )}
 
       {/* One-Time Imported Resume Notice Banner */}
       {showImportNotice && (

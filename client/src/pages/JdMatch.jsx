@@ -11,7 +11,9 @@ export default function JdMatch() {
   const { resumeId } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const { exportPdf, isExporting } = usePdfExport();
+  const { exportPdf, isExporting, exportError, clearExportError } = usePdfExport();
+  const [tailorLoading, setTailorLoading] = useState(false);
+  const [tailorSuccess, setTailorSuccess] = useState('');
 
   const [resume, setResume] = useState(null);
   const [savedJds, setSavedJds] = useState([]);
@@ -118,7 +120,8 @@ export default function JdMatch() {
 
   const handleSaveTailoredVersion = async (targetJd) => {
     if (!resumeId || !token) return;
-    setMatchLoading(true);
+    setTailorLoading(true);
+    setError('');
 
     try {
       const res = await fetch(`/api/resumes/${resumeId}/tailor`, {
@@ -134,7 +137,8 @@ export default function JdMatch() {
 
       const data = await res.json();
       if (res.ok && data.resumeId) {
-        navigate(`/builder/${data.resumeId}`);
+        setTailorSuccess(`Tailored version created! Opening builder...`);
+        setTimeout(() => navigate(`/builder/${data.resumeId}`), 1200);
       } else {
         setError(data.message || 'Failed to create tailored resume version');
       }
@@ -142,7 +146,7 @@ export default function JdMatch() {
       console.error('Error saving tailored resume:', err);
       setError('Network error saving tailored version');
     } finally {
-      setMatchLoading(false);
+      setTailorLoading(false);
     }
   };
 
@@ -160,20 +164,20 @@ export default function JdMatch() {
   return (
     <div className="min-h-screen bg-surface-50 text-surface-900 flex flex-col font-body selection:bg-brand-500/20 selection:text-brand-700">
       {/* Page Header */}
-      <header className="h-16 bg-white/90 border-b border-surface-200/80 backdrop-blur px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-soft-xs">
-        <div className="flex items-center space-x-4">
+      <header className="h-16 bg-white/90 border-b border-surface-200/80 backdrop-blur px-3 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-soft-xs gap-2">
+        <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
           <Link to={`/builder/${resumeId}`}>
             <Button variant="ghost" size="sm" leftIcon={<span>←</span>}>
-              Resume Builder
+              <span className="hidden sm:inline">Resume Builder</span>
             </Button>
           </Link>
-          <div className="h-5 w-px bg-surface-200"></div>
-          <h1 className="text-base md:text-lg font-bold font-display text-surface-900 tracking-tight truncate max-w-xs md:max-w-md">
-            {resume?.title || 'Resume'} — Target Job Match
+          <div className="h-5 w-px bg-surface-200 hidden sm:block"></div>
+          <h1 className="text-sm md:text-base font-bold font-display text-surface-900 tracking-tight truncate">
+            <span className="hidden sm:inline">{resume?.title || 'Resume'} — </span>Job Match
           </h1>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 md:space-x-3 shrink-0">
           <Button
             variant="primary"
             size="sm"
@@ -181,9 +185,10 @@ export default function JdMatch() {
             disabled={isExporting}
             leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
           >
-            {isExporting ? 'Generating...' : 'Download PDF'}
+            <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Download PDF'}</span>
+            <span className="sm:hidden">{isExporting ? '⏳' : '📄'}</span>
           </Button>
-          <Link to="/dashboard">
+          <Link to="/dashboard" className="hidden sm:block">
             <Button variant="outline" size="sm">
               Dashboard
             </Button>
@@ -193,10 +198,20 @@ export default function JdMatch() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 space-y-6">
-        {error && (
-          <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium">
-            ⚠️ {error}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 md:p-8 space-y-4 md:space-y-6">
+        {(error || exportError) && (
+          <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium flex items-center justify-between gap-3">
+            <span>⚠️ {error || exportError}</span>
+            <button
+              onClick={() => { setError(''); clearExportError(); }}
+              className="shrink-0 text-rose-400 hover:text-rose-700 font-bold text-lg leading-none"
+            >×</button>
+          </div>
+        )}
+
+        {tailorSuccess && (
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-700 font-semibold flex items-center gap-2">
+            ✅ {tailorSuccess}
           </div>
         )}
 
@@ -208,6 +223,7 @@ export default function JdMatch() {
           onSaveTailoredVersion={handleSaveTailoredVersion}
           matchData={matchData}
           loading={matchLoading}
+          tailorLoading={tailorLoading}
         />
       </main>
 
