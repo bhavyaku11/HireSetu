@@ -130,4 +130,75 @@ CRITICAL RULES & INSTRUCTIONS:
   }
 });
 
+/**
+ * @route   POST /api/ai/suggest-achievements
+ * @desc    Generate 2-3 reflective questions prompting users to recall real quantifiable achievements
+ * @access  Private
+ */
+router.post('/suggest-achievements', async (req, res) => {
+  try {
+    const { title = '', bullets = [], context = '' } = req.body || {};
+
+    const cleanTitle = (title || context || 'Role/Project').trim();
+    const bulletsText = Array.isArray(bullets) ? bullets.filter(Boolean).join('; ') : (bullets || '');
+
+    const systemPrompt = 'You are an executive career coach and ATS interview consultant. Your task is to prompt candidate reflection via targeted questions without ever generating or fabricating false achievements.';
+
+    const prompt = `Based on the candidate's entry for "${cleanTitle}", generate 2 to 3 reflective QUESTIONS (NOT statements) that prompt the candidate to think of real, quantifiable achievements or metrics they might have forgotten to include.
+
+Current Entry Context:
+"${bulletsText || 'No existing bullets detailed yet'}"
+
+CRITICAL CONSTRAINTS:
+- Output 2 to 3 reflective QUESTIONS ONLY. Never invent specific numbers, percentages, company names, or accomplishments.
+- Example question: "Did this project reduce processing time, cut operational costs, or improve any measurable metric? If so, what was the approximate percentage or figure?"
+- Your job is to prompt candidate reflection, NOT to generate content or fake achievements.
+
+Output MUST be a valid JSON object matching this exact structure:
+{
+  "questions": [
+    "Reflective question 1 prompting metrics or quantifiable impact?",
+    "Reflective question 2 prompting scale, user base, or system throughput?",
+    "Reflective question 3 prompting team leadership or cost savings?"
+  ]
+}`;
+
+    try {
+      const responseData = await generateJsonCompletion(prompt, {
+        systemPrompt,
+        maxTokens: 500,
+        temperature: 0.3,
+      });
+
+      if (responseData && Array.isArray(responseData.questions) && responseData.questions.length > 0) {
+        return res.status(200).json({
+          success: true,
+          questions: responseData.questions.slice(0, 3),
+        });
+      }
+    } catch (aiErr) {
+      if (aiErr.code === 'API_KEY_MISSING') {
+        const fallbackQuestions = [
+          `Did your work on "${cleanTitle}" improve system performance, decrease load time, or cut operational costs? If so, what was the estimated metric?`,
+          `How many users, clients, team members, or daily transactions were directly impacted by your work in "${cleanTitle}"?`,
+          `Did you lead, mentor, or collaborate on key architecture or project milestones? If so, what specific deliverable did you own?`,
+        ];
+
+        return res.status(200).json({
+          success: true,
+          status: 'warning',
+          message: aiErr.message,
+          questions: fallbackQuestions,
+        });
+      }
+      throw aiErr;
+    }
+
+    return res.status(400).json({ message: 'Failed to generate achievement prompts' });
+  } catch (error) {
+    console.error('Error generating achievement suggestions:', error);
+    return res.status(500).json({ message: error.message || 'Internal server error suggesting achievements' });
+  }
+});
+
 export default router;

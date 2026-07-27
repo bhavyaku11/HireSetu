@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import BulletListEditor from './BulletListEditor';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { Card } from '../ui/Card';
 import Badge from '../ui/Badge';
+import { useAuth } from '../../context/AuthContext';
+import AchievementPromptsPanel from './AchievementPromptsPanel';
 
 export default function ProjectsForm({ data = { items: [] }, onChange }) {
+  const { token } = useAuth();
   const items = Array.isArray(data.items) ? data.items : [];
+
+  const [promptsState, setPromptsState] = useState({});
 
   const updateItems = (newItems) => {
     onChange({
@@ -53,8 +58,66 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
     updateItems(newItems);
   };
 
+  const handleFetchPrompts = async (index, item) => {
+    const title = item.name || 'Project';
+
+    setPromptsState((prev) => ({
+      ...prev,
+      [index]: { show: true, questions: [], loading: true },
+    }));
+
+    try {
+      const response = await fetch('/api/ai/suggest-achievements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          bullets: item.bullets || [],
+          context: `Project: ${item.name || ''} (${item.techStack || ''})`,
+        }),
+      });
+
+      const resData = await response.json();
+
+      if (response.ok && Array.isArray(resData.questions)) {
+        setPromptsState((prev) => ({
+          ...prev,
+          [index]: { show: true, questions: resData.questions, loading: false },
+        }));
+      } else {
+        setPromptsState((prev) => ({
+          ...prev,
+          [index]: { show: true, questions: [], loading: false },
+        }));
+      }
+    } catch (err) {
+      console.error('Error fetching project achievement prompts:', err);
+      setPromptsState((prev) => ({
+        ...prev,
+        [index]: { show: true, questions: [], loading: false },
+      }));
+    }
+  };
+
+  const handleAddBulletFromPrompt = (index, questionText) => {
+    const item = items[index];
+    const currentBullets = item?.bullets || [];
+    const newBullets = [...currentBullets, ''];
+    handleItemChange(index, 'bullets', newBullets);
+  };
+
+  const handleDismissPrompts = (index) => {
+    setPromptsState((prev) => ({
+      ...prev,
+      [index]: { ...prev[index], show: false },
+    }));
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-body">
       <div className="flex items-center justify-between border-b border-surface-200/80 pb-3">
         <div>
           <h3 className="text-base font-bold font-display text-surface-900">Projects</h3>
@@ -76,96 +139,115 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
         </Card>
       ) : (
         <div className="space-y-4">
-          {items.map((item, index) => (
-            <Card
-              key={item.id || index}
-              padding="p-5"
-              className="bg-white border-surface-200 shadow-soft-xs space-y-4 relative"
-            >
-              {/* Item Header Controls */}
-              <div className="flex items-center justify-between border-b border-surface-100 pb-2">
-                <Badge variant="secondary" size="sm">
-                  Project #{index + 1}
-                </Badge>
+          {items.map((item, index) => {
+            const promptState = promptsState[index] || { show: false, questions: [], loading: false };
 
-                <div className="flex items-center space-x-1">
-                  <button
-                    type="button"
-                    onClick={() => handleMove(index, 'up')}
-                    disabled={index === 0}
-                    title="Move Up"
-                    className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
-                  >
-                    ▲
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleMove(index, 'down')}
-                    disabled={index === items.length - 1}
-                    title="Move Down"
-                    className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
-                  >
-                    ▼
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(index)}
-                    title="Delete Entry"
-                    className="p-1 text-rose-500 hover:text-rose-700 text-xs ml-2 cursor-pointer"
-                  >
-                    ✕
-                  </button>
+            return (
+              <Card
+                key={item.id || index}
+                padding="p-5"
+                className="bg-white border-surface-200 shadow-soft-xs space-y-4 relative"
+              >
+                {/* Item Header Controls */}
+                <div className="flex items-center justify-between border-b border-surface-100 pb-2">
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="secondary" size="sm">
+                      Project #{index + 1}
+                    </Badge>
+
+                    {/* AI Suggest Achievements Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleFetchPrompts(index, item)}
+                      className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/80 transition-all flex items-center space-x-1 cursor-pointer"
+                    >
+                      <span>💡</span>
+                      <span>Suggest achievements to add</span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center space-x-1">
+                    <button
+                      type="button"
+                      onClick={() => handleMove(index, 'up')}
+                      disabled={index === 0}
+                      title="Move Up"
+                      className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMove(index, 'down')}
+                      disabled={index === items.length - 1}
+                      title="Move Down"
+                      className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
+                    >
+                      ▼
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(index)}
+                      title="Delete Entry"
+                      className="p-1 text-rose-500 hover:text-rose-700 text-xs ml-2 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Input Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="sm:col-span-2">
+                {/* Input Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <Input
+                      label="Project Name"
+                      isRequired
+                      value={item.name || ''}
+                      onChange={(e) => handleItemChange(index, 'name', e.target.value)}
+                      placeholder="e.g. AI Resume Builder"
+                      error={!item.name?.trim() ? 'Project name required' : ''}
+                    />
+                  </div>
+
                   <Input
-                    label="Project Name"
-                    isRequired
-                    value={item.name || ''}
-                    onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                    placeholder="e.g. AI Resume Builder"
-                    error={!item.name?.trim() ? 'Project name required' : ''}
+                    label="Tech Stack (Comma-separated)"
+                    value={item.techStack || ''}
+                    onChange={(e) => handleItemChange(index, 'techStack', e.target.value)}
+                    placeholder="e.g. React, Node.js, Express, MySQL"
+                  />
+
+                  <Input
+                    label="Project Link / Demo URL"
+                    type="url"
+                    value={item.link || ''}
+                    onChange={(e) => handleItemChange(index, 'link', e.target.value)}
+                    placeholder="https://github.com/username/project"
                   />
                 </div>
 
-                <Input
-                  label="Tech Stack (Comma-separated)"
-                  value={item.techStack || ''}
-                  onChange={(e) => handleItemChange(index, 'techStack', e.target.value)}
-                  placeholder="e.g. React, Node.js, Express, MySQL"
-                />
+                {/* Optional Reflective Achievement Prompts Panel */}
+                {promptState.show && (
+                  <AchievementPromptsPanel
+                    title={item.name}
+                    questions={promptState.questions}
+                    loading={promptState.loading}
+                    onAddBulletWithFocus={(q) => handleAddBulletFromPrompt(index, q)}
+                    onDismiss={() => handleDismissPrompts(index)}
+                  />
+                )}
 
-                <Input
-                  label="Project / GitHub URL"
-                  type="url"
-                  value={item.link || ''}
-                  onChange={(e) => handleItemChange(index, 'link', e.target.value)}
-                  placeholder="https://github.com/user/project"
-                />
-
-                <div className="sm:col-span-2">
-                  <Input
-                    label="Project Overview / Description"
-                    value={item.description || ''}
-                    onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                    placeholder="Full-stack AI resume builder with live ATS preview..."
+                {/* Bullet Points List Editor */}
+                <div className="pt-2 border-t border-surface-100">
+                  <BulletListEditor
+                    bullets={item.bullets || []}
+                    onChange={(newBullets) => handleItemChange(index, 'bullets', newBullets)}
+                    label="Key Features & Accomplishments"
+                    context={{ jobTitle: item.name, company: item.techStack }}
                   />
                 </div>
-              </div>
-
-              {/* Bullet Points List Editor */}
-              <div className="pt-2 border-t border-surface-100">
-                <BulletListEditor
-                  bullets={item.bullets || []}
-                  onChange={(newBullets) => handleItemChange(index, 'bullets', newBullets)}
-                  label="Key Features & Highlights"
-                />
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
