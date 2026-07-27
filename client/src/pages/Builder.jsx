@@ -226,6 +226,7 @@ export default function Builder() {
                 Retry
               </Button>
             </div>
+          )}
           <Button
             variant={activeTab === 'job_description' ? 'primary' : 'outline'}
             size="sm"
