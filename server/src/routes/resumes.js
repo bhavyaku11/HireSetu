@@ -1256,7 +1256,8 @@ router.get('/:id/export', async (req, res) => {
     const html = generateResumeHtml(resume, sectionsData);
 
     // Generate PDF
-    const pdfBuffer = await generatePdfFromHtml(html);
+    const pdfUint8Array = await generatePdfFromHtml(html);
+    const pdfBuffer = Buffer.from(pdfUint8Array);
 
     // Construct filename
     let filename = 'Resume';
