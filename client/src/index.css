@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode — ThemeContext toggles .dark on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Typography */
   --font-display: "Outfit", sans-serif;
@@ -129,3 +132,43 @@
     #ffffff;
 }
 
+/* ── Dark Mode Base ──────────────────────── */
+/*
+  When html.dark is set by ThemeContext, apply a dark canvas.
+  Individual components can layer their own dark: overrides as needed.
+  This gives the toggle an immediate, whole-page visible effect.
+*/
+.dark body {
+  background-color: #0E1424;
+  color: #E2E7F4;
+}
+
+.dark .hero-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 60% -10%, #1a1340 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 0% 80%, #110e2a 0%, transparent 55%),
+    #0E1424;
+}
+
+.dark .bg-white { background-color: #131929 !important; }
+.dark .bg-surface-50 { background-color: #0E1424 !important; }
+.dark .bg-surface-100\/50 { background-color: rgba(30, 38, 59, 0.5) !important; }
+.dark .border-surface-200 { border-color: #323D57 !important; }
+.dark .border-surface-100 { border-color: #1E263B !important; }
+.dark .text-surface-900 { color: #E2E7F4 !important; }
+.dark .text-surface-800 { color: #CBD3E6 !important; }
+.dark .text-surface-700 { color: #93A1C0 !important; }
+.dark .text-surface-600 { color: #637294 !important; }
+.dark .text-surface-500 { color: #465373 !important; }
+
+/* Dark mode glass card */
+.dark .glass-card {
+  background: rgba(19, 25, 41, 0.85);
+  border-color: rgba(50, 61, 87, 0.8);
+}
+
+/* Header dark overlay */
+.dark header {
+  background-color: rgba(14, 20, 36, 0.92) !important;
+  border-color: #323D57 !important;
+}

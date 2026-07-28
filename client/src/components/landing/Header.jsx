@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import SkyToggle from '../ui/sky-toggle';
 import Button from '../ui/Button';
 import UserDropdown from '../ui/UserDropdown';
 import logoMark from '../../assets/logo-mark.png';
 
 export default function Header() {
   const { isAuthenticated } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -41,6 +44,8 @@ export default function Header() {
 
           {/* ── Desktop CTA / Profile Avatar ─────────── */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
+            {/* Theme toggle — left of auth controls */}
+            <SkyToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
             {isAuthenticated ? (
               <UserDropdown />
             ) : (
@@ -61,6 +66,10 @@ export default function Header() {
 
           {/* ── Mobile Hamburger ─────────────────────── */}
           <div className="md:hidden flex items-center gap-2">
+            {/* Theme toggle on mobile too */}
+            <div className="scale-[0.7] origin-center">
+              <SkyToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
+            </div>
             {isAuthenticated ? (
               <UserDropdown />
             ) : (
