@@ -22,6 +22,134 @@ export default function AtsEducation() {
           </p>
         </div>
 
+        {/* 0. The Human Review: The 7.4 Second Scan */}
+        <div className="space-y-6 pb-12 border-b border-surface-100">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <h3 className="text-xl font-bold font-display text-surface-900">
+              The Human Review: The 7.4 Second Scan
+            </h3>
+            <p className="text-[14px] text-surface-500 leading-relaxed">
+              Recruiters scan, they don't read. Studies show most resumes get just <strong>7.4 seconds</strong> of attention. They follow an "F-pattern" — reading across the top, then straight down the left side searching for keywords and metrics.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch pt-4">
+            {/* Left: Heatmap */}
+            <Card padding="p-0" className="overflow-hidden border-surface-200 shadow-soft-sm bg-surface-50 flex flex-col relative">
+              <div className="bg-surface-100/50 py-3 px-5 border-b border-surface-200 flex items-center gap-2 z-10 relative bg-white/80 backdrop-blur-sm">
+                <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                <span className="text-xs font-semibold text-surface-600 uppercase tracking-wide">Eye-Tracking Heatmap (F-Pattern)</span>
+              </div>
+              <div className="p-8 flex-1 relative bg-white flex flex-col justify-center">
+                 {/* Resume Content Skeleton (Faded) */}
+                 <div className="space-y-6 opacity-30 select-none pointer-events-none max-w-sm mx-auto w-full">
+                    <div className="border-b pb-3">
+                       <div className="h-6 w-1/3 bg-surface-800 rounded mb-2"></div>
+                       <div className="h-2 w-1/2 bg-surface-400 rounded"></div>
+                    </div>
+                    <div className="space-y-3">
+                       <div className="h-3 w-1/4 bg-surface-800 rounded"></div>
+                       <div className="h-2 w-full bg-surface-400 rounded"></div>
+                       <div className="h-2 w-5/6 bg-surface-400 rounded"></div>
+                       <div className="h-2 w-4/6 bg-surface-400 rounded"></div>
+                    </div>
+                    <div className="space-y-3 pt-2">
+                       <div className="h-3 w-1/4 bg-surface-800 rounded"></div>
+                       <div className="h-2 w-full bg-surface-400 rounded"></div>
+                       <div className="h-2 w-3/4 bg-surface-400 rounded"></div>
+                    </div>
+                    <div className="space-y-3 pt-2">
+                       <div className="h-3 w-1/4 bg-surface-800 rounded"></div>
+                       <div className="h-2 w-full bg-surface-400 rounded"></div>
+                    </div>
+                 </div>
+                 {/* Heatmap Overlay (F-Pattern) */}
+                 <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden mix-blend-multiply flex items-center justify-center">
+                    <div className="relative w-full max-w-sm h-full max-h-[400px]">
+                      {/* Top heavy red */}
+                      <div className="absolute top-4 left-0 w-4/5 h-16 bg-red-500/40 blur-[28px] rounded-full"></div>
+                      <div className="absolute top-8 left-4 w-1/2 h-10 bg-yellow-400/60 blur-[20px] rounded-full"></div>
+                      {/* Down the left side */}
+                      <div className="absolute top-16 left-0 w-24 h-64 bg-red-500/25 blur-[32px] rounded-full"></div>
+                      {/* Second row scan */}
+                      <div className="absolute top-[35%] left-4 w-3/4 h-12 bg-yellow-400/40 blur-[24px] rounded-full"></div>
+                      {/* Third row scan */}
+                      <div className="absolute top-[60%] left-4 w-1/2 h-10 bg-green-400/30 blur-[24px] rounded-full"></div>
+                    </div>
+                 </div>
+              </div>
+            </Card>
+
+            {/* Right: Interactive Hotspots */}
+            <Card padding="p-0" className="overflow-hidden border-surface-200 shadow-soft-sm bg-surface-50 flex flex-col">
+               <div className="bg-surface-100/50 py-3 px-5 border-b border-surface-200 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
+                <span className="text-xs font-semibold text-surface-600 uppercase tracking-wide">Interactive: What they look for</span>
+              </div>
+              <div className="p-8 flex-1 bg-white relative">
+                 <p className="text-[11px] font-semibold text-brand-600 mb-6 text-center uppercase tracking-wider bg-brand-50 py-1.5 rounded-lg border border-brand-100/50 inline-block px-4 mx-auto block w-fit">
+                   Hover the pulses to see feedback
+                 </p>
+                 
+                 {/* Mock Resume for hotspots */}
+                 <div className="space-y-6 select-none text-[11px] text-surface-600 leading-relaxed max-w-sm mx-auto">
+                    
+                    {/* Hotspot 1: Summary */}
+                    <div className="relative group">
+                       <div className="absolute -left-4 top-1 w-3.5 h-3.5 bg-brand-500/30 rounded-full animate-ping"></div>
+                       <div className="absolute -left-4 top-1 w-3.5 h-3.5 bg-brand-500 rounded-full cursor-pointer peer z-10 shadow-sm border-2 border-white"></div>
+                       {/* Tooltip */}
+                       <div className="opacity-0 invisible peer-hover:opacity-100 peer-hover:visible transition-all absolute z-20 left-3 -top-10 w-64 bg-surface-900 text-white p-3.5 rounded-xl shadow-xl text-[11px] font-medium pointer-events-none origin-left scale-95 peer-hover:scale-100">
+                          <span className="text-amber-300 font-bold block mb-1">Too dense.</span> 
+                          Recruiters won't read a wall of text. Keep summaries to 2-3 lines max.
+                          <div className="absolute top-11 -left-1.5 w-3 h-3 bg-surface-900 rotate-45"></div>
+                       </div>
+                       
+                       <p className="font-bold text-surface-900 text-xs border-b border-surface-200 pb-1 mb-2">Professional Summary</p>
+                       <p className="bg-amber-50/50 -mx-2 px-2 py-1 rounded border border-transparent group-hover:border-amber-200 transition-colors">Dedicated and results-driven software engineer with a proven track record of developing innovative solutions. Highly skilled in collaborating with cross-functional teams to deliver projects on time and under budget, leveraging deep expertise in modern web frameworks and backend architectures to drive business value and improve user experiences.</p>
+                    </div>
+
+                    {/* Hotspot 2: Bad Bullet */}
+                    <div className="relative group pt-1">
+                       <div className="absolute -left-4 top-8 w-3.5 h-3.5 bg-rose-500/30 rounded-full animate-ping delay-100"></div>
+                       <div className="absolute -left-4 top-8 w-3.5 h-3.5 bg-rose-500 rounded-full cursor-pointer peer z-10 shadow-sm border-2 border-white"></div>
+                       {/* Tooltip */}
+                       <div className="opacity-0 invisible peer-hover:opacity-100 peer-hover:visible transition-all absolute z-20 left-3 top-2 w-64 bg-surface-900 text-white p-3.5 rounded-xl shadow-xl text-[11px] font-medium pointer-events-none origin-left scale-95 peer-hover:scale-100">
+                          <span className="text-rose-400 font-bold block mb-1">No metrics here.</span> 
+                          Recruiters skim past bullets without numbers. "Improved performance" means nothing without "by X%".
+                          <div className="absolute top-7 -left-1.5 w-3 h-3 bg-surface-900 rotate-45"></div>
+                       </div>
+                       
+                       <p className="font-bold text-surface-900 text-xs mb-1">Experience</p>
+                       <p className="font-semibold text-surface-800">Software Engineer | TechCorp</p>
+                       <ul className="list-disc pl-4 mt-1.5 space-y-2">
+                          <li>Worked on the frontend application using React.</li>
+                          <li className="bg-rose-50 -mx-1 px-1 py-0.5 rounded border border-transparent group-hover:border-rose-200 transition-colors text-rose-900">Improved application performance and fixed various bugs across the system.</li>
+                       </ul>
+                    </div>
+
+                    {/* Hotspot 3: Good Bullet */}
+                    <div className="relative group pt-1">
+                       <div className="absolute -left-4 top-1 w-3.5 h-3.5 bg-emerald-500/30 rounded-full animate-ping delay-200"></div>
+                       <div className="absolute -left-4 top-1 w-3.5 h-3.5 bg-emerald-500 rounded-full cursor-pointer peer z-10 shadow-sm border-2 border-white"></div>
+                       {/* Tooltip */}
+                       <div className="opacity-0 invisible peer-hover:opacity-100 peer-hover:visible transition-all absolute z-20 left-3 -top-6 w-64 bg-surface-900 text-white p-3.5 rounded-xl shadow-xl text-[11px] font-medium pointer-events-none origin-left scale-95 peer-hover:scale-100">
+                          <span className="text-emerald-400 font-bold block mb-1">Quantified impact!</span> 
+                          Numbers stand out instantly during a quick scan. This proves actual value.
+                          <div className="absolute top-7 -left-1.5 w-3 h-3 bg-surface-900 rotate-45"></div>
+                       </div>
+                       
+                       <ul className="list-disc pl-4 space-y-2">
+                          <li className="bg-emerald-50 -mx-1 px-1 py-0.5 rounded border border-transparent group-hover:border-emerald-200 transition-colors font-medium text-emerald-950">Reduced database query time by 40% (from 2.1s to 1.2s) by implementing Redis caching layer.</li>
+                       </ul>
+                    </div>
+
+                 </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
         {/* 1. What You See vs What an ATS Parses */}
         <div className="space-y-6">
           <h3 className="text-xl font-bold font-display text-surface-900 text-center">
