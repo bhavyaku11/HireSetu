@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import JdMatchDiffView from '../components/ats/JdMatchDiffView';
 import JobDescriptionManager from '../components/builder/JobDescriptionManager';
 import Button from '../components/ui/Button';
-import UserDropdown from '../components/ui/UserDropdown';
+import AppHeader from '../components/ui/AppHeader';
 import { usePdfExport } from '../hooks/usePdfExport';
 
 export default function JdMatch() {
@@ -164,38 +164,29 @@ export default function JdMatch() {
   return (
     <div className="min-h-screen bg-surface-50 text-surface-900 flex flex-col font-body selection:bg-brand-500/20 selection:text-brand-700">
       {/* Page Header */}
-      <header className="h-16 bg-white/90 border-b border-surface-200/80 backdrop-blur px-3 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-soft-xs gap-2">
-        <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
-          <Link to={`/builder/${resumeId}`}>
-            <Button variant="ghost" size="sm" leftIcon={<span>←</span>}>
-              <span className="hidden sm:inline">Resume Builder</span>
-            </Button>
-          </Link>
-          <div className="h-5 w-px bg-surface-200 hidden sm:block"></div>
-          <h1 className="text-sm md:text-base font-bold font-display text-surface-900 tracking-tight truncate">
+      <AppHeader
+        leftSlot={
+          <h1 className="text-sm md:text-base font-bold font-display text-surface-900 dark:text-[#F5F6FA] tracking-tight truncate">
             <span className="hidden sm:inline">{resume?.title || 'Resume'} — </span>Job Match
           </h1>
-        </div>
-
-        <div className="flex items-center space-x-2 md:space-x-3 shrink-0">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => exportPdf(resumeId)}
-            disabled={isExporting}
-            leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
-          >
-            <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Download PDF'}</span>
-            <span className="sm:hidden">{isExporting ? '⏳' : '📄'}</span>
-          </Button>
-          <Link to="/dashboard" className="hidden sm:block">
-            <Button variant="outline" size="sm">
-              Dashboard
+        }
+        rightSlot={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="primary" size="sm"
+              onClick={() => exportPdf(resumeId)}
+              disabled={isExporting}
+              leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
+            >
+              <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Download PDF'}</span>
+              <span className="sm:hidden">{isExporting ? '⏳' : '📄'}</span>
             </Button>
-          </Link>
-          <UserDropdown />
-        </div>
-      </header>
+            <Link to={`/builder/${resumeId}`} className="hidden sm:block">
+              <Button variant="ghost" size="sm" leftIcon={<span>←</span>}>Builder</Button>
+            </Link>
+          </div>
+        }
+      />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-3 md:p-8 space-y-4 md:space-y-6">

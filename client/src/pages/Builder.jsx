@@ -10,7 +10,7 @@ import ResumePreview from '../components/builder/ResumePreview';
 import JobDescriptionManager from '../components/builder/JobDescriptionManager';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
-import UserDropdown from '../components/ui/UserDropdown';
+import AppHeader from '../components/ui/AppHeader';
 import { usePdfExport } from '../hooks/usePdfExport';
 
 const ACTIVE_SECTIONS = [
@@ -194,63 +194,47 @@ export default function Builder() {
   return (
     <div className="min-h-screen bg-surface-50 text-surface-900 flex flex-col font-body selection:bg-brand-500/20 selection:text-brand-700">
       {/* Top Header */}
-      <header className="h-16 bg-white/90 border-b border-surface-200/80 backdrop-blur px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-soft-xs">
-        <div className="flex items-center space-x-4">
-          <Link to="/dashboard">
-            <Button variant="ghost" size="sm" leftIcon={<span>←</span>}>
-              Dashboard
-            </Button>
-          </Link>
-          <div className="h-5 w-px bg-surface-200"></div>
-          <h1 className="text-base md:text-lg font-bold font-display text-surface-900 tracking-tight truncate max-w-xs md:max-w-md">
+      <AppHeader
+        leftSlot={
+          <h1 className="text-sm md:text-base font-bold font-display text-surface-900 dark:text-[#F5F6FA] tracking-tight truncate max-w-[160px] md:max-w-sm">
             {resume.title}
           </h1>
-        </div>
-
-        {/* Styled Save Status Indicator Badge */}
-        <div className="flex items-center space-x-4">
-          {saveStatus === 'Saving...' && (
-            <Badge variant="warning" size="md" dot>
-              <span className="hidden sm:inline">Saving...</span>
-            </Badge>
-          )}
-          {saveStatus === 'All changes saved' && (
-            <Badge variant="success" size="md" dot>
-              <span className="hidden sm:inline">All changes saved</span>
-            </Badge>
-          )}
-          {saveStatus === 'Failed to save' && (
-            <div className="flex items-center space-x-2">
-              <Badge variant="danger" size="md" dot>
-                <span className="hidden sm:inline">Failed to save</span>
+        }
+        rightSlot={
+          <div className="flex items-center gap-2">
+            {saveStatus === 'Saving...' && (
+              <Badge variant="warning" size="md" dot>
+                <span className="hidden sm:inline">Saving...</span>
               </Badge>
-              <Button size="sm" variant="outline" onClick={handleRetrySave}>
-                Retry
-              </Button>
-            </div>
-          )}
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => exportPdf(resumeId)}
-            disabled={isExporting}
-            leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
-          >
-            <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Download PDF'}</span>
-            <span className="sm:hidden">{isExporting ? '⏳' : '📄'}</span>
-          </Button>
-          <Link to={`/builder/${resumeId}/match`} className="hidden sm:block">
+            )}
+            {saveStatus === 'All changes saved' && (
+              <Badge variant="success" size="md" dot>
+                <span className="hidden sm:inline">Saved</span>
+              </Badge>
+            )}
+            {saveStatus === 'Failed to save' && (
+              <div className="flex items-center gap-2">
+                <Badge variant="danger" size="md" dot>
+                  <span className="hidden sm:inline">Failed</span>
+                </Badge>
+                <Button size="sm" variant="outline" onClick={handleRetrySave}>Retry</Button>
+              </div>
+            )}
             <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<span>🎯</span>}
+              variant="primary" size="sm"
+              onClick={() => exportPdf(resumeId)}
+              disabled={isExporting}
+              leftIcon={isExporting ? <span className="animate-spin inline-block">⏳</span> : <span>📄</span>}
             >
-              Match to Job
+              <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Download PDF'}</span>
+              <span className="sm:hidden">{isExporting ? '⏳' : '📄'}</span>
             </Button>
-          </Link>
-          <UserDropdown />
-        </div>
-      </header>
+            <Link to={`/builder/${resumeId}/match`} className="hidden sm:block">
+              <Button variant="outline" size="sm" leftIcon={<span>🎯</span>}>Match to Job</Button>
+            </Link>
+          </div>
+        }
+      />
 
       {/* PDF Export Error Banner */}
       {exportError && (

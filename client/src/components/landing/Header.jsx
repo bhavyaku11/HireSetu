@@ -67,9 +67,7 @@ export default function Header() {
           {/* ── Mobile Hamburger ─────────────────────── */}
           <div className="md:hidden flex items-center gap-2">
             {/* Theme toggle on mobile too */}
-            <div className="scale-[0.7] origin-center">
-              <SkyToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
-            </div>
+            <SkyToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
             {isAuthenticated ? (
               <UserDropdown />
             ) : (

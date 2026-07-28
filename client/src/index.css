@@ -132,43 +132,145 @@
     #ffffff;
 }
 
-/* ── Dark Mode Base ──────────────────────── */
+/* ── Dark Mode Token System ──────────────── */
 /*
-  When html.dark is set by ThemeContext, apply a dark canvas.
-  Individual components can layer their own dark: overrides as needed.
-  This gives the toggle an immediate, whole-page visible effect.
+  All dark mode colors use CSS custom properties defined here.
+  ThemeContext sets .dark on <html>. Never use ad-hoc colors
+  outside this system — extend here first.
+
+  Tokens:
+  --dm-bg-base:        #0A0C12  (page background)
+  --dm-bg-card:        #12151F  (default card/section surface)
+  --dm-bg-elevated:    #1A1E2B  (nested cards, hover states)
+  --dm-bg-popover:     #232838  (dropdowns, modals, tooltips)
+  --dm-text-primary:   #F5F6FA  (main text — not pure white, reduces harshness)
+  --dm-text-secondary: #A0A4B8  (supporting text, descriptions)
+  --dm-text-muted:     #6B7086  (placeholders, least important text)
+  --dm-accent:         #8B5CF6  (primary brand purple)
+  --dm-accent-hover:   #A78BFA  (hover state for accent elements)
+  --dm-border:         #262B3A  (all borders/dividers)
+  --dm-success:        #34D399
+  --dm-error:          #F87171
+  --dm-warning:        #FBBF24
 */
-.dark body {
-  background-color: #0E1424;
-  color: #E2E7F4;
+.dark {
+  --dm-bg-base:        #0A0C12;
+  --dm-bg-card:        #12151F;
+  --dm-bg-elevated:    #1A1E2B;
+  --dm-bg-popover:     #232838;
+  --dm-text-primary:   #F5F6FA;
+  --dm-text-secondary: #A0A4B8;
+  --dm-text-muted:     #6B7086;
+  --dm-accent:         #8B5CF6;
+  --dm-accent-hover:   #A78BFA;
+  --dm-border:         #262B3A;
+  --dm-success:        #34D399;
+  --dm-error:          #F87171;
+  --dm-warning:        #FBBF24;
+
+  color-scheme: dark;
 }
 
+/* ── Page & Section Backgrounds ─────────── */
+.dark body {
+  background-color: var(--dm-bg-base);
+  color: var(--dm-text-primary);
+}
+
+/* Landing page sections — all use bg-card for consistent dark surface */
+.dark section {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+}
+
+/* The "steps" section (HowItWorks — bg-white) */
+.dark #how-it-works {
+  background-color: var(--dm-bg-card) !important;
+}
+
+/* The CredibilityStat section (jarring near-white card) — use bg-elevated */
+.dark .dark-stat-section,
+.dark [data-section="stat"] {
+  background-color: var(--dm-bg-elevated) !important;
+}
+
+/* ── Hero Background ─────────────────────── */
+.hero-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 60% -10%, #ede9ff 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 0% 80%, #f0edff 0%, transparent 55%),
+    #ffffff;
+}
 .dark .hero-bg {
   background:
-    radial-gradient(ellipse 80% 60% at 60% -10%, #1a1340 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 0% 80%, #110e2a 0%, transparent 55%),
-    #0E1424;
+    radial-gradient(ellipse 80% 60% at 60% -10%, rgba(139, 92, 246, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(91, 141, 239, 0.08) 0%, transparent 55%),
+    var(--dm-bg-base);
 }
 
-.dark .bg-white { background-color: #131929 !important; }
-.dark .bg-surface-50 { background-color: #0E1424 !important; }
-.dark .bg-surface-100\/50 { background-color: rgba(30, 38, 59, 0.5) !important; }
-.dark .border-surface-200 { border-color: #323D57 !important; }
-.dark .border-surface-100 { border-color: #1E263B !important; }
-.dark .text-surface-900 { color: #E2E7F4 !important; }
-.dark .text-surface-800 { color: #CBD3E6 !important; }
-.dark .text-surface-700 { color: #93A1C0 !important; }
-.dark .text-surface-600 { color: #637294 !important; }
-.dark .text-surface-500 { color: #465373 !important; }
+/* ── Cards ───────────────────────────────── */
+/* Utility classes from our Card component */
+.dark .bg-white           { background-color: var(--dm-bg-card) !important; }
+.dark .bg-surface-50      { background-color: var(--dm-bg-base) !important; }
+.dark .bg-surface-100\/50 { background-color: rgba(26, 30, 43, 0.5) !important; }
+.dark .bg-brand-canvas    { background-color: var(--dm-bg-base) !important; }
 
-/* Dark mode glass card */
+/* Step cards (from-brand-50, from-violet-50, from-indigo-50 gradients) */
+.dark .bg-gradient-to-b   { background: var(--dm-bg-elevated) !important; }
+
+/* Stat card (from-brand-50/60 to-white gradient) — use elevated */
+.dark .from-brand-50\/60  { --tw-gradient-from: var(--dm-bg-elevated) !important; }
+
+/* ── Borders ─────────────────────────────── */
+.dark .border-surface-200,
+.dark .border-surface-200\/80 { border-color: var(--dm-border) !important; }
+.dark .border-surface-100     { border-color: var(--dm-border) !important; }
+.dark .border-brand-100       { border-color: rgba(139, 92, 246, 0.15) !important; }
+.dark .border-brand-200       { border-color: rgba(139, 92, 246, 0.2) !important; }
+.dark .border-emerald-100     { border-color: rgba(52, 211, 153, 0.15) !important; }
+.dark .border-rose-100        { border-color: rgba(248, 113, 113, 0.15) !important; }
+
+/* ── Text ────────────────────────────────── */
+.dark .text-surface-900 { color: var(--dm-text-primary) !important; }
+.dark .text-surface-800 { color: var(--dm-text-primary) !important; }
+.dark .text-surface-700 { color: var(--dm-text-secondary) !important; }
+.dark .text-surface-600 { color: var(--dm-text-secondary) !important; }
+.dark .text-surface-500 { color: var(--dm-text-muted) !important; }
+.dark .text-surface-400 { color: var(--dm-text-muted) !important; }
+
+/* Accent text stays consistent with brand */
+.dark .text-brand-700   { color: var(--dm-accent-hover) !important; }
+.dark .text-brand-600   { color: var(--dm-accent) !important; }
+.dark .text-brand-500   { color: var(--dm-accent) !important; }
+.dark .text-emerald-900 { color: #6ee7b7 !important; }
+.dark .text-rose-900    { color: #fca5a5 !important; }
+
+/* ── Icon/illustration accent pockets ───── */
+.dark .bg-brand-50      { background-color: rgba(139, 92, 246, 0.1) !important; }
+.dark .bg-brand-100     { background-color: rgba(139, 92, 246, 0.15) !important; }
+.dark .bg-brand-100\/60 { background-color: rgba(139, 92, 246, 0.12) !important; }
+.dark .bg-emerald-50    { background-color: rgba(52, 211, 153, 0.08) !important; }
+.dark .bg-emerald-50\/40 { background-color: rgba(52, 211, 153, 0.06) !important; }
+.dark .bg-rose-50       { background-color: rgba(248, 113, 113, 0.08) !important; }
+.dark .bg-rose-50\/40   { background-color: rgba(248, 113, 113, 0.06) !important; }
+.dark .bg-amber-50\/50  { background-color: rgba(251, 191, 36, 0.06) !important; }
+
+/* ── Glass card ─────────────────────────── */
 .dark .glass-card {
-  background: rgba(19, 25, 41, 0.85);
-  border-color: rgba(50, 61, 87, 0.8);
+  background: rgba(18, 21, 31, 0.85);
+  border-color: var(--dm-border);
 }
 
-/* Header dark overlay */
+/* ── Header ─────────────────────────────── */
+/* Both the landing Header and AppHeader use this */
 .dark header {
-  background-color: rgba(14, 20, 36, 0.92) !important;
-  border-color: #323D57 !important;
+  background-color: rgba(10, 12, 18, 0.92) !important;
+  border-color: var(--dm-border) !important;
 }
+
+/* ── FAQ Accordion ───────────────────────── */
+.dark .bg-surface-100   { background-color: var(--dm-bg-elevated) !important; }
+
+/* ── Scrollbar ───────────────────────────── */
+.dark ::-webkit-scrollbar-track { background: var(--dm-bg-base); }
+.dark ::-webkit-scrollbar-thumb { background: var(--dm-border); border-radius: 4px; }
