@@ -14,9 +14,19 @@ const FAQS = [
       'An ATS-friendly resume uses a clean single-column layout, standard section titles (such as Experience, Education, and Skills), standard readable typography, and avoids complex tables, multi-column designs, or embedded graphics that cause applicant tracking system parsers to fail.',
   },
   {
-    question: 'Can I import my existing resume?',
+    question: 'Do I really need to tailor my resume for every job?',
     answer:
-      'Resume file import is coming soon in an upcoming update! Right now, you can quickly build your resume section by section using our intuitive form editor with real-time auto-saving.',
+      "Yes, but you don't need to rewrite it from scratch. The best approach is to maintain a 'base' resume, then duplicate and tweak the summary and key bullets to match the specific keywords in the job description you're applying for. HireSetu's job matching tool makes this exact workflow easy.",
+  },
+  {
+    question: 'Should I include a photo on my resume?',
+    answer:
+      "In the US, UK, Canada, and Australia, you should almost never include a photo unless you're an actor or model. It can introduce unconscious bias, and some companies will auto-reject resumes with photos to avoid discrimination liabilities. For some European and Asian countries, it's expected, so tailor this based on your region.",
+  },
+  {
+    question: 'What if I have employment gaps?',
+    answer:
+      "Be honest but concise. If it's a gap of a few months, simply list years instead of months for your roles (e.g., 2022-2023). If it's a longer gap, you can add a brief one-line note (e.g., 'Sabbatical for family care' or 'Career break for travel') so the recruiter doesn't have to guess.",
   },
   {
     question: 'How does the AI improve my resume?',
