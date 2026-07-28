@@ -118,10 +118,10 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
 
   return (
     <div className="space-y-6 font-body">
-      <div className="flex items-center justify-between border-b border-surface-200/80 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-700/80 pb-3">
         <div>
-          <h3 className="text-base font-bold font-display text-surface-900">Projects</h3>
-          <p className="text-xs text-surface-500">
+          <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">Projects</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Showcase key personal or professional projects and technical accomplishments.
           </p>
         </div>
@@ -131,8 +131,8 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
       </div>
 
       {items.length === 0 ? (
-        <Card padding="p-8" className="text-center bg-white/60 border-dashed border-surface-300 space-y-2">
-          <p className="text-xs text-surface-500">No project entries added yet.</p>
+        <Card padding="p-8" className="text-center bg-white/60 border-dashed border-slate-300 dark:border-slate-400 space-y-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400">No project entries added yet.</p>
           <Button size="sm" variant="ghost" onClick={handleAdd}>
             + Add your first project entry
           </Button>
@@ -146,10 +146,10 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
               <Card
                 key={item.id || index}
                 padding="p-5"
-                className="bg-white border-surface-200 shadow-soft-xs space-y-4 relative"
+                className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-xs space-y-4 relative"
               >
                 {/* Item Header Controls */}
-                <div className="flex items-center justify-between border-b border-surface-100 pb-2">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                   <div className="flex items-center space-x-2">
                     <Badge variant="secondary" size="sm">
                       Project #{index + 1}
@@ -172,7 +172,7 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
                       onClick={() => handleMove(index, 'up')}
                       disabled={index === 0}
                       title="Move Up"
-                      className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
+                      className="p-1 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 disabled:opacity-30 text-xs cursor-pointer"
                     >
                       ▲
                     </button>
@@ -181,7 +181,7 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
                       onClick={() => handleMove(index, 'down')}
                       disabled={index === items.length - 1}
                       title="Move Down"
-                      className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
+                      className="p-1 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 disabled:opacity-30 text-xs cursor-pointer"
                     >
                       ▼
                     </button>
@@ -237,7 +237,7 @@ export default function ProjectsForm({ data = { items: [] }, onChange }) {
                 )}
 
                 {/* Bullet Points List Editor */}
-                <div className="pt-2 border-t border-surface-100">
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                   <BulletListEditor
                     bullets={item.bullets || []}
                     onChange={(newBullets) => handleItemChange(index, 'bullets', newBullets)}

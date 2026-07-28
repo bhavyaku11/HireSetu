@@ -58,29 +58,29 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
   };
 
   return (
-    <Card padding="p-6 md:p-8" className="bg-white border-surface-200 shadow-soft-lg space-y-6">
+    <Card padding="p-6 md:p-8" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-lg space-y-6">
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 pb-5">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2">
             <Pill variant="primary" size="sm">
               ATS Audit Mode
             </Pill>
-            <span className="text-xs font-semibold text-surface-400">Transparency Inspector</span>
+            <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">Transparency Inspector</span>
           </div>
-          <h3 className="text-xl font-extrabold font-display text-surface-900 tracking-tight flex items-center gap-2">
+          <h3 className="text-xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-2">
             How an ATS Sees Your Resume
           </h3>
         </div>
 
         {/* Tab Switcher */}
-        <div className="inline-flex p-1 bg-surface-100/80 rounded-xl border border-surface-200/70 shrink-0">
+        <div className="inline-flex p-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl border border-slate-200/70 dark:border-slate-700/70 shrink-0">
           <button
             onClick={() => setActiveTab('ats')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
               activeTab === 'ats'
-                ? 'bg-surface-900 text-white shadow-soft-xs'
-                : 'text-surface-600 hover:text-surface-900 hover:bg-surface-200/50'
+                ? 'bg-slate-900 dark:bg-slate-100 text-white shadow-soft-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-200/50 dark:bg-slate-700/50'
             }`}
           >
             <Bot className="w-4 h-4" />
@@ -91,8 +91,8 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
             onClick={() => setActiveTab('formatted')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
               activeTab === 'formatted'
-                ? 'bg-brand-600 text-white shadow-soft-xs'
-                : 'text-surface-600 hover:text-surface-900 hover:bg-surface-200/50'
+                ? 'bg-indigo-600 dark:bg-indigo-400 text-white shadow-soft-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-200/50 dark:bg-slate-700/50'
             }`}
           >
             <Eye className="w-4 h-4" />
@@ -105,10 +105,10 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
       {activeTab === 'ats' ? (
         <div className="space-y-5 animate-fadeIn">
           {/* Explanatory Note */}
-          <div className="p-4 bg-surface-50 border border-surface-200/80 rounded-xl flex items-start gap-3">
-            <Info className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
-            <div className="text-xs text-surface-700 space-y-0.5">
-              <p className="font-bold font-display text-surface-900">
+          <div className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 rounded-xl flex items-start gap-3">
+            <Info className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-slate-700 dark:text-slate-400 space-y-0.5">
+              <p className="font-bold font-display text-slate-900 dark:text-slate-100">
                 What applicant tracking systems actually see
               </p>
               <p className="leading-relaxed">
@@ -160,10 +160,10 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
 
           {/* Unstyled Monospace Plain Text View */}
           <div className="relative group">
-            <div className="absolute top-3 right-3 text-[10px] font-mono uppercase tracking-widest text-surface-400 bg-surface-900 px-2.5 py-1 rounded border border-surface-800 pointer-events-none select-none">
+            <div className="absolute top-3 right-3 text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-400 bg-slate-900 dark:bg-slate-100 px-2.5 py-1 rounded border border-slate-800 dark:border-slate-200 pointer-events-none select-none">
               Plain Text Output
             </div>
-            <pre className="p-6 bg-surface-950 text-surface-100 rounded-2xl font-mono text-xs leading-relaxed max-h-[500px] overflow-y-auto whitespace-pre-wrap selection:bg-brand-500 selection:text-white border border-surface-800 shadow-inner">
+            <pre className="p-6 bg-slate-950 dark:bg-slate-50 text-slate-100 dark:text-slate-800 rounded-2xl font-mono text-xs leading-relaxed max-h-[500px] overflow-y-auto whitespace-pre-wrap selection:bg-indigo-500 dark:bg-indigo-400 selection:text-white border border-slate-800 dark:border-slate-200 shadow-inner">
               {rawText || 'No raw text extracted.'}
             </pre>
           </div>
@@ -171,23 +171,23 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
       ) : (
         <div className="space-y-5 animate-fadeIn">
           {/* Formatted View Explanation */}
-          <div className="p-4 bg-brand-50/60 border border-brand-200/70 rounded-xl flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
-            <div className="text-xs text-brand-900 space-y-0.5">
+          <div className="p-4 bg-indigo-50/60 dark:bg-indigo-900/20/60 border border-indigo-200/70 dark:border-indigo-700/40/70 rounded-xl flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-indigo-900 dark:text-indigo-400 space-y-0.5">
               <p className="font-bold font-display">Structured Visual View</p>
-              <p className="text-brand-700">
+              <p className="text-indigo-700 dark:text-indigo-300">
                 This is a visual layout preview of your resume content. Toggle back to "ATS Parse-Test View" at any time to verify raw bot extraction accuracy.
               </p>
             </div>
           </div>
 
           {/* Formatted Content Card */}
-          <div className="p-6 bg-surface-50 border border-surface-200 rounded-2xl space-y-6">
-            <div className="border-b border-surface-200 pb-4">
-              <h4 className="text-lg font-bold font-display text-surface-900">
+          <div className="p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-6">
+            <div className="border-b border-slate-200 dark:border-slate-700 pb-4">
+              <h4 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100">
                 {resumeTitle}
               </h4>
-              <p className="text-xs text-surface-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Imported document preview
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
                 .map((paragraph, i) => (
                   <div
                     key={i}
-                    className="p-4 bg-white rounded-xl border border-surface-200/80 text-xs text-surface-800 leading-relaxed shadow-soft-xs"
+                    className="p-4 bg-white rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-800 dark:text-slate-200 leading-relaxed shadow-soft-xs"
                   >
                     {paragraph}
                   </div>

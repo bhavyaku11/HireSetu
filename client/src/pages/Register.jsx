@@ -80,10 +80,10 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen hero-bg flex items-center justify-center p-4 font-body selection:bg-brand-500/20 selection:text-brand-700 relative overflow-hidden">
+    <div className="min-h-screen hero-bg flex items-center justify-center p-4 font-body selection:bg-indigo-500/20 dark:bg-indigo-400/20 selection:text-indigo-700 dark:text-indigo-300 relative overflow-hidden">
       {/* Background Orbs */}
-      <div className="absolute -top-32 -left-32 w-[450px] h-[450px] rounded-full bg-brand-200/20 blur-[90px] pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-[450px] h-[450px] rounded-full bg-brand-100/30 blur-[90px] pointer-events-none" />
+      <div className="absolute -top-32 -left-32 w-[450px] h-[450px] rounded-full bg-indigo-200/20 dark:bg-indigo-700/40/20 blur-[90px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-[450px] h-[450px] rounded-full bg-indigo-100/30 dark:bg-indigo-800/30/30 blur-[90px] pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10 space-y-6">
         {/* Brand Header */}
@@ -94,19 +94,19 @@ export default function Register() {
               alt="HireSetu Logo"
               className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-200"
             />
-            <span className="text-2xl font-extrabold font-display tracking-tight text-surface-900">
-              Hire<span className="text-brand-500">Setu</span>
+            <span className="text-2xl font-extrabold font-display tracking-tight text-slate-900 dark:text-slate-100">
+              Hire<span className="text-indigo-500 dark:text-indigo-400">Setu</span>
             </span>
           </Link>
-          <h1 className="text-xl font-bold font-display text-surface-900 tracking-tight">
+          <h1 className="text-xl font-bold font-display text-slate-900 dark:text-slate-100 tracking-tight">
             Create Your Account
           </h1>
-          <p className="text-xs text-surface-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Start building AI-enhanced ATS resumes in seconds
           </p>
         </div>
 
-        <Card padding="p-8" className="bg-white border-surface-200/90 shadow-soft-xl">
+        <Card padding="p-8" className="bg-white border-slate-200/90 dark:border-slate-700/90 shadow-soft-xl">
           {/* API Error Alert */}
           {apiError && (
             <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200/80 rounded-xl text-rose-700 text-xs font-medium flex items-center space-x-2 shadow-soft-xs">
@@ -179,11 +179,11 @@ export default function Register() {
           </form>
 
           {/* Footer Link */}
-          <div className="mt-6 pt-5 border-t border-surface-100 text-center text-xs text-surface-500">
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-brand-600 hover:text-brand-700 font-semibold hover:underline"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:text-indigo-300 font-semibold hover:underline"
             >
               Log in
             </Link>

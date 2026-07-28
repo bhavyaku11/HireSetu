@@ -1,23 +1,23 @@
 import React from 'react';
 
 const variantStyles = {
-  primary: 'bg-brand-50 text-brand-700 border-brand-200/80',
+  primary: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border-indigo-200/80 dark:border-indigo-700/40/80',
   secondary: 'bg-indigo-50 text-indigo-700 border-indigo-200/60',
   success: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
   warning: 'bg-amber-50 text-amber-700 border-amber-200/80',
   danger: 'bg-rose-50 text-rose-700 border-rose-200/80',
-  neutral: 'bg-surface-100 text-surface-700 border-surface-200',
-  outline: 'bg-white text-surface-700 border-surface-300 shadow-soft-xs',
+  neutral: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700',
+  outline: 'bg-white text-slate-700 dark:text-slate-400 border-slate-300 dark:border-slate-400 shadow-soft-xs',
 };
 
 const dotColors = {
-  primary: 'bg-brand-500',
+  primary: 'bg-indigo-500 dark:bg-indigo-400',
   secondary: 'bg-indigo-500',
   success: 'bg-emerald-500',
   warning: 'bg-amber-500',
   danger: 'bg-rose-500',
-  neutral: 'bg-surface-400',
-  outline: 'bg-surface-500',
+  neutral: 'bg-slate-400 dark:bg-slate-400',
+  outline: 'bg-slate-500 dark:bg-slate-400',
 };
 
 const sizeStyles = {

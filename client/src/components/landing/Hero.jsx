@@ -21,7 +21,8 @@ function DotGrid({ className = '' }) {
             cx={col * 28 + 14}
             cy={row * 28 + 14}
             r="2"
-            fill="#6D5EF0"
+            fill="currentColor"
+            className="text-indigo-500 dark:text-indigo-400"
             fillOpacity="0.18"
           />
         ))
@@ -34,62 +35,62 @@ function DotGrid({ className = '' }) {
 function ResumeCard({ className = '', style = {} }) {
   return (
     <div
-      className={`bg-white rounded-2xl border border-surface-200/90 shadow-soft-xl overflow-hidden ${className}`}
+      className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 shadow-soft-xl overflow-hidden ${className}`}
       style={style}
     >
       {/* Card top accent strip */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-brand-500 to-brand-400" />
+      <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 to-indigo-400 dark:from-indigo-400 dark:to-cyan-400" />
 
       <div className="px-5 py-5 space-y-4">
         {/* Header: name + contact line */}
-        <div className="space-y-1.5 pb-3.5 border-b border-surface-100">
-          <div className="h-4 w-36 bg-surface-900 rounded-md" />
+        <div className="space-y-1.5 pb-3.5 border-b border-slate-100 dark:border-slate-700/50">
+          <div className="h-4 w-36 bg-slate-900 dark:bg-slate-200 rounded-md" />
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="h-2 w-20 bg-surface-300 rounded" />
-            <span className="w-1 h-1 rounded-full bg-surface-300" />
-            <div className="h-2 w-24 bg-surface-300 rounded" />
-            <span className="w-1 h-1 rounded-full bg-surface-300" />
-            <div className="h-2 w-16 bg-surface-300 rounded" />
+            <div className="h-2 w-20 bg-slate-300 dark:bg-slate-600 rounded" />
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+            <div className="h-2 w-24 bg-slate-300 dark:bg-slate-600 rounded" />
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+            <div className="h-2 w-16 bg-slate-300 dark:bg-slate-600 rounded" />
           </div>
         </div>
 
         {/* Section: Summary */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-20 bg-brand-600 rounded" />
-            <div className="flex-1 h-px bg-surface-200" />
+            <div className="h-2 w-20 bg-indigo-600 dark:bg-indigo-400 rounded" />
+            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
             {/* "AI Enhanced" chip */}
-            <span className="px-1.5 py-0.5 bg-brand-50 text-brand-600 border border-brand-200 text-[9px] font-bold rounded-md tracking-wide">
+            <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 text-[9px] font-bold rounded-md tracking-wide">
               AI
             </span>
           </div>
-          <div className="h-1.5 w-full bg-surface-200 rounded" />
-          <div className="h-1.5 w-11/12 bg-surface-200 rounded" />
-          <div className="h-1.5 w-4/5 bg-surface-200 rounded" />
+          <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded" />
+          <div className="h-1.5 w-11/12 bg-slate-200 dark:bg-slate-700 rounded" />
+          <div className="h-1.5 w-4/5 bg-slate-200 dark:bg-slate-700 rounded" />
         </div>
 
         {/* Section: Experience */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-24 bg-surface-800 rounded" />
-            <div className="flex-1 h-px bg-surface-200" />
+            <div className="h-2 w-24 bg-slate-800 dark:bg-slate-300 rounded" />
+            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
           </div>
           <div className="flex justify-between items-baseline">
-            <div className="h-2.5 w-32 bg-surface-700 rounded" />
-            <div className="h-1.5 w-16 bg-surface-300 rounded" />
+            <div className="h-2.5 w-32 bg-slate-700 dark:bg-slate-400 rounded" />
+            <div className="h-1.5 w-16 bg-slate-300 dark:bg-slate-600 rounded" />
           </div>
-          <div className="pl-2.5 border-l-2 border-brand-200 space-y-1.5">
+          <div className="pl-2.5 border-l-2 border-indigo-200 dark:border-indigo-500/30 space-y-1.5">
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />
-              <div className="h-1.5 w-full bg-brand-50 rounded" />
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+              <div className="h-1.5 w-full bg-indigo-50 dark:bg-indigo-500/20 rounded" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />
-              <div className="h-1.5 w-10/12 bg-surface-200 rounded" />
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+              <div className="h-1.5 w-10/12 bg-slate-200 dark:bg-slate-700 rounded" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />
-              <div className="h-1.5 w-9/12 bg-surface-200 rounded" />
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+              <div className="h-1.5 w-9/12 bg-slate-200 dark:bg-slate-700 rounded" />
             </div>
           </div>
         </div>
@@ -97,14 +98,14 @@ function ResumeCard({ className = '', style = {} }) {
         {/* Section: Skills */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-16 bg-surface-800 rounded" />
-            <div className="flex-1 h-px bg-surface-200" />
+            <div className="h-2 w-16 bg-slate-800 dark:bg-slate-300 rounded" />
+            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
           </div>
           <div className="flex flex-wrap gap-1.5">
             {['React', 'Node.js', 'SQL', 'TypeScript', 'Git'].map((s) => (
               <span
                 key={s}
-                className="px-2 py-0.5 bg-brand-50 text-brand-700 border border-brand-200/80 text-[9px] font-semibold rounded-md"
+                className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-500/20 text-[9px] font-semibold rounded-md"
               >
                 {s}
               </span>
@@ -120,19 +121,10 @@ function ResumeCard({ className = '', style = {} }) {
 export default function Hero() {
   return (
     <section className="relative hero-bg min-h-[calc(100dvh-64px)] flex items-center py-16 md:py-20 overflow-hidden">
-
-      {/* ── Subtle full-section dot texture overlay ── */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.35]"
-        style={{
-          backgroundImage: 'radial-gradient(#6D5EF0 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
-
+      
       {/* ── Soft violet orbs for depth ─────────────── */}
-      <div className="absolute -top-32 -right-24 w-[520px] h-[520px] rounded-full bg-brand-200/25 blur-[80px] pointer-events-none" />
-      <div className="absolute top-1/2 -left-32 w-[380px] h-[380px] rounded-full bg-brand-100/30 blur-[64px] pointer-events-none" />
+      <div className="absolute -top-32 -right-24 w-[520px] h-[520px] rounded-full bg-indigo-200/25 dark:bg-indigo-500/10 blur-[80px] pointer-events-none" />
+      <div className="absolute top-1/2 -left-32 w-[380px] h-[380px] rounded-full bg-indigo-100/30 dark:bg-indigo-400/5 blur-[64px] pointer-events-none" />
 
       {/* ── Content wrapper ───────────────────────── */}
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
@@ -144,22 +136,22 @@ export default function Hero() {
           <div className="space-y-8 text-center lg:text-left">
 
             {/* Pill badge — adds context the headline doesn't */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/80 shadow-soft-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 shrink-0" />
-              <span className="text-[12px] font-semibold text-brand-700 tracking-tight">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200/80 dark:border-indigo-500/20 shadow-soft-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 shrink-0" />
+              <span className="text-[12px] font-semibold text-indigo-700 dark:text-indigo-400 tracking-tight">
                 Free for students &amp; fresh grads
               </span>
             </div>
 
             {/* Headline — one line, committed */}
-            <h1 className="text-[42px] sm:text-[54px] lg:text-[60px] font-extrabold font-display text-surface-900 tracking-[-0.03em] leading-[1.06]">
+            <h1 className="text-[42px] sm:text-[54px] lg:text-[60px] font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-[-0.03em] leading-[1.06]">
               Your resume,{' '}
-              <span className="text-gradient-brand">done right</span>
+              <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent dark:from-indigo-400 dark:to-indigo-300">done right</span>
               {' '}— in minutes.
             </h1>
 
             {/* Supporting line — peer tone, no jargon */}
-            <p className="text-[16px] sm:text-[17px] text-surface-500 font-body leading-[1.7] max-w-lg mx-auto lg:mx-0">
+            <p className="text-[16px] sm:text-[17px] text-slate-500 dark:text-slate-400 font-body leading-[1.7] max-w-lg mx-auto lg:mx-0">
               Tell us where you've been. HireSetu writes the resume
               that gets you where you're going.
             </p>
@@ -192,11 +184,11 @@ export default function Hero() {
             </div>
 
             {/* Trust micro-badges — earn their space here */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-[12px] font-medium text-surface-500">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-[12px] font-medium text-slate-500 dark:text-slate-400">
               {[
                 { dot: 'bg-emerald-400', text: 'Free to start' },
-                { dot: 'bg-brand-500', text: 'ATS-compatible layouts' },
-                { dot: 'bg-brand-400', text: 'Auto-saves as you type' },
+                { dot: 'bg-indigo-500 dark:bg-indigo-400', text: 'ATS-compatible layouts' },
+                { dot: 'bg-cyan-400', text: 'Auto-saves as you type' },
               ].map(({ dot, text }) => (
                 <div key={text} className="flex items-center gap-1.5">
                   <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
@@ -208,7 +200,6 @@ export default function Hero() {
 
           {/* ══════════════════════════════════════════
               RIGHT COLUMN — Layered resume mockup
-              (unchanged — layout/visual pass only)
           ══════════════════════════════════════════ */}
           <div className="relative flex justify-center lg:justify-end">
 
@@ -227,10 +218,10 @@ export default function Hero() {
 
               {/* Floating badge: ATS score — top-right */}
               <div className="absolute -top-4 -right-5 z-30">
-                <div className="bg-white border border-emerald-200/90 text-emerald-700 shadow-soft-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold font-display whitespace-nowrap">
+                <div className="bg-white dark:bg-slate-800 border border-emerald-200/90 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 shadow-soft-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold font-display whitespace-nowrap">
                   <span className="relative flex w-2 h-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                    <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
+                    <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500 dark:bg-emerald-400" />
                   </span>
                   94% ATS Match
                 </div>
@@ -238,8 +229,8 @@ export default function Hero() {
 
               {/* Floating badge: auto-save — bottom-left */}
               <div className="absolute -bottom-4 -left-5 z-30 hidden sm:flex">
-                <div className="bg-surface-900 text-white shadow-soft-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-medium font-body whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />
+                <div className="bg-slate-900 dark:bg-slate-700 text-white shadow-soft-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-medium font-body whitespace-nowrap border dark:border-slate-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
                   ⚡ Saved automatically
                 </div>
               </div>
@@ -254,7 +245,7 @@ export default function Hero() {
             </div>
 
             {/* Ambient glow behind all cards */}
-            <div className="absolute inset-4 bg-brand-300/20 rounded-3xl blur-2xl -z-10" />
+            <div className="absolute inset-4 bg-indigo-300/20 dark:bg-indigo-500/10 rounded-3xl blur-2xl -z-10" />
           </div>
 
         </div>

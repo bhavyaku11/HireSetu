@@ -80,10 +80,10 @@ export default function SkillsForm({ data = { categories: [] }, onChange }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-surface-200/80 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-700/80 pb-3">
         <div>
-          <h3 className="text-base font-bold font-display text-surface-900">Skills & Competencies</h3>
-          <p className="text-xs text-surface-500">
+          <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">Skills & Competencies</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Organize your technical, domain, and soft skills into categorized tag groups.
           </p>
         </div>
@@ -93,8 +93,8 @@ export default function SkillsForm({ data = { categories: [] }, onChange }) {
       </div>
 
       {categories.length === 0 ? (
-        <Card padding="p-8" className="text-center bg-white/60 border-dashed border-surface-300 space-y-2">
-          <p className="text-xs text-surface-500">No skill categories added yet.</p>
+        <Card padding="p-8" className="text-center bg-white/60 border-dashed border-slate-300 dark:border-slate-400 space-y-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400">No skill categories added yet.</p>
           <Button size="sm" variant="ghost" onClick={handleAddCategory}>
             + Add your first skill category
           </Button>
@@ -107,7 +107,7 @@ export default function SkillsForm({ data = { categories: [] }, onChange }) {
               <Card
                 key={cat.id || catIndex}
                 padding="p-5"
-                className="bg-white border-surface-200 shadow-soft-xs space-y-4 relative"
+                className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-xs space-y-4 relative"
               >
                 {/* Category Header */}
                 <div className="flex items-center justify-between gap-3">
@@ -137,7 +137,7 @@ export default function SkillsForm({ data = { categories: [] }, onChange }) {
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(catIndex, skill)}
-                        className="ml-1.5 text-brand-600 hover:text-brand-800 font-bold"
+                        className="ml-1.5 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:text-indigo-400 font-bold"
                       >
                         ×
                       </button>
@@ -145,7 +145,7 @@ export default function SkillsForm({ data = { categories: [] }, onChange }) {
                   ))}
 
                   {currentSkills.length === 0 && (
-                    <span className="text-xs text-surface-400 italic">No skills added in this category yet.</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-400 italic">No skills added in this category yet.</span>
                   )}
                 </div>
 

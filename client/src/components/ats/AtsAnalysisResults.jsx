@@ -96,7 +96,7 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[11px] font-bold text-surface-500 hidden sm:inline-block">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 hidden sm:inline-block">
               {isExpanded ? 'Hide Reason' : 'Why & How to Fix'}
             </span>
             <button
@@ -111,33 +111,33 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
 
         {/* Expandable Reasoning & Fix Detail View */}
         {isExpanded && (
-          <div className="px-4 pb-4 pt-1 border-t border-surface-200/60 space-y-3 animate-fadeIn">
+          <div className="px-4 pb-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 space-y-3 animate-fadeIn">
             {/* Why It Matters Box */}
-            <div className="p-3 bg-white/90 rounded-lg border border-surface-200/80 space-y-1">
-              <div className="flex items-center gap-1.5 text-surface-800 text-[11px] font-bold font-display uppercase tracking-wider">
-                <HelpCircle className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+            <div className="p-3 bg-white/90 rounded-lg border border-slate-200/80 dark:border-slate-700/80 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 text-[11px] font-bold font-display uppercase tracking-wider">
+                <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                 <span>Why This Matters</span>
               </div>
-              <p className="text-xs text-surface-700 leading-relaxed font-medium">
+              <p className="text-xs text-slate-700 dark:text-slate-400 leading-relaxed font-medium">
                 {whyText}
               </p>
             </div>
 
             {/* Flagged Instance Quote Box */}
             {issue.instance && (
-              <div className="p-2.5 bg-surface-900 text-surface-100 rounded-lg text-xs flex items-start gap-2 font-mono shadow-soft-xs">
-                <Quote className="w-3.5 h-3.5 text-brand-400 shrink-0 mt-0.5" />
+              <div className="p-2.5 bg-slate-900 dark:bg-slate-100 text-slate-100 dark:text-slate-800 rounded-lg text-xs flex items-start gap-2 font-mono shadow-soft-xs">
+                <Quote className="w-3.5 h-3.5 text-indigo-400 dark:text-indigo-400 shrink-0 mt-0.5" />
                 <span className="break-all">Flagged text: "{issue.instance}"</span>
               </div>
             )}
 
             {/* How to Fix Actionable Guide */}
-            <div className="p-3 bg-brand-50/70 rounded-lg border border-brand-200/80 space-y-1">
-              <div className="flex items-center gap-1.5 text-brand-950 text-[11px] font-bold font-display uppercase tracking-wider">
-                <Wrench className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+            <div className="p-3 bg-indigo-50/70 dark:bg-indigo-900/20/70 rounded-lg border border-indigo-200/80 dark:border-indigo-700/40/80 space-y-1">
+              <div className="flex items-center gap-1.5 text-indigo-950 dark:text-indigo-400 text-[11px] font-bold font-display uppercase tracking-wider">
+                <Wrench className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                 <span>How to Fix</span>
               </div>
-              <p className="text-xs font-semibold text-brand-900 leading-relaxed">
+              <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-400 leading-relaxed">
                 {fixText}
               </p>
             </div>
@@ -148,18 +148,18 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
   };
 
   return (
-    <Card padding="p-6 md:p-8" className="bg-white border-surface-200 shadow-soft-lg space-y-6">
+    <Card padding="p-6 md:p-8" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-lg space-y-6">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 pb-5">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2">
             <Pill variant="primary" size="sm">
               Resume Intelligence
             </Pill>
-            <span className="text-xs font-semibold text-surface-400">ATS, Grammar & Readability</span>
+            <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">ATS, Grammar & Readability</span>
           </div>
-          <h3 className="text-xl font-extrabold font-display text-surface-900 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-brand-600" />
+          <h3 className="text-xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             Resume Strength & ATS Audit Report
           </h3>
         </div>
@@ -198,13 +198,13 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
 
       {/* Loading Skeleton during AI Analysis */}
       {analyzing ? (
-        <div className="p-10 rounded-2xl bg-brand-50/70 border border-brand-200 text-center space-y-4 animate-fadeIn">
-          <div className="w-12 h-12 rounded-2xl bg-brand-500 text-white flex items-center justify-center mx-auto shadow-soft-md animate-spin">
+        <div className="p-10 rounded-2xl bg-indigo-50/70 dark:bg-indigo-900/20/70 border border-indigo-200 dark:border-indigo-700/40 text-center space-y-4 animate-fadeIn">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500 dark:bg-indigo-400 text-white flex items-center justify-center mx-auto shadow-soft-md animate-spin">
             <Sparkles className="w-6 h-6" />
           </div>
           <div className="space-y-1.5">
-            <h4 className="text-base font-bold font-display text-brand-950">Analyzing Your Resume with Claude AI...</h4>
-            <p className="text-xs font-medium text-brand-800 max-w-md mx-auto">
+            <h4 className="text-base font-bold font-display text-indigo-950 dark:text-indigo-400">Analyzing Your Resume with Claude AI...</h4>
+            <p className="text-xs font-medium text-indigo-800 dark:text-indigo-400 max-w-md mx-auto">
               Evaluating ATS compatibility, grammar accuracy, weak action verbs, and quantifiable impact metrics. This takes 2–4 seconds.
             </p>
           </div>
@@ -215,11 +215,11 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
           <ScoreMeter score={analysis.score} breakdown={analysis.scoreBreakdown} />
 
           {/* Executive Summary Banner */}
-          <div className="p-5 rounded-2xl bg-surface-50 border border-surface-200 space-y-1">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-surface-500 font-display">
+          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-1">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-display">
               Executive Overview
             </h4>
-            <p className="text-sm font-bold font-display text-surface-900 leading-relaxed">
+            <p className="text-sm font-bold font-display text-slate-900 dark:text-slate-100 leading-relaxed">
               {analysis.summary}
             </p>
           </div>
@@ -253,10 +253,10 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
           {/* Expandable Issues Grouped by Severity */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-surface-500 font-display">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-display">
                 Detected Issues & Reasoning ({analysis.issues?.length || 0})
               </h4>
-              <span className="text-[11px] font-semibold text-surface-400">Click any item to expand reason & fix</span>
+              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">Click any item to expand reason & fix</span>
             </div>
 
             {(!analysis.issues || analysis.issues.length === 0) ? (
@@ -319,15 +319,15 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
           </div>
         </div>
       ) : (
-        <div className="p-8 bg-surface-50 border border-dashed border-surface-300 rounded-2xl text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-200 text-brand-600 flex items-center justify-center mx-auto shadow-soft-xs">
+        <div className="p-8 bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-400 rounded-2xl text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-soft-xs">
             <Sparkles className="w-6 h-6" />
           </div>
           <div className="space-y-1">
-            <h4 className="text-sm font-bold font-display text-surface-900">
+            <h4 className="text-sm font-bold font-display text-slate-900 dark:text-slate-100">
               No Resume Audit Report Available Yet
             </h4>
-            <p className="text-xs text-surface-500 max-w-md mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
               Run a comprehensive audit to evaluate grammar, readability, action verbs, quantifiable metrics, and overall ATS strength score.
             </p>
           </div>

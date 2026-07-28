@@ -133,24 +133,24 @@ export default function ImportModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-surface-950/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+    <div className="fixed inset-0 bg-slate-950/60 dark:bg-slate-50/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
       <div className="w-full max-w-lg">
-        <Card padding="p-6" className="bg-white border-surface-200 shadow-soft-xl space-y-5">
+        <Card padding="p-6" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-xl space-y-5">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-surface-100 pb-3.5">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3.5">
             <div className="space-y-0.5">
-              <h3 className="text-lg font-bold font-display text-surface-900 flex items-center gap-2">
-                <Upload className="w-5 h-5 text-brand-600" />
+              <h3 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Upload className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 Import Resume
               </h3>
-              <p className="text-xs text-surface-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Upload your existing resume to import data into HireSetu
               </p>
             </div>
             <button
               onClick={onClose}
               disabled={uploading}
-              className="text-surface-400 hover:text-surface-600 text-sm p-1 rounded-lg hover:bg-surface-100 transition-colors disabled:opacity-50"
+              className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:text-slate-400 text-sm p-1 rounded-lg hover:bg-slate-100 dark:bg-slate-800 transition-colors disabled:opacity-50"
             >
               <X className="w-5 h-5" />
             </button>
@@ -172,10 +172,10 @@ export default function ImportModal({ isOpen, onClose }) {
             onClick={() => fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer transition-all duration-200 ${
               isDragging
-                ? 'border-brand-500 bg-brand-50/70 scale-[1.01]'
+                ? 'border-indigo-500 dark:border-indigo-400 bg-indigo-50/70 dark:bg-indigo-900/20/70 scale-[1.01]'
                 : selectedFile
-                ? 'border-brand-300 bg-brand-50/30'
-                : 'border-surface-300 hover:border-brand-400 bg-surface-50/50 hover:bg-brand-50/20'
+                ? 'border-indigo-300 dark:border-indigo-400 bg-indigo-50/30 dark:bg-indigo-900/20/30'
+                : 'border-slate-300 dark:border-slate-400 hover:border-indigo-400 dark:border-indigo-400 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-indigo-50/20 dark:bg-indigo-900/20/20'
             }`}
           >
             <input
@@ -192,39 +192,39 @@ export default function ImportModal({ isOpen, onClose }) {
 
             {selectedFile ? (
               <div className="space-y-2 flex flex-col items-center">
-                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-700 flex items-center justify-center shadow-soft-xs">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-800/30 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shadow-soft-xs">
                   <FileText className="w-6 h-6" />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-sm font-bold text-surface-900 truncate max-w-xs">
+                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate max-w-xs">
                     {selectedFile.name}
                   </p>
-                  <p className="text-xs text-surface-500 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                 </div>
-                <span className="text-xs text-brand-600 underline font-semibold pt-1">
+                <span className="text-xs text-indigo-600 dark:text-indigo-400 underline font-semibold pt-1">
                   Click or drag to change file
                 </span>
               </div>
             ) : (
               <>
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-600 shadow-soft-xs group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-soft-xs group-hover:scale-105 transition-transform">
                   <Upload className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-surface-900">
+                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
                     Drag and drop your resume here
                   </p>
-                  <p className="text-xs text-surface-500">
-                    or <span className="text-brand-600 underline font-semibold">browse files</span> from your computer
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    or <span className="text-indigo-600 dark:text-indigo-400 underline font-semibold">browse files</span> from your computer
                   </p>
                 </div>
                 <div className="inline-flex items-center gap-2 pt-1">
-                  <span className="px-2.5 py-1 text-[11px] font-semibold bg-surface-100 text-surface-600 rounded-md">
+                  <span className="px-2.5 py-1 text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md">
                     PDF or DOCX
                   </span>
-                  <span className="px-2.5 py-1 text-[11px] font-semibold bg-surface-100 text-surface-600 rounded-md">
+                  <span className="px-2.5 py-1 text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md">
                     Max 5MB
                   </span>
                 </div>

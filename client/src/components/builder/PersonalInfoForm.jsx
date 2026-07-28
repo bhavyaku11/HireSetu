@@ -94,9 +94,9 @@ export default function PersonalInfoForm({ data = {}, onChange }) {
 
   return (
     <div className="space-y-5 font-body">
-      <div className="border-b border-surface-200/80 pb-3">
-        <h3 className="text-base font-bold font-display text-surface-900">Personal Information</h3>
-        <p className="text-xs text-surface-500">
+      <div className="border-b border-slate-200/80 dark:border-slate-700/80 pb-3">
+        <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">Personal Information</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Enter your basic contact details and a professional summary.
         </p>
       </div>
@@ -159,7 +159,7 @@ export default function PersonalInfoForm({ data = {}, onChange }) {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="block text-xs font-bold text-surface-700 tracking-tight">
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-400 tracking-tight">
             Professional Summary
           </label>
           <button
@@ -169,8 +169,8 @@ export default function PersonalInfoForm({ data = {}, onChange }) {
             title={isEligibleForAi ? 'Improve summary with AI' : 'Type at least 5 characters to improve'}
             className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
               isEligibleForAi
-                ? 'bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200/80 shadow-soft-xs'
-                : 'opacity-40 text-surface-400 cursor-not-allowed border border-surface-200'
+                ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:bg-indigo-800/30 border border-indigo-200/80 dark:border-indigo-700/40/80 shadow-soft-xs'
+                : 'opacity-40 text-slate-400 dark:text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
             }`}
           >
             <span>✨</span>

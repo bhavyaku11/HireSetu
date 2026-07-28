@@ -64,12 +64,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-canvas relative flex items-center justify-center p-4 font-body selection:bg-brand-500/20 selection:text-brand-700">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 font-body selection:bg-indigo-500/20 selection:text-indigo-400">
       {/* Background Dot Grid Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#d4ccff_1.2px,transparent_1.2px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
 
       {/* Decorative Blur Orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-brand-300/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-indigo-300/20 dark:bg-indigo-400/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Centered Auth Card */}
       <div className="w-full max-w-md relative z-10 space-y-6">
@@ -81,19 +81,19 @@ export default function Login() {
               alt="HireSetu" 
               className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" 
             />
-            <span className="text-2xl font-extrabold font-display tracking-tight text-surface-900">
-              Hire<span className="text-brand-500">Setu</span>
+            <span className="text-2xl font-extrabold font-display tracking-tight text-slate-900 dark:text-slate-100">
+              Hire<span className="text-indigo-500 dark:text-indigo-400">Setu</span>
             </span>
           </Link>
-          <h1 className="text-xl font-bold font-display text-surface-900 tracking-tight">
+          <h1 className="text-xl font-bold font-display text-slate-900 dark:text-slate-100 tracking-tight">
             Welcome Back
           </h1>
-          <p className="text-xs text-surface-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Sign in to access your resumes and career tools
           </p>
         </div>
 
-        <Card padding="p-8" className="bg-white border-surface-200/90 shadow-soft-xl">
+        <Card padding="p-8" className="bg-white border-slate-200/90 dark:border-slate-700/90 shadow-soft-xl">
           {/* API Error Alert */}
           {apiError && (
             <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200/80 rounded-xl text-rose-700 text-xs font-medium flex items-center space-x-2 shadow-soft-xs">
@@ -141,11 +141,11 @@ export default function Login() {
           </form>
 
           {/* Footer Link */}
-          <div className="mt-6 pt-5 border-t border-surface-100 text-center text-xs text-surface-500">
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-brand-600 hover:text-brand-700 font-semibold hover:underline"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:text-indigo-300 font-semibold hover:underline"
             >
               Sign up
             </Link>

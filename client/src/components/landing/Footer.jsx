@@ -4,7 +4,7 @@ import logoMark from '../../assets/logo-mark.png';
 
 export default function Footer() {
   return (
-    <footer className="bg-surface-900 text-surface-300 font-body border-t border-surface-800 py-10 md:py-12">
+    <footer className="bg-slate-900 text-slate-300 font-body border-t border-slate-800 py-10 md:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo / Brand */}
@@ -15,12 +15,12 @@ export default function Footer() {
               className="w-8 h-8 object-contain"
             />
             <span className="text-lg font-extrabold font-display tracking-tight text-white">
-              Hire<span className="text-brand-400">Setu</span>
+              Hire<span className="text-indigo-400">Setu</span>
             </span>
           </Link>
 
           {/* Action Links */}
-          <div className="flex items-center gap-6 text-xs text-surface-400 font-medium">
+          <div className="flex items-center gap-6 text-xs text-slate-400 font-medium">
             <Link to="/login" className="hover:text-white transition-colors">
               Log in
             </Link>
@@ -30,9 +30,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-surface-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-surface-500 gap-4">
+        <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <p>© {new Date().getFullYear()} HireSetu. Built for job seekers and software engineers.</p>
-          <p className="text-[11px] text-surface-600">
+          <p className="text-[11px] text-slate-600">
             Sprint 1 Production Release • 100% ATS Parser Compatible
           </p>
         </div>

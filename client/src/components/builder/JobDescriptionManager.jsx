@@ -134,14 +134,14 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
   return (
     <div className="space-y-6 font-body">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-brand-900 via-brand-800 to-indigo-950 p-6 rounded-2xl text-white shadow-soft-lg">
+      <div className="bg-gradient-to-r from-indigo-900 dark:from-indigo-400 via-indigo-800 dark:via-indigo-400 to-indigo-950 p-6 rounded-2xl text-white shadow-soft-lg">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl backdrop-blur">
             🎯
           </div>
           <div>
             <h2 className="text-lg font-bold font-display">Target Job Description</h2>
-            <p className="text-xs text-brand-100/80">
+            <p className="text-xs text-indigo-100/80 dark:text-indigo-800/30/80">
               Save job descriptions to tailor your resume for specific positions.
             </p>
           </div>
@@ -149,18 +149,18 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
       </div>
 
       {/* Main Input Form Card */}
-      <div className="bg-white border border-surface-200 rounded-2xl p-6 shadow-soft-sm space-y-5">
-        <div className="flex items-center justify-between border-b border-surface-100 pb-4">
-          <h3 className="text-sm font-bold text-surface-900 font-display">Save New Job Description</h3>
+      <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-soft-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-display">Save New Job Description</h3>
           {/* Tab Switcher */}
-          <div className="flex p-1 bg-surface-100 rounded-xl space-x-1">
+          <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl space-x-1">
             <button
               type="button"
               onClick={() => { setActiveTab('paste'); setError(''); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'paste'
-                  ? 'bg-white text-surface-900 shadow-soft-xs'
-                  : 'text-surface-600 hover:text-surface-900'
+                  ? 'bg-white text-slate-900 dark:text-slate-100 shadow-soft-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100'
               }`}
             >
               📝 Paste Text
@@ -170,8 +170,8 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
               onClick={() => { setActiveTab('upload'); setError(''); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'upload'
-                  ? 'bg-white text-surface-900 shadow-soft-xs'
-                  : 'text-surface-600 hover:text-surface-900'
+                  ? 'bg-white text-slate-900 dark:text-slate-100 shadow-soft-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100'
               }`}
             >
               📁 Upload File
@@ -203,9 +203,9 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
                 }}
                 error={isTextTooShort ? `Job description text must be at least 50 characters (currently ${textLength})` : ''}
               />
-              <div className="flex justify-between items-center text-[11px] text-surface-500 px-1">
+              <div className="flex justify-between items-center text-[11px] text-slate-500 dark:text-slate-400 px-1">
                 <span>Must be at least 50 characters</span>
-                <span className={textLength >= 50 ? 'text-emerald-600 font-semibold' : 'text-surface-400'}>
+                <span className={textLength >= 50 ? 'text-emerald-600 font-semibold' : 'text-slate-400 dark:text-slate-400'}>
                   {textLength} chars
                 </span>
               </div>
@@ -215,10 +215,10 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
           {/* Upload Tab */}
           {activeTab === 'upload' && (
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-surface-700">
-                Upload JD Document <span className="text-brand-500 font-bold">*</span>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400">
+                Upload JD Document <span className="text-indigo-500 dark:text-indigo-400 font-bold">*</span>
               </label>
-              <div className="border-2 border-dashed border-surface-200 rounded-2xl p-6 text-center hover:border-brand-400 transition-colors bg-surface-50/50">
+              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-6 text-center hover:border-indigo-400 dark:border-indigo-400 transition-colors bg-slate-50/50 dark:bg-slate-900/50">
                 <input
                   type="file"
                   id="jd-file-input"
@@ -227,24 +227,24 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
                   className="hidden"
                 />
                 <label htmlFor="jd-file-input" className="cursor-pointer block space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mx-auto text-xl">
+                  <div className="w-12 h-12 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto text-xl">
                     📄
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-brand-600 hover:underline">
+                    <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
                       Click to upload
                     </span>{' '}
-                    <span className="text-xs text-surface-500">or drag and drop</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">or drag and drop</span>
                   </div>
-                  <p className="text-[11px] text-surface-400">Supports .TXT, .PDF, or .DOCX (Max 5MB)</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-400">Supports .TXT, .PDF, or .DOCX (Max 5MB)</p>
                 </label>
                 {selectedFile && (
-                  <div className="mt-3 inline-flex items-center space-x-2 bg-brand-50 border border-brand-200 px-3 py-1.5 rounded-xl text-xs text-brand-800 font-medium">
+                  <div className="mt-3 inline-flex items-center space-x-2 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700/40 px-3 py-1.5 rounded-xl text-xs text-indigo-800 dark:text-indigo-400 font-medium">
                     <span>📎 {selectedFile.name}</span>
                     <button
                       type="button"
                       onClick={() => setSelectedFile(null)}
-                      className="text-brand-600 hover:text-brand-900 font-bold ml-1"
+                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:text-indigo-400 font-bold ml-1"
                     >
                       ×
                     </button>
@@ -288,9 +288,9 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
       </div>
 
       {/* Previously Saved Job Descriptions */}
-      <div className="bg-white border border-surface-200 rounded-2xl p-6 shadow-soft-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-surface-100 pb-3">
-          <h3 className="text-sm font-bold text-surface-900 font-display flex items-center space-x-2">
+      <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-soft-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-display flex items-center space-x-2">
             <span>📚 Saved Job Descriptions</span>
             <Badge variant="neutral" size="sm">
               {savedJds.length}
@@ -299,12 +299,12 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
         </div>
 
         {fetchingSaved ? (
-          <div className="p-4 text-center text-xs text-surface-500 space-x-2 flex items-center justify-center">
-            <div className="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400 space-x-2 flex items-center justify-center">
+            <div className="w-4 h-4 border-2 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
             <span>Loading saved job descriptions...</span>
           </div>
         ) : savedJds.length === 0 ? (
-          <div className="p-6 text-center text-xs text-surface-400 bg-surface-50 rounded-xl border border-dashed border-surface-200">
+          <div className="p-6 text-center text-xs text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
             No saved job descriptions yet. Paste or upload a job description above to get started!
           </div>
         ) : (
@@ -320,14 +320,14 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
               return (
                 <div
                   key={jd.id}
-                  className="border border-surface-200 rounded-xl p-4 transition-all hover:border-brand-200 hover:shadow-soft-xs bg-white space-y-2"
+                  className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition-all hover:border-indigo-200 dark:border-indigo-700/40 hover:shadow-soft-xs bg-white space-y-2"
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-surface-900 font-display">
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 font-display">
                         {jd.title || 'Untitled Job Description'}
                       </h4>
-                      <p className="text-[11px] text-surface-400">
+                      <p className="text-[11px] text-slate-400 dark:text-slate-400">
                         Saved on {dateStr} • {jd.raw_text ? jd.raw_text.length : 0} characters
                       </p>
                     </div>
@@ -335,7 +335,7 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
                       <button
                         type="button"
                         onClick={() => setExpandedJdId(isExpanded ? null : jd.id)}
-                        className="text-xs font-medium text-brand-600 hover:text-brand-800 px-2 py-1 rounded hover:bg-brand-50 transition-colors"
+                        className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-50 dark:bg-indigo-900/20 transition-colors"
                       >
                         {isExpanded ? 'Hide Snippet' : 'View Snippet'}
                       </button>
@@ -352,7 +352,7 @@ export default function JobDescriptionManager({ resumeId, token, onSelectJd }) {
                   </div>
 
                   {isExpanded && (
-                    <div className="mt-2 p-3 bg-surface-50 rounded-xl border border-surface-200 text-xs text-surface-700 font-mono whitespace-pre-wrap max-h-48 overflow-y-auto">
+                    <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-400 font-mono whitespace-pre-wrap max-h-48 overflow-y-auto">
                       {jd.raw_text}
                     </div>
                   )}

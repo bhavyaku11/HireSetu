@@ -4,21 +4,21 @@ import Button from '../components/ui/Button';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-brand-canvas font-body selection:bg-brand-500/20 selection:text-brand-700 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-body selection:bg-indigo-500/20 dark:bg-indigo-400/20 selection:text-indigo-700 dark:text-indigo-300 flex flex-col items-center justify-center p-4">
       {/* Background Dot Grid Pattern */}
       <div className="fixed inset-0 bg-[radial-gradient(#d4ccff_1.2px,transparent_1.2px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
 
-      <div className="relative z-10 bg-white border border-surface-200/80 rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-soft-xl">
+      <div className="relative z-10 bg-white border border-slate-200/80 dark:border-slate-700/80 rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-soft-xl">
         {/* 404 Number */}
-        <div className="text-7xl font-extrabold font-display tracking-tight text-gradient-brand leading-none">
+        <div className="text-7xl font-extrabold font-display tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent dark:from-indigo-400 dark:to-indigo-300 leading-none">
           404
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-xl font-bold font-display text-surface-900">
+          <h1 className="text-xl font-bold font-display text-slate-900 dark:text-slate-100">
             Page Not Found
           </h1>
-          <p className="text-xs text-surface-500 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
             The page you're looking for doesn't exist or may have been moved.
           </p>
         </div>

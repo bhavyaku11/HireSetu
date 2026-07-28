@@ -63,11 +63,11 @@ export default function UserDropdown() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center space-x-2 rounded-full p-1 hover:bg-surface-100/80 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+        className="flex items-center space-x-2 rounded-full p-1 hover:bg-slate-100/80 dark:bg-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:ring-indigo-400/40"
         aria-label="User account menu"
         aria-expanded={isOpen}
       >
-        <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-surface-200 shadow-soft-xs bg-brand-500 text-white font-bold text-xs flex items-center justify-center ring-2 ring-brand-500/20">
+        <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 shadow-soft-xs bg-indigo-500 dark:bg-indigo-400 text-white font-bold text-xs flex items-center justify-center ring-2 ring-indigo-500/20 dark:ring-indigo-400/20">
           {avatarUrl && !imgError ? (
             <img
               src={avatarUrl}
@@ -80,21 +80,21 @@ export default function UserDropdown() {
           )}
         </div>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-surface-500 transition-transform duration-200 hidden sm:block ${
-            isOpen ? 'rotate-180 text-brand-600' : ''
+          className={`w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform duration-200 hidden sm:block ${
+            isOpen ? 'rotate-180 text-indigo-600 dark:text-indigo-400' : ''
           }`}
         />
       </button>
 
       {/* Animated Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white border border-surface-200/90 shadow-soft-xl z-50 overflow-hidden animate-fadeIn py-1 font-body">
+        <div className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white border border-slate-200/90 dark:border-slate-700/90 shadow-soft-xl z-50 overflow-hidden animate-fadeIn py-1 font-body">
           {/* User Information Header */}
-          <div className="px-4 py-3 border-b border-surface-200/80 bg-surface-50/60">
-            <p className="text-xs font-bold text-surface-900 truncate font-display">
+          <div className="px-4 py-3 border-b border-slate-200/80 dark:border-slate-700/80 bg-slate-50/60 dark:bg-slate-900/60">
+            <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate font-display">
               {user.name || 'HireSetu User'}
             </p>
-            <p className="text-[11px] text-surface-500 truncate mt-0.5">{user.email}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{user.email}</p>
           </div>
 
           <div className="py-1">
@@ -107,11 +107,11 @@ export default function UserDropdown() {
               }}
               className={`w-full px-4 py-2.5 text-xs font-semibold text-left flex items-center space-x-2.5 transition-colors ${
                 location.pathname === '/profile'
-                  ? 'bg-brand-50/80 text-brand-700 font-bold'
-                  : 'text-surface-700 hover:bg-surface-50 hover:text-surface-900'
+                  ? 'bg-indigo-50/80 dark:bg-indigo-900/20/80 text-indigo-700 dark:text-indigo-300 font-bold'
+                  : 'text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-900 dark:text-slate-100'
               }`}
             >
-              <User className="w-4 h-4 text-surface-500" />
+              <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Profile</span>
             </button>
 
@@ -124,15 +124,15 @@ export default function UserDropdown() {
               }}
               className={`w-full px-4 py-2.5 text-xs font-semibold text-left flex items-center space-x-2.5 transition-colors ${
                 location.pathname === '/dashboard'
-                  ? 'bg-brand-50/80 text-brand-700 font-bold'
-                  : 'text-surface-700 hover:bg-surface-50 hover:text-surface-900'
+                  ? 'bg-indigo-50/80 dark:bg-indigo-900/20/80 text-indigo-700 dark:text-indigo-300 font-bold'
+                  : 'text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-900 dark:text-slate-100'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 text-surface-500" />
+              <LayoutDashboard className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Dashboard</span>
             </button>
 
-            <div className="my-1 border-t border-surface-200/80" />
+            <div className="my-1 border-t border-slate-200/80 dark:border-slate-700/80" />
 
             {/* Logout Action */}
             <button

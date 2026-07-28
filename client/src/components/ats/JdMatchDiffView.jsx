@@ -70,7 +70,7 @@ function renderHighlightedJd(rawText = '', matchedKeywords = [], missingKeywords
   const parts = rawText.split(pattern);
 
   return (
-    <div className="whitespace-pre-wrap font-sans text-xs md:text-sm text-surface-800 leading-relaxed space-y-2">
+    <div className="whitespace-pre-wrap font-sans text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed space-y-2">
       {parts.map((part, index) => {
         if (!part) return null;
         const lowerPart = part.toLowerCase().trim();
@@ -125,16 +125,16 @@ export default function JdMatchDiffView({
   return (
     <div className="space-y-6 font-body">
       {/* Top Bar: Selector Dropdown & Action Controls */}
-      <div className="bg-white border border-surface-200 rounded-2xl p-4 md:p-6 shadow-soft-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-2xl p-4 md:p-6 shadow-soft-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-brand text-white flex items-center justify-center text-xl shadow-soft-xs">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-500 text-white flex items-center justify-center text-xl shadow-soft-xs">
             🎯
           </div>
           <div>
-            <h2 className="text-base font-bold font-display text-surface-900">
+            <h2 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">
               Side-by-Side Job Match Analysis
             </h2>
-            <p className="text-xs text-surface-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Comparing your resume against saved target job descriptions
             </p>
           </div>
@@ -144,7 +144,7 @@ export default function JdMatchDiffView({
         <div className="flex items-center space-x-3">
           {savedJds.length > 0 ? (
             <div className="flex items-center space-x-2">
-              <label htmlFor="jd-selector" className="text-xs font-semibold text-surface-600 whitespace-nowrap">
+              <label htmlFor="jd-selector" className="text-xs font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">
                 Select Job:
               </label>
               <select
@@ -155,7 +155,7 @@ export default function JdMatchDiffView({
                   const found = savedJds.find((j) => j.id === targetId);
                   if (found) onSelectJd(found);
                 }}
-                className="px-3 py-2 bg-surface-50 border border-surface-200 rounded-xl text-xs font-semibold text-surface-900 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15"
+                className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500 dark:border-indigo-400 focus:ring-2 focus:ring-indigo-500/15 dark:ring-indigo-400/15"
               >
                 {savedJds.map((jd) => (
                   <option key={jd.id} value={jd.id}>
@@ -190,17 +190,17 @@ export default function JdMatchDiffView({
       </div>
 
       {loading ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-surface-200 shadow-soft-sm space-y-3">
-          <div className="w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-xs font-semibold text-surface-600">Calculating deterministic match score...</p>
+        <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 dark:border-slate-700 shadow-soft-sm space-y-3">
+          <div className="w-8 h-8 border-3 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Calculating deterministic match score...</p>
         </div>
       ) : !currentJd ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-dashed border-surface-300 space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl mx-auto">
+        <div className="p-12 text-center bg-white rounded-2xl border border-dashed border-slate-300 dark:border-slate-400 space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl mx-auto">
             📋
           </div>
-          <h3 className="text-base font-bold font-display text-surface-900">No Job Description Selected</h3>
-          <p className="text-xs text-surface-500 max-w-sm mx-auto">
+          <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">No Job Description Selected</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
             Save or select a job description above to view the inline side-by-side keyword match analysis.
           </p>
           <Button variant="primary" size="sm" onClick={onAddJdClick}>
@@ -211,13 +211,13 @@ export default function JdMatchDiffView({
         /* Side-by-Side Two Panel Container */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Panel: Actual Job Description with Inline Highlights */}
-          <div className="lg:col-span-7 bg-white border border-surface-200 rounded-2xl shadow-soft-sm flex flex-col overflow-hidden">
-            <div className="p-4 border-b border-surface-100 bg-surface-50/60 flex items-center justify-between">
+          <div className="lg:col-span-7 bg-white border border-slate-200 dark:border-slate-700 rounded-2xl shadow-soft-sm flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between">
               <div>
-                <h3 className="text-xs font-bold text-surface-900 uppercase tracking-wider font-display">
+                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-display">
                   Actual Job Description
                 </h3>
-                <p className="text-[11px] text-surface-500 truncate max-w-xs md:max-w-md">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs md:max-w-md">
                   {currentJd.title || 'Untitled Position'}
                 </p>
               </div>
@@ -251,8 +251,8 @@ export default function JdMatchDiffView({
             />
 
             {/* Keywords You Have Card */}
-            <div className="bg-white border border-surface-200 rounded-2xl p-5 shadow-soft-sm space-y-3">
-              <div className="flex items-center justify-between border-b border-surface-100 pb-2">
+            <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-soft-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                 <h4 className="text-xs font-bold text-emerald-800 font-display flex items-center space-x-1.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-black">
                     ✓
@@ -266,7 +266,7 @@ export default function JdMatchDiffView({
 
               <div className="max-h-56 overflow-y-auto pr-1">
                 {matchedKeywords.length === 0 ? (
-                  <p className="text-xs text-surface-400 py-2">No matching keywords found.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-400 py-2">No matching keywords found.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {matchedKeywords.map((kw, i) => (
@@ -284,8 +284,8 @@ export default function JdMatchDiffView({
             </div>
 
             {/* Keywords You're Missing Card */}
-            <div className="bg-white border border-surface-200 rounded-2xl p-5 shadow-soft-sm space-y-3">
-              <div className="flex items-center justify-between border-b border-surface-100 pb-2">
+            <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-soft-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                 <h4 className="text-xs font-bold text-rose-800 font-display flex items-center space-x-1.5">
                   <span className="w-5 h-5 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-[10px] font-black">
                     ✕

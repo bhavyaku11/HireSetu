@@ -2,13 +2,13 @@ import React from 'react';
 
 const variantStyles = {
   primary:
-    'bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-soft-sm hover:shadow-soft-md border border-brand-400/30 active:scale-[0.98]',
+    'bg-indigo-600 hover:bg-indigo-700 text-white shadow-soft-sm hover:shadow-soft-md border border-indigo-500/30 active:scale-[0.98]',
   secondary:
-    'bg-brand-50 hover:bg-brand-100 text-brand-700 hover:text-brand-800 border border-brand-200/60 active:scale-[0.98]',
+    'bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-500/30 active:scale-[0.98]',
   outline:
-    'bg-white hover:bg-surface-50 text-surface-700 hover:text-surface-900 border border-surface-200 hover:border-surface-300 shadow-soft-xs active:scale-[0.98]',
+    'bg-white dark:bg-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-soft-xs active:scale-[0.98]',
   ghost:
-    'bg-transparent hover:bg-brand-50/70 text-surface-600 hover:text-brand-600 active:scale-[0.98]',
+    'bg-transparent hover:bg-indigo-50/70 dark:hover:bg-indigo-500/10 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 active:scale-[0.98]',
   danger:
     'bg-rose-600 hover:bg-rose-700 text-white shadow-soft-sm border border-rose-500/30 active:scale-[0.98]',
 };

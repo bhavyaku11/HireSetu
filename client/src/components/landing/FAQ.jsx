@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Card } from '../ui/Card';
 
 const FAQS = [
   {
@@ -48,23 +47,23 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="py-16 md:py-24 bg-surface-50 relative overflow-hidden">
+    <section id="faq" className="py-16 md:py-24 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-5 sm:px-8 space-y-12 relative z-10">
         
         {/* ── Section Header ──────────────────────── */}
         <div className="text-center space-y-4 max-w-xl mx-auto">
           {/* Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/80 shadow-soft-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 shrink-0" />
-            <span className="text-[12px] font-semibold text-brand-700 tracking-tight">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200/80 dark:border-indigo-500/20 shadow-soft-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 shrink-0" />
+            <span className="text-[12px] font-semibold text-indigo-700 dark:text-indigo-400 tracking-tight">
               Got Questions?
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-surface-900 tracking-tight leading-tight">
-            Frequently Asked <span className="text-gradient-brand">Questions</span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
+            Frequently Asked <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent dark:from-indigo-400 dark:to-indigo-300">Questions</span>
           </h2>
-          <p className="text-sm sm:text-[15px] text-surface-500 font-body leading-relaxed">
+          <p className="text-sm sm:text-[15px] text-slate-500 dark:text-slate-400 font-body leading-relaxed">
             Everything you need to know about HireSetu and how our ATS resume builder works.
           </p>
         </div>
@@ -74,13 +73,12 @@ export default function FAQ() {
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <Card
+              <div
                 key={faq.question}
-                padding="p-0"
-                className={`overflow-hidden transition-all duration-200 bg-white border ${
+                className={`overflow-hidden transition-all duration-200 bg-white dark:bg-slate-800/60 rounded-2xl border ${
                   isOpen
-                    ? 'border-brand-200 shadow-soft-md ring-1 ring-brand-500/10'
-                    : 'border-surface-200/80 shadow-soft-xs hover:border-brand-200/60 hover:shadow-soft-sm'
+                    ? 'border-indigo-200 dark:border-indigo-500/50 shadow-soft-md ring-1 ring-indigo-500/10 dark:ring-indigo-500/20'
+                    : 'border-slate-200 dark:border-slate-700/50 shadow-soft-xs hover:border-indigo-200/60 dark:hover:border-indigo-500/30 hover:shadow-soft-sm'
                 }`}
               >
                 {/* Accordion Trigger Header */}
@@ -91,13 +89,13 @@ export default function FAQ() {
                   aria-expanded={isOpen}
                 >
                   <span className={`text-[15px] sm:text-base font-bold font-display tracking-tight transition-colors ${
-                    isOpen ? 'text-brand-600' : 'text-surface-900'
+                    isOpen ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-slate-100'
                   }`}>
                     {faq.question}
                   </span>
 
                   <span className={`ml-4 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
-                    isOpen ? 'bg-brand-50 text-brand-600 rotate-180' : 'bg-surface-100 text-surface-500'
+                    isOpen ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rotate-180' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400'
                   }`}>
                     <ChevronDown className="w-4 h-4 stroke-[2.5]" />
                   </span>
@@ -110,12 +108,12 @@ export default function FAQ() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-6 pb-6 pt-1 border-t border-surface-100 text-xs sm:text-sm text-surface-600 font-body leading-relaxed">
+                    <div className="px-6 pb-6 pt-1 border-t border-slate-100 dark:border-slate-700/50 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-body leading-relaxed">
                       {faq.answer}
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>

@@ -24,15 +24,15 @@ export default function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-xs font-semibold text-surface-700 tracking-tight"
+          className="block text-xs font-semibold text-slate-700 dark:text-slate-400 tracking-tight"
         >
-          {label} {isRequired && <span className="text-brand-500 font-bold">*</span>}
+          {label} {isRequired && <span className="text-indigo-500 dark:text-indigo-400 font-bold">*</span>}
         </label>
       )}
 
       <div className="relative flex items-center">
         {leftIcon && (
-          <div className="absolute left-3.5 pointer-events-none text-surface-400 flex items-center justify-center">
+          <div className="absolute left-3.5 pointer-events-none text-slate-400 dark:text-slate-400 flex items-center justify-center">
             {leftIcon}
           </div>
         )}
@@ -44,20 +44,20 @@ export default function Input({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`w-full px-3.5 py-2.5 bg-white border text-sm text-surface-900 placeholder-surface-400 rounded-xl transition-all duration-200 focus:outline-none ${
+          className={`w-full px-3.5 py-2.5 bg-white border text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 rounded-xl transition-all duration-200 focus:outline-none ${
             leftIcon ? 'pl-10' : ''
           } ${rightIcon ? 'pr-10' : ''} ${
             error
               ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/15'
-              : 'border-surface-200/90 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 hover:border-surface-300'
+              : 'border-slate-200/90 dark:border-slate-700/90 focus:border-indigo-500 dark:border-indigo-400 focus:ring-4 focus:ring-indigo-500/15 dark:ring-indigo-400/15 hover:border-slate-300 dark:border-slate-400'
           } ${
-            isDisabled ? 'bg-surface-100 text-surface-400 cursor-not-allowed border-surface-200' : ''
+            isDisabled ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 cursor-not-allowed border-slate-200 dark:border-slate-700' : ''
           } ${className}`}
           {...props}
         />
 
         {rightIcon && (
-          <div className="absolute right-3.5 text-surface-400 flex items-center justify-center">
+          <div className="absolute right-3.5 text-slate-400 dark:text-slate-400 flex items-center justify-center">
             {rightIcon}
           </div>
         )}
@@ -69,7 +69,7 @@ export default function Input({
           <span>{error}</span>
         </p>
       ) : (
-        helperText && <p className="text-xs text-surface-500">{helperText}</p>
+        helperText && <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
       )}
     </div>
   );
@@ -97,9 +97,9 @@ export function TextArea({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-xs font-semibold text-surface-700 tracking-tight"
+          className="block text-xs font-semibold text-slate-700 dark:text-slate-400 tracking-tight"
         >
-          {label} {isRequired && <span className="text-brand-500 font-bold">*</span>}
+          {label} {isRequired && <span className="text-indigo-500 dark:text-indigo-400 font-bold">*</span>}
         </label>
       )}
 
@@ -110,12 +110,12 @@ export function TextArea({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`w-full px-3.5 py-2.5 bg-white border text-sm text-surface-900 placeholder-surface-400 rounded-xl transition-all duration-200 focus:outline-none resize-y ${
+        className={`w-full px-3.5 py-2.5 bg-white border text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 rounded-xl transition-all duration-200 focus:outline-none resize-y ${
           error
             ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/15'
-            : 'border-surface-200/90 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 hover:border-surface-300'
+            : 'border-slate-200/90 dark:border-slate-700/90 focus:border-indigo-500 dark:border-indigo-400 focus:ring-4 focus:ring-indigo-500/15 dark:ring-indigo-400/15 hover:border-slate-300 dark:border-slate-400'
         } ${
-          isDisabled ? 'bg-surface-100 text-surface-400 cursor-not-allowed border-surface-200' : ''
+          isDisabled ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 cursor-not-allowed border-slate-200 dark:border-slate-700' : ''
         } ${className}`}
         {...props}
       />
@@ -126,7 +126,7 @@ export function TextArea({
           <span>{error}</span>
         </p>
       ) : (
-        helperText && <p className="text-xs text-surface-500">{helperText}</p>
+        helperText && <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
       )}
     </div>
   );

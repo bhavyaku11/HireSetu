@@ -57,7 +57,7 @@ export default function AchievementPromptsPanel({
               key={idx}
               className="p-3 bg-white rounded-xl border border-amber-200/80 shadow-soft-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
             >
-              <div className="flex items-start space-x-2 text-xs text-surface-800">
+              <div className="flex items-start space-x-2 text-xs text-slate-800 dark:text-slate-200">
                 <span className="font-bold text-amber-600 shrink-0">{idx + 1}.</span>
                 <span className="font-medium leading-relaxed">{q}</span>
               </div>

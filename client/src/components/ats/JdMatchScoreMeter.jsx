@@ -32,8 +32,8 @@ export default function JdMatchScoreMeter({
         gradFrom: '#0284c7',
         gradTo: '#38bdf8',
         gradientId: 'jdGradBrand',
-        textColor: 'text-brand-700',
-        bgPill: 'bg-brand-100 text-brand-800',
+        textColor: 'text-indigo-700 dark:text-indigo-300',
+        bgPill: 'bg-indigo-100 dark:bg-indigo-800/30 text-indigo-800 dark:text-indigo-400',
       };
     }
     if (val >= 40) {
@@ -61,17 +61,17 @@ export default function JdMatchScoreMeter({
   const tier = getTierDetails(safeScore);
 
   return (
-    <div className="p-6 rounded-2xl bg-white border border-surface-200 shadow-soft-sm space-y-6">
+    <div className="p-6 rounded-2xl bg-white border border-slate-200 dark:border-slate-700 shadow-soft-sm space-y-6">
       {/* Top Header Label */}
-      <div className="flex items-center justify-between border-b border-surface-100 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
         <div>
           <div className="inline-flex items-center gap-2">
             <Badge variant={tier.variant} size="sm">
               {tier.label}
             </Badge>
-            <span className="text-xs font-semibold text-surface-500">Keyword Alignment</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Keyword Alignment</span>
           </div>
-          <h3 className="text-base font-bold font-display text-surface-900 mt-1">
+          <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100 mt-1">
             Job Description Match Score
           </h3>
         </div>
@@ -116,10 +116,10 @@ export default function JdMatchScoreMeter({
           </svg>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-0.5">
-            <span className="text-3xl font-black font-display text-surface-900 leading-none">
+            <span className="text-3xl font-black font-display text-slate-900 dark:text-slate-100 leading-none">
               {safeScore}%
             </span>
-            <span className="text-[10px] font-bold text-surface-400 uppercase tracking-wider">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
               Keyword Match
             </span>
           </div>

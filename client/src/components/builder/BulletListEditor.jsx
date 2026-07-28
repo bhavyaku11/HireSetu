@@ -121,13 +121,13 @@ export default function BulletListEditor({
   return (
     <div className="space-y-3 font-body">
       <div className="flex items-center justify-between">
-        <label className="block text-xs font-bold text-surface-700 uppercase tracking-wider">
+        <label className="block text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">
           {label}
         </label>
         <button
           type="button"
           onClick={handleAddBullet}
-          className="text-xs text-brand-600 hover:text-brand-700 font-semibold flex items-center space-x-1 cursor-pointer"
+          className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:text-indigo-300 font-semibold flex items-center space-x-1 cursor-pointer"
         >
           <span>+</span>
           <span>Add Bullet Point</span>
@@ -140,7 +140,7 @@ export default function BulletListEditor({
 
           return (
             <div key={index} className="flex items-start space-x-2 group">
-              <span className="text-surface-400 text-xs mt-2.5 shrink-0">•</span>
+              <span className="text-slate-400 dark:text-slate-400 text-xs mt-2.5 shrink-0">•</span>
 
               <div className="flex-1">
                 <Input
@@ -159,8 +159,8 @@ export default function BulletListEditor({
                   title={isEligibleForAi ? 'Improve bullet with AI' : 'Type at least 5 characters to improve'}
                   className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1 cursor-pointer ${
                     isEligibleForAi
-                      ? 'bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200'
-                      : 'opacity-40 text-surface-400 cursor-not-allowed border border-surface-200'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:bg-indigo-800/30 border border-indigo-200 dark:border-indigo-700/40'
+                      : 'opacity-40 text-slate-400 dark:text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   <span>✨</span>
@@ -172,7 +172,7 @@ export default function BulletListEditor({
                   onClick={() => handleMoveBullet(index, 'up')}
                   disabled={index === 0}
                   title="Move Up"
-                  className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
+                  className="p-1 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 disabled:opacity-30 text-xs cursor-pointer"
                 >
                   ▲
                 </button>
@@ -181,7 +181,7 @@ export default function BulletListEditor({
                   onClick={() => handleMoveBullet(index, 'down')}
                   disabled={index === bullets.length - 1}
                   title="Move Down"
-                  className="p-1 text-surface-400 hover:text-surface-800 disabled:opacity-30 text-xs cursor-pointer"
+                  className="p-1 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 disabled:opacity-30 text-xs cursor-pointer"
                 >
                   ▼
                 </button>

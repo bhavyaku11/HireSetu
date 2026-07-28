@@ -89,23 +89,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-canvas text-surface-900 flex flex-col font-body selection:bg-brand-500/20 selection:text-brand-700">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
       {/* Top Navbar Header */}
       <AppHeader />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 space-y-8">
         {/* Banner Card */}
-        <Card padding="p-8" className="bg-white/90 border-surface-200/80 shadow-soft-md">
+        <Card padding="p-8" className="bg-white/90 border-slate-200/80 dark:border-slate-700/80 shadow-soft-md">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-1.5">
               <div className="inline-flex items-center space-x-2">
-                <span className="text-xs font-semibold text-brand-600">Dashboard</span>
+                <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">Dashboard</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-surface-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight">
                 Welcome back, {user?.name}!
               </h2>
-              <p className="text-xs sm:text-sm text-surface-600">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 Manage, edit, and tailor your ATS-optimized resumes in one place.
               </p>
             </div>
@@ -135,9 +135,9 @@ export default function Dashboard() {
 
         {/* Resumes Grid Section */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-surface-200/70 pb-3">
+          <div className="flex items-center justify-between border-b border-slate-200/70 dark:border-slate-700/70 pb-3">
             <div className="flex items-center space-x-3">
-              <h3 className="text-lg font-bold font-display text-surface-900">
+              <h3 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100">
                 Your Resumes
               </h3>
               <Badge variant="neutral" size="sm">
@@ -157,20 +157,20 @@ export default function Dashboard() {
           )}
 
           {loading ? (
-            <div className="p-16 text-center text-surface-500 space-y-3">
-              <div className="w-7 h-7 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="p-16 text-center text-slate-500 dark:text-slate-400 space-y-3">
+              <div className="w-7 h-7 border-2 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
               <p className="text-xs font-medium">Loading your resumes...</p>
             </div>
           ) : resumes.length === 0 ? (
-            <Card padding="p-12" className="text-center space-y-4 bg-white/80 border-dashed border-surface-300">
-              <div className="w-14 h-14 bg-brand-50 border border-brand-200/60 rounded-2xl flex items-center justify-center text-2xl mx-auto shadow-soft-xs">
+            <Card padding="p-12" className="text-center space-y-4 bg-white/80 border-dashed border-slate-300 dark:border-slate-400">
+              <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200/60 dark:border-indigo-700/40/60 rounded-2xl flex items-center justify-center text-2xl mx-auto shadow-soft-xs">
                 📄
               </div>
               <div className="space-y-1">
-                <h4 className="text-base font-bold font-display text-surface-900">
+                <h4 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">
                   You haven't created any resumes yet
                 </h4>
-                <p className="text-xs text-surface-500 max-w-sm mx-auto">
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                   Create your first ATS-optimized resume or import an existing PDF/DOCX document to get started.
                 </p>
               </div>
@@ -218,7 +218,7 @@ export default function Dashboard() {
                   </CardHeader>
 
                   <CardFooter className="pt-2">
-                    <span className="text-[11px] text-surface-400 font-medium">ATS Ready</span>
+                    <span className="text-[11px] text-slate-400 dark:text-slate-400 font-medium">ATS Ready</span>
                     <Link to={`/builder/${res.id}`}>
                       <Button size="sm" variant="secondary" rightIcon={<span>→</span>}>
                         Continue Editing
@@ -234,11 +234,11 @@ export default function Dashboard() {
 
       {/* New Resume Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-surface-950/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-slate-950/60 dark:bg-slate-50/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="w-full max-w-md">
-            <Card padding="p-6" className="bg-white border-surface-200 shadow-soft-xl space-y-4">
-              <div className="flex items-center justify-between border-b border-surface-100 pb-3">
-                <h3 className="text-lg font-bold font-display text-surface-900">
+            <Card padding="p-6" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-xl space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100">
                   Create New Resume
                 </h3>
                 <button
@@ -246,7 +246,7 @@ export default function Dashboard() {
                     setShowModal(false);
                     setError('');
                   }}
-                  className="text-surface-400 hover:text-surface-600 text-sm"
+                  className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:text-slate-400 text-sm"
                 >
                   ✕
                 </button>

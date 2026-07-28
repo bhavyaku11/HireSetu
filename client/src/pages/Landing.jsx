@@ -10,7 +10,7 @@ import Footer from '../components/landing/Footer';
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-surface-50 font-body text-surface-900 selection:bg-brand-500/20 selection:text-brand-700 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 dark:bg-slate-950 font-body text-slate-900 dark:text-slate-100 selection:bg-indigo-500/20 selection:text-indigo-400 flex flex-col">
       {/* Header Bar */}
       <Header />
 

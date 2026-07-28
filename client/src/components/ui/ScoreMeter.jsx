@@ -31,8 +31,8 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
         gradientId: 'scoreGradBrand',
         gradFrom: '#0284c7',
         gradTo: '#38bdf8',
-        textClass: 'text-brand-600',
-        bgClass: 'bg-brand-50 border-brand-200',
+        textClass: 'text-indigo-600 dark:text-indigo-400',
+        bgClass: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-700/40',
       };
     }
     if (val >= 50) {
@@ -66,7 +66,7 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
   const grammarScore = breakdown?.grammarScore ?? safeScore;
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-8 p-6 md:p-8 rounded-2xl bg-surface-50/90 border border-surface-200 shadow-soft-sm">
+    <div className="flex flex-col md:flex-row items-center gap-8 p-6 md:p-8 rounded-2xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 shadow-soft-sm">
       {/* Circular Progress Ring */}
       <div className="relative flex flex-col items-center justify-center shrink-0">
         <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 120 120">
@@ -85,7 +85,7 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
             stroke="#e2e8f0"
             strokeWidth="10"
             fill="transparent"
-            className="text-surface-200"
+            className="text-slate-200 dark:text-slate-700"
           />
 
           {/* Animated Progress Circle */}
@@ -105,10 +105,10 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
 
         {/* Center Score Label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-0.5">
-          <span className="text-3xl font-black font-display tracking-tight text-surface-900 leading-none">
+          <span className="text-3xl font-black font-display tracking-tight text-slate-900 dark:text-slate-100 leading-none">
             {safeScore}
           </span>
-          <span className="text-[11px] font-bold text-surface-400 uppercase tracking-widest">
+          <span className="text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest">
             out of 100
           </span>
         </div>
@@ -116,15 +116,15 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
 
       {/* Score Description & Sub-Metrics Bars */}
       <div className="flex-1 w-full space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-200/70 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 dark:border-slate-700/70 pb-3">
           <div>
             <div className="inline-flex items-center gap-2">
               <Badge variant={tier.variant} size="sm">
                 {tier.label}
               </Badge>
-              <span className="text-xs font-semibold text-surface-500">Overall Strength Rating</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Overall Strength Rating</span>
             </div>
-            <h4 className="text-lg font-bold font-display text-surface-900 mt-1">
+            <h4 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100 mt-1">
               Resume Strength Index
             </h4>
           </div>
@@ -136,15 +136,15 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
           <div className="space-y-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold font-display">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-surface-800">ATS Parsability & Structure</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-brand-100 text-brand-700">40% Weight</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-surface-200 text-surface-600">Rule-Based</span>
+                <span className="text-slate-800 dark:text-slate-200">ATS Parsability & Structure</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-indigo-100 dark:bg-indigo-800/30 text-indigo-700 dark:text-indigo-300">40% Weight</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400">Rule-Based</span>
               </div>
-              <span className="text-surface-900">{atsScore}/100</span>
+              <span className="text-slate-900 dark:text-slate-100">{atsScore}/100</span>
             </div>
-            <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-brand-500 h-2 rounded-full transition-all duration-700 ease-out"
+                className="bg-indigo-500 dark:bg-indigo-400 h-2 rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${atsScore}%` }}
               ></div>
             </div>
@@ -154,13 +154,13 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
           <div className="space-y-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold font-display">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-surface-800">Content Quality & Metrics</span>
+                <span className="text-slate-800 dark:text-slate-200">Content Quality & Metrics</span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 text-emerald-700">35% Weight</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-surface-200 text-surface-600">Rule-Based</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400">Rule-Based</span>
               </div>
-              <span className="text-surface-900">{contentScore}/100</span>
+              <span className="text-slate-900 dark:text-slate-100">{contentScore}/100</span>
             </div>
-            <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
               <div
                 className="bg-emerald-500 h-2 rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${contentScore}%` }}
@@ -172,13 +172,13 @@ export default function ScoreMeter({ score = 0, breakdown = null }) {
           <div className="space-y-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold font-display">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-surface-800">Grammar & Readability</span>
+                <span className="text-slate-800 dark:text-slate-200">Grammar & Readability</span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-sky-100 text-sky-700">25% Weight</span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">AI-Judged</span>
               </div>
-              <span className="text-surface-900">{grammarScore}/100</span>
+              <span className="text-slate-900 dark:text-slate-100">{grammarScore}/100</span>
             </div>
-            <div className="w-full bg-surface-200 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
               <div
                 className="bg-sky-500 h-2 rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${grammarScore}%` }}

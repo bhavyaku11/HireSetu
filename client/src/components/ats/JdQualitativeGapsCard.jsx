@@ -22,16 +22,16 @@ export default function JdQualitativeGapsCard({
   const totalGaps = safeSkillGaps.length + safeExperienceGaps.length;
 
   return (
-    <div className="bg-white border border-surface-200 rounded-2xl p-6 shadow-soft-sm space-y-6">
+    <div className="bg-white border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-soft-sm space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-100 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center text-lg shadow-soft-xs">
             🔍
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="text-base font-bold font-display text-surface-900">
+              <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100">
                 Qualitative AI Gap Analysis
               </h3>
               {!loading && (
@@ -40,7 +40,7 @@ export default function JdQualitativeGapsCard({
                 </Badge>
               )}
             </div>
-            <p className="text-xs text-surface-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Evaluates skill depth & experience relevance requirements beyond basic keyword matching
             </p>
           </div>
@@ -54,11 +54,11 @@ export default function JdQualitativeGapsCard({
       {loading ? (
         <div className="p-8 text-center space-y-3">
           <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-xs font-semibold text-surface-500">Running AI gap analysis...</p>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Running AI gap analysis...</p>
         </div>
       ) : skillGaps === undefined && experienceGaps === undefined ? (
-        <div className="p-6 rounded-2xl bg-surface-50 border border-dashed border-surface-200 text-center space-y-2">
-          <p className="text-xs text-surface-400">Run a job match to see AI-identified skill and experience gaps.</p>
+        <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-700 text-center space-y-2">
+          <p className="text-xs text-slate-400 dark:text-slate-400">Run a job match to see AI-identified skill and experience gaps.</p>
         </div>
       ) : totalGaps === 0 ? (
         <div className="p-6 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 text-center space-y-2">
@@ -78,7 +78,7 @@ export default function JdQualitativeGapsCard({
           {safeSkillGaps.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-surface-800 uppercase tracking-wider font-display flex items-center space-x-2">
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider font-display flex items-center space-x-2">
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>
                   <span>Skill & Expertise Gaps</span>
                 </h4>
@@ -98,7 +98,7 @@ export default function JdQualitativeGapsCard({
                       className={`rounded-xl border transition-all duration-200 bg-white ${
                         isExpanded
                           ? 'border-amber-300 shadow-soft-md'
-                          : 'border-surface-200 hover:border-amber-200 hover:shadow-soft-xs'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-amber-200 hover:shadow-soft-xs'
                       }`}
                     >
                       {/* Scannable Header Row */}
@@ -110,7 +110,7 @@ export default function JdQualitativeGapsCard({
                           <Badge variant="warning" size="sm">
                             SKILL GAP
                           </Badge>
-                          <h5 className="text-xs font-bold text-surface-900 font-display truncate">
+                          <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 font-display truncate">
                             {item.gap}
                           </h5>
                         </div>
@@ -132,7 +132,7 @@ export default function JdQualitativeGapsCard({
                               <span className="font-bold text-amber-950 font-display block mb-0.5">
                                 Why This Matters to Recruiters:
                               </span>
-                              <p className="text-surface-700 leading-relaxed">{item.why}</p>
+                              <p className="text-slate-700 dark:text-slate-400 leading-relaxed">{item.why}</p>
                             </div>
                           </div>
                         </div>
@@ -148,7 +148,7 @@ export default function JdQualitativeGapsCard({
           {safeExperienceGaps.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-surface-800 uppercase tracking-wider font-display flex items-center space-x-2">
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider font-display flex items-center space-x-2">
                   <span className="w-2 h-2 rounded-full bg-rose-500"></span>
                   <span>Experience Relevance Gaps</span>
                 </h4>
@@ -168,7 +168,7 @@ export default function JdQualitativeGapsCard({
                       className={`rounded-xl border transition-all duration-200 bg-white ${
                         isExpanded
                           ? 'border-rose-300 shadow-soft-md'
-                          : 'border-surface-200 hover:border-rose-200 hover:shadow-soft-xs'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-rose-200 hover:shadow-soft-xs'
                       }`}
                     >
                       {/* Scannable Header Row */}
@@ -180,7 +180,7 @@ export default function JdQualitativeGapsCard({
                           <Badge variant="danger" size="sm">
                             EXPERIENCE GAP
                           </Badge>
-                          <h5 className="text-xs font-bold text-surface-900 font-display truncate">
+                          <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 font-display truncate">
                             {item.gap}
                           </h5>
                         </div>
@@ -202,7 +202,7 @@ export default function JdQualitativeGapsCard({
                               <span className="font-bold text-rose-950 font-display block mb-0.5">
                                 Why This Matters to Recruiters:
                               </span>
-                              <p className="text-surface-700 leading-relaxed">{item.why}</p>
+                              <p className="text-slate-700 dark:text-slate-400 leading-relaxed">{item.why}</p>
                             </div>
                           </div>
                         </div>
