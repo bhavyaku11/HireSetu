@@ -247,7 +247,42 @@ router.put('/:id/sections/:sectionType', async (req, res) => {
 });
 
 /**
+ * @route   DELETE /api/resumes/:id
+ * @desc    Delete a resume (blocked if tailored versions exist)
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    const resumeId = req.params.id;
+
+    // Verify ownership
+    const resume = await verifyResumeOwnership(resumeId, req.user.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    // Check if there are tailored versions linked to this resume's job descriptions
+    const [jds] = await pool.query('SELECT id FROM job_descriptions WHERE resume_id = ?', [resumeId]);
+    if (jds.length > 0) {
+      const jdIds = jds.map(jd => jd.id);
+      const [tailored] = await pool.query('SELECT COUNT(*) as count FROM resumes WHERE tailored_for_jd_id IN (?)', [jdIds]);
+      if (tailored[0].count > 0) {
+        return res.status(400).json({ message: `Cannot delete: this resume has ${tailored[0].count} tailored version(s). Please delete them first.` });
+      }
+    }
+
+    // Delete the resume
+    await pool.query('DELETE FROM resumes WHERE id = ?', [resumeId]);
+
+    res.json({ message: 'Resume deleted successfully' });
+  } catch (error) {
+    console.error('Delete Resume error:', error);
+    res.status(500).json({ message: 'Server error deleting resume' });
+  }
+});
+
+/**
  * @route   DELETE /api/resumes/:id/sections/:sectionType
+
  * @desc    Remove a section from a resume
  * @access  Private
  */

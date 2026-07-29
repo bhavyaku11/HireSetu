@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Upload } from 'lucide-react';
+import { Plus, Upload, Trash2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import Input from '../components/ui/Input';
@@ -19,6 +19,9 @@ export default function Dashboard() {
   const [newTitle, setNewTitle] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [deleteConfirmTitle, setDeleteConfirmTitle] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
 
   const fetchResumes = async () => {
@@ -49,6 +52,37 @@ export default function Dashboard() {
       fetchResumes();
     }
   }, [token]);
+
+  const handleDeleteResume = async () => {
+    if (!deleteConfirmId) return;
+    setIsDeleting(true);
+    setError('');
+    try {
+      const response = await fetch(`/api/resumes/${deleteConfirmId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setResumes((prev) => prev.filter((r) => r.id !== deleteConfirmId));
+        setDeleteConfirmId(null);
+        setDeleteConfirmTitle('');
+      } else {
+        setError(data.message || 'Failed to delete resume');
+        setDeleteConfirmId(null);
+        setDeleteConfirmTitle('');
+      }
+    } catch (err) {
+      console.error('Failed to delete resume:', err);
+      setError('Network error — could not delete resume.');
+      setDeleteConfirmId(null);
+      setDeleteConfirmTitle('');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleCreateResume = async (e) => {
     e.preventDefault();
@@ -198,18 +232,30 @@ export default function Dashboard() {
                 >
                   <CardHeader>
                     <div className="flex justify-between items-start gap-2 flex-wrap">
-                      <Pill variant="primary" size="sm">
-                        ID #{res.id}
-                      </Pill>
-                      {res.tailored_for_jd_title || res.tailoredForJdTitle ? (
-                        <Badge variant="primary" size="sm">
-                          ✨ Tailored for: {res.tailored_for_jd_title || res.tailoredForJdTitle}
-                        </Badge>
-                      ) : (
-                        <Badge variant="neutral" size="sm">
-                          Base Resume
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Pill variant="primary" size="sm">
+                          ID #{res.id}
+                        </Pill>
+                        {res.tailored_for_jd_title || res.tailoredForJdTitle ? (
+                          <Badge variant="primary" size="sm">
+                            ✨ Tailored for: {res.tailored_for_jd_title || res.tailoredForJdTitle}
+                          </Badge>
+                        ) : (
+                          <Badge variant="neutral" size="sm">
+                            Base Resume
+                          </Badge>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setDeleteConfirmId(res.id);
+                          setDeleteConfirmTitle(res.title);
+                        }}
+                        className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-500 transition-colors p-1 rounded-md hover:bg-rose-50 dark:hover:bg-rose-500/10"
+                        title="Delete resume"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                     <CardTitle className="pt-1 truncate">{res.title}</CardTitle>
                     <CardDescription>
@@ -292,6 +338,52 @@ export default function Dashboard() {
                   </Button>
                 </div>
               </form>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-slate-950/60 dark:bg-slate-50/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="w-full max-w-md">
+            <Card padding="p-6" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-soft-xl space-y-4">
+              <div className="flex items-start gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center shrink-0">
+                  <Trash2 className="w-5 h-5 text-rose-600 dark:text-rose-500" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100">
+                    Delete Resume?
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Are you sure you want to delete <span className="font-semibold text-slate-900 dark:text-slate-200">'{deleteConfirmTitle}'</span>? This cannot be undone.
+                  </p>
+                  <p className="text-xs text-amber-700 dark:text-amber-400/90 font-medium pt-1">
+                    Note: If this resume has tailored versions, you must delete them first before deleting this base resume.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setDeleteConfirmId(null);
+                    setDeleteConfirmTitle('');
+                  }}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleDeleteResume}
+                  disabled={isDeleting}
+                  className="bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-700 text-white border-rose-600 dark:border-rose-600 shadow-soft-sm"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Resume'}
+                </Button>
+              </div>
             </Card>
           </div>
         </div>
