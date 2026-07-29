@@ -3,6 +3,7 @@ import { Bot, Eye, Copy, Check, AlertTriangle, Info, FileText, Sparkles } from '
 import Button from '../ui/Button';
 import Badge, { Pill } from '../ui/Badge';
 import { Card } from '../ui/Card';
+import { DocumentSurface } from '../ui/DocumentSurface';
 
 export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sections = [] }) {
   const [activeTab, setActiveTab] = useState('ats'); // 'ats' | 'formatted'
@@ -119,13 +120,13 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
 
           {/* Layout Warning Banner (if anomalies detected) */}
           {layoutAnalysis.hasWarning && (
-            <div className="p-4 bg-amber-50 border border-amber-200/90 rounded-xl text-amber-900 text-xs flex items-start gap-3 animate-fadeIn">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="p-4 bg-amber-50 dark:bg-slate-800/80 border border-amber-200/90 dark:border-amber-500/30 rounded-xl text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 animate-fadeIn">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p className="font-bold font-display text-amber-950">
+                <p className="font-bold font-display text-amber-950 dark:text-amber-100">
                   This resume's layout may cause the ATS to misread the order of information.
                 </p>
-                <ul className="list-disc list-inside text-amber-800 space-y-0.5 pl-0.5">
+                <ul className="list-disc list-inside text-amber-800 dark:text-amber-200/80 space-y-0.5 pl-0.5">
                   {layoutAnalysis.reasons.map((reason, idx) => (
                     <li key={idx}>{reason}</li>
                   ))}
@@ -160,12 +161,14 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
 
           {/* Unstyled Monospace Plain Text View */}
           <div className="relative group">
-            <div className="absolute top-3 right-3 text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-400 bg-slate-900 dark:bg-slate-100 px-2.5 py-1 rounded border border-slate-800 dark:border-slate-200 pointer-events-none select-none">
+            <div className="absolute top-3 right-3 text-[10px] font-mono uppercase tracking-widest text-slate-500 bg-slate-50 px-2.5 py-1 rounded border border-slate-200 pointer-events-none select-none z-10 shadow-sm">
               Plain Text Output
             </div>
-            <pre className="p-6 bg-slate-950 dark:bg-slate-50 text-slate-100 dark:text-slate-800 rounded-2xl font-mono text-xs leading-relaxed max-h-[500px] overflow-y-auto whitespace-pre-wrap selection:bg-indigo-500 dark:bg-indigo-400 selection:text-white border border-slate-800 dark:border-slate-200 shadow-inner">
-              {rawText || 'No raw text extracted.'}
-            </pre>
+            <DocumentSurface className="p-6 rounded-2xl max-h-[500px] overflow-y-auto">
+              <pre className="font-mono text-xs leading-relaxed whitespace-pre-wrap selection:bg-indigo-500 selection:text-white text-slate-800">
+                {rawText || 'No raw text extracted.'}
+              </pre>
+            </DocumentSurface>
           </div>
         </div>
       ) : (

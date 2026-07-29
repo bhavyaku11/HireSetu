@@ -264,7 +264,7 @@ export default function Builder() {
       {/* Main Two-Panel Content */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Left Panel: Section Navigation & Active Form */}
-        <div className="w-full md:w-1/2 lg:w-5/12 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-white">
+        <div className="w-full md:w-1/2 lg:w-5/12 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900">
           {/* Horizontal scrollable tabs */}
           <div className="p-3 bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-700/80 overflow-x-auto scrollbar-none">
             <div className="flex space-x-2">
@@ -277,7 +277,7 @@ export default function Builder() {
                     className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center space-x-1.5 cursor-pointer ${
                       isActive
                         ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-500 text-white shadow-soft-sm'
-                        : 'bg-white text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/60 dark:bg-indigo-900/20/60 border border-slate-200/60 dark:border-slate-700/60'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/60 dark:hover:bg-indigo-500/10 border border-slate-200/60 dark:border-slate-700/60'
                     }`}
                   >
                     <span>{sec.icon}</span>

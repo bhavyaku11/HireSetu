@@ -1,4 +1,5 @@
 import React from 'react';
+import { DocumentSurface } from '../ui/DocumentSurface';
 
 export default function ResumePreview({ sections = {} }) {
   const personal = sections.personal_info || {};
@@ -25,7 +26,7 @@ export default function ResumePreview({ sections = {} }) {
   const hasContent = hasPersonalHeader || personal.summary || validEducation.length > 0 || validExperience.length > 0 || validProjects.length > 0 || validSkills.length > 0;
 
   return (
-    <div className="w-full max-w-[210mm] min-h-[297mm] bg-white text-slate-900 rounded-xl shadow-2xl p-10 font-sans text-[11px] leading-relaxed transition-all">
+    <DocumentSurface className="w-full max-w-[210mm] min-h-[297mm] rounded-xl shadow-2xl p-10 font-sans text-[11px] leading-relaxed transition-all border-none">
       {!hasContent ? (
         <div className="h-full min-h-[600px] flex flex-col items-center justify-center text-slate-400 text-center space-y-3">
           <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-3xl">
@@ -231,6 +232,6 @@ export default function ResumePreview({ sections = {} }) {
           )}
         </div>
       )}
-    </div>
+    </DocumentSurface>
   );
 }

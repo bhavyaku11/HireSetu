@@ -165,8 +165,8 @@ export default function ImportedResume() {
                   File Summary
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 bg-white p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-soft-xs">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-soft-xs">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <FileText className="w-5 h-5" />
                     </div>
                     <div className="truncate">
@@ -175,8 +175,8 @@ export default function ImportedResume() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 bg-white p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-soft-xs">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-soft-xs">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>

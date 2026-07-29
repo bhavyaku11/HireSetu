@@ -88,9 +88,9 @@ export default function UserDropdown() {
 
       {/* Animated Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white border border-slate-200/90 dark:border-slate-700/90 shadow-soft-xl z-50 overflow-hidden animate-fadeIn py-1 font-body">
+        <div className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-soft-xl z-50 overflow-hidden animate-fadeIn py-1 font-body">
           {/* User Information Header */}
-          <div className="px-4 py-3 border-b border-slate-200/80 dark:border-slate-700/80 bg-slate-50/60 dark:bg-slate-900/60">
+          <div className="px-4 py-3 border-b border-slate-200/80 dark:border-slate-700">
             <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate font-display">
               {user.name || 'HireSetu User'}
             </p>
@@ -107,8 +107,8 @@ export default function UserDropdown() {
               }}
               className={`w-full px-4 py-2.5 text-xs font-semibold text-left flex items-center space-x-2.5 transition-colors ${
                 location.pathname === '/profile'
-                  ? 'bg-indigo-50/80 dark:bg-indigo-900/20/80 text-indigo-700 dark:text-indigo-300 font-bold'
-                  : 'text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-900 dark:text-slate-100'
+                  ? 'bg-indigo-50/80 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-bold'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
@@ -124,23 +124,23 @@ export default function UserDropdown() {
               }}
               className={`w-full px-4 py-2.5 text-xs font-semibold text-left flex items-center space-x-2.5 transition-colors ${
                 location.pathname === '/dashboard'
-                  ? 'bg-indigo-50/80 dark:bg-indigo-900/20/80 text-indigo-700 dark:text-indigo-300 font-bold'
-                  : 'text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-900 dark:text-slate-100'
+                  ? 'bg-indigo-50/80 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-bold'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               <LayoutDashboard className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Dashboard</span>
             </button>
 
-            <div className="my-1 border-t border-slate-200/80 dark:border-slate-700/80" />
+            <div className="my-1 border-t border-slate-200/80 dark:border-slate-700" />
 
             {/* Logout Action */}
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full px-4 py-2.5 text-xs font-semibold text-left text-rose-600 hover:bg-rose-50 flex items-center space-x-2.5 transition-colors"
+              className="w-full px-4 py-2.5 text-xs font-semibold text-left text-rose-600 dark:text-rose-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center space-x-2.5 transition-colors"
             >
-              <LogOut className="w-4 h-4 text-rose-500" />
+              <LogOut className="w-4 h-4 text-rose-500 dark:text-rose-400" />
               <span>Log Out</span>
             </button>
           </div>
