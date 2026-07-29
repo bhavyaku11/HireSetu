@@ -44,14 +44,14 @@ export default function Input({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`w-full px-3.5 py-2.5 bg-white border text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 rounded-xl transition-all duration-200 focus:outline-none ${
+          className={`w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-xl transition-all duration-200 focus:outline-none ${
             leftIcon ? 'pl-10' : ''
           } ${rightIcon ? 'pr-10' : ''} ${
             error
               ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/15'
               : 'border-slate-200/90 dark:border-slate-700/90 focus:border-indigo-500 dark:border-indigo-400 focus:ring-4 focus:ring-indigo-500/15 dark:ring-indigo-400/15 hover:border-slate-300 dark:border-slate-400'
           } ${
-            isDisabled ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 cursor-not-allowed border-slate-200 dark:border-slate-700' : ''
+            isDisabled ? 'bg-slate-100 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 cursor-not-allowed border-slate-200 dark:border-slate-800' : ''
           } ${className}`}
           {...props}
         />
@@ -110,12 +110,12 @@ export function TextArea({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`w-full px-3.5 py-2.5 bg-white border text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 rounded-xl transition-all duration-200 focus:outline-none resize-y ${
+        className={`w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-xl transition-all duration-200 focus:outline-none resize-y ${
           error
             ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/15'
             : 'border-slate-200/90 dark:border-slate-700/90 focus:border-indigo-500 dark:border-indigo-400 focus:ring-4 focus:ring-indigo-500/15 dark:ring-indigo-400/15 hover:border-slate-300 dark:border-slate-400'
         } ${
-          isDisabled ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 cursor-not-allowed border-slate-200 dark:border-slate-700' : ''
+          isDisabled ? 'bg-slate-100 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 cursor-not-allowed border-slate-200 dark:border-slate-800' : ''
         } ${className}`}
         {...props}
       />
