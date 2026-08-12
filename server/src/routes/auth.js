@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import pool from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { handleAvatarUpload } from '../middleware/upload.js';
@@ -144,6 +145,162 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({ message: 'Internal server error during login' });
+  }
+});
+
+/**
+ * @route   POST /api/auth/google
+ * @desc    Verify a Google ID token and issue our own JWT.
+ *          Creates a new account or links to an existing one by email.
+ * @access  Public
+ */
+router.post('/google', async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential || typeof credential !== 'string') {
+      return res.status(400).json({ message: 'Google credential token is required.' });
+    }
+
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    if (!googleClientId) {
+      console.error('GOOGLE_CLIENT_ID is not set in environment variables.');
+      return res.status(500).json({ message: 'Server configuration error: Google auth not set up.' });
+    }
+
+    // ── Step 1: Verify the ID token with Google ──────────────────────────────
+    // This confirms: correct audience (our Client ID), valid signature from
+    // Google's public keys, token not expired, and correct issuer.
+    const client = new OAuth2Client(googleClientId);
+    let payload;
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: googleClientId,
+      });
+      payload = ticket.getPayload();
+    } catch (verifyErr) {
+      console.error('Google token verification failed:', verifyErr.message);
+      return res.status(401).json({ message: 'Invalid or expired Google token. Please try again.' });
+    }
+
+    // ── Step 2: Require a verified email ────────────────────────────────────
+    // Google includes `email_verified` in the payload. We require it to be
+    // true — unverified emails are a security risk (anyone can claim them).
+    if (!payload.email_verified) {
+      return res.status(403).json({
+        message: 'Your Google account email is not verified. Please verify it with Google first.',
+      });
+    }
+
+    const { sub: googleId, email, name, picture: profilePicture } = payload;
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return res.status(500).json({ message: 'Server configuration error.' });
+    }
+
+    // ── Step 3: Upsert the user ──────────────────────────────────────────────
+    // Lookup order: google_id first (fast, exact), then email (handles the
+    // case where the user previously signed up with email/password).
+    const [byGoogleId] = await pool.query(
+      'SELECT id, name, email, password_hash, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE google_id = ?',
+      [googleId]
+    );
+
+    let user;
+
+    if (byGoogleId.length > 0) {
+      // ── Existing Google-linked account ────────────────────────────────────
+      user = byGoogleId[0];
+
+      // Refresh name and profile picture if Google has newer data.
+      // Never overwrite a manually-uploaded avatar (only update if still
+      // pointing at a Google URL or if there's no avatar at all).
+      const shouldUpdatePicture =
+        !user.profile_image_url ||
+        user.profile_image_url.startsWith('https://lh3.googleusercontent.com');
+
+      await pool.query(
+        `UPDATE users
+           SET name = ?,
+               profile_image_url = IF(?, ?, profile_image_url)
+           WHERE id = ?`,
+        [
+          name,
+          shouldUpdatePicture && profilePicture ? 1 : 0,
+          profilePicture || user.profile_image_url,
+          user.id,
+        ]
+      );
+
+      // Re-fetch to get updated values.
+      const [refreshed] = await pool.query(
+        'SELECT id, name, email, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE id = ?',
+        [user.id]
+      );
+      user = refreshed[0];
+
+    } else {
+      // ── No google_id match — check by email ──────────────────────────────
+      const [byEmail] = await pool.query(
+        'SELECT id, name, email, password_hash, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE email = ?',
+        [normalizedEmail]
+      );
+
+      if (byEmail.length > 0) {
+        // ── Existing email/password account — link Google to it ─────────────
+        // Link Google ID to the existing row. Set profile picture only if
+        // the user has never uploaded one.
+        user = byEmail[0];
+        const shouldSetPicture = !user.profile_image_url && profilePicture;
+
+        await pool.query(
+          `UPDATE users
+             SET google_id = ?,
+                 profile_image_url = IF(?, ?, profile_image_url)
+             WHERE id = ?`,
+          [
+            googleId,
+            shouldSetPicture ? 1 : 0,
+            profilePicture || user.profile_image_url,
+            user.id,
+          ]
+        );
+
+        const [refreshed] = await pool.query(
+          'SELECT id, name, email, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE id = ?',
+          [user.id]
+        );
+        user = refreshed[0];
+
+      } else {
+        // ── Brand-new user — create account from Google profile ──────────────
+        const [result] = await pool.query(
+          'INSERT INTO users (name, email, google_id, profile_image_url, password_hash) VALUES (?, ?, ?, ?, NULL)',
+          [name, normalizedEmail, googleId, profilePicture || null]
+        );
+
+        const [newUser] = await pool.query(
+          'SELECT id, name, email, profile_image_url, linkedin_url, github_url, portfolio_url, bio, created_at FROM users WHERE id = ?',
+          [result.insertId]
+        );
+        user = newUser[0];
+      }
+    }
+
+    // ── Step 4: Issue our own JWT — identical shape to normal login ──────────
+    const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: '7d' });
+
+    return res.status(200).json({
+      message: 'Google sign-in successful',
+      token,
+      user,
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    return res.status(500).json({ message: 'Internal server error during Google sign-in.' });
   }
 });
 

@@ -17,11 +17,31 @@ export function generateResumeHtml(resume, sectionsData) {
   const skillsObj = sectionsData.skills || { categories: [] };
   const skillCategories = Array.isArray(skillsObj.categories) ? skillsObj.categories : [];
 
+  const certObj = sectionsData.certifications || { items: [] };
+  const certItems = Array.isArray(certObj.items) ? certObj.items : [];
+
+  const achObj = sectionsData.achievements || { items: [] };
+  const achItems = Array.isArray(achObj.items) ? achObj.items : [];
+
+  const respObj = sectionsData.positions_of_responsibility || { items: [] };
+  const respItems = Array.isArray(respObj.items) ? respObj.items : [];
+
+  const langObj = sectionsData.languages || { items: [] };
+  const langItems = Array.isArray(langObj.items) ? langObj.items : [];
+
+  const interestsObj = sectionsData.interests || { items: [] };
+  const interestItems = Array.isArray(interestsObj.items) ? interestsObj.items : [];
+
   // Filter valid entries
   const validEducation = educationItems.filter((i) => i.institution && i.institution.trim() !== '');
   const validExperience = experienceItems.filter((i) => i.company && i.company.trim() !== '');
   const validProjects = projectItems.filter((i) => i.name && i.name.trim() !== '');
   const validSkills = skillCategories.filter((cat) => cat.name && cat.skills && cat.skills.length > 0);
+  const validCerts = certItems.filter((i) => i.name && i.name.trim() !== '');
+  const validAchs = achItems.filter((i) => i.title && i.title.trim() !== '');
+  const validResps = respItems.filter((i) => (i.role || i.organization) && (i.role.trim() !== '' || i.organization.trim() !== ''));
+  const validLangs = langItems.filter((i) => i.name && i.name.trim() !== '');
+  const validInterests = interestItems.filter((i) => typeof i === 'string' && i.trim() !== '');
 
   const hasPersonalHeader = personal.fullName || personal.email || personal.phone || personal.location;
   const hasContent =
@@ -30,7 +50,12 @@ export function generateResumeHtml(resume, sectionsData) {
     validEducation.length > 0 ||
     validExperience.length > 0 ||
     validProjects.length > 0 ||
-    validSkills.length > 0;
+    validSkills.length > 0 ||
+    validCerts.length > 0 ||
+    validAchs.length > 0 ||
+    validResps.length > 0 ||
+    validLangs.length > 0 ||
+    validInterests.length > 0;
 
   // Escape HTML entities to prevent injection/XSS issues during render
   const escapeHtml = (unsafe) => {
@@ -64,7 +89,7 @@ export function generateResumeHtml(resume, sectionsData) {
       if (personal.email) contactItems.push(`<span class="font-medium text-slate-800">${escapeHtml(personal.email)}</span>`);
       if (personal.linkedin) contactItems.push(`<span>${escapeHtml(personal.linkedin)}</span>`);
       if (personal.github) contactItems.push(`<span>${escapeHtml(personal.github)}</span>`);
-      
+
       let contactHtml = contactItems.join('<span> | </span>');
 
       headerHtml = `
@@ -236,6 +261,103 @@ export function generateResumeHtml(resume, sectionsData) {
       `;
     }
 
+    // Build Certifications
+    let certsHtml = '';
+    if (validCerts.length > 0) {
+      const itemsHtml = validCerts.map(c => `
+        <div class="space-y-0.5">
+          <div class="flex justify-between font-bold text-slate-900">
+            <span>${escapeHtml(c.name)}${c.issuer ? ` — ${escapeHtml(c.issuer)}` : ''}</span>
+            ${c.date ? `<span class="font-medium text-slate-600 text-[10px]">${escapeHtml(c.date)}</span>` : ''}
+          </div>
+          ${c.link ? `<div class="text-[10px] text-slate-600 font-mono">${escapeHtml(c.link)}</div>` : ''}
+        </div>
+      `).join('');
+
+      certsHtml = `
+        <div class="space-y-2">
+          <h2 class="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+            Certifications
+          </h2>
+          <div class="space-y-1.5">${itemsHtml}</div>
+        </div>
+      `;
+    }
+
+    // Build Achievements
+    let achsHtml = '';
+    if (validAchs.length > 0) {
+      const itemsHtml = validAchs.map(a => `
+        <div class="space-y-0.5">
+          <div class="flex justify-between font-bold text-slate-900">
+            <span>${escapeHtml(a.title)}</span>
+            ${a.date ? `<span class="font-medium text-slate-600 text-[10px]">${escapeHtml(a.date)}</span>` : ''}
+          </div>
+          ${a.description ? `<p class="text-[10.5px] text-slate-700">${escapeHtml(a.description)}</p>` : ''}
+        </div>
+      `).join('');
+
+      achsHtml = `
+        <div class="space-y-2">
+          <h2 class="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+            Achievements & Awards
+          </h2>
+          <div class="space-y-1.5">${itemsHtml}</div>
+        </div>
+      `;
+    }
+
+    // Build Positions of Responsibility
+    let respsHtml = '';
+    if (validResps.length > 0) {
+      const itemsHtml = validResps.map(r => `
+        <div class="space-y-0.5">
+          <div class="flex justify-between font-bold text-slate-900">
+            <span>${escapeHtml(r.role)}${r.organization ? ` — ${escapeHtml(r.organization)}` : ''}</span>
+            ${r.date ? `<span class="font-medium text-slate-600 text-[10px]">${escapeHtml(r.date)}</span>` : ''}
+          </div>
+          ${r.description ? `<p class="text-[10.5px] text-slate-700">${escapeHtml(r.description)}</p>` : ''}
+        </div>
+      `).join('');
+
+      respsHtml = `
+        <div class="space-y-2">
+          <h2 class="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+            Positions of Responsibility
+          </h2>
+          <div class="space-y-1.5">${itemsHtml}</div>
+        </div>
+      `;
+    }
+
+    // Build Languages
+    let langsHtml = '';
+    if (validLangs.length > 0) {
+      const langsStr = validLangs.map(l => `${escapeHtml(l.name)}${l.proficiency ? ` (${escapeHtml(l.proficiency)})` : ''}`).join(', ');
+      langsHtml = `
+        <div class="space-y-1.5">
+          <h2 class="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+            Languages
+          </h2>
+          <div class="text-[10.5px] text-slate-800">${langsStr}</div>
+        </div>
+      `;
+    }
+
+    // Build Interests
+    let interestsHtml = '';
+    if (validInterests.length > 0) {
+      const interestsStr = validInterests.map(i => escapeHtml(i)).join(', ');
+      interestsHtml = `
+        <div class="space-y-1.5">
+          <h2 class="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+            Interests & Hobbies
+          </h2>
+          <div class="text-[10.5px] text-slate-800">${interestsStr}</div>
+        </div>
+      `;
+    }
+
     htmlContent = `
       <div class="space-y-4">
         ${headerHtml}
@@ -244,6 +366,11 @@ export function generateResumeHtml(resume, sectionsData) {
         ${projectsHtml}
         ${skillsHtml}
         ${educationHtml}
+        ${certsHtml}
+        ${achsHtml}
+        ${respsHtml}
+        ${langsHtml}
+        ${interestsHtml}
       </div>
     `;
   }
