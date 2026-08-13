@@ -1,10 +1,94 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Card } from '../ui/Card';
-import { CheckCircle2, XCircle, FileText, Layout, Type, FileJson } from 'lucide-react';
+import { useGSAP, gsap, ScrollTrigger } from '../../lib/gsap';
+import {
+  AnimatedCheckCircleIcon,
+  AnimatedXCircleIcon,
+  AnimatedTypeTextIcon,
+  AnimatedLayoutGridIcon,
+  AnimatedFileTextIcon,
+  AnimatedDownloadCloudIcon,
+} from '../icons/AnimatedIcons';
 
 export default function AtsEducation() {
+  const containerRef = useRef(null);
+  const pinWrapperRef = useRef(null);
+
+  useGSAP(
+    () => {
+      if (!pinWrapperRef.current) return;
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      // gsap.matchMedia() is the modern API (GSAP 3.12+) that replaced the
+      // now-deprecated ScrollTrigger.matchMedia().
+      const mm = gsap.matchMedia();
+
+      mm.add('(min-width: 1024px)', () => {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: pinWrapperRef.current,
+            start: 'top top+=100',
+            end: '+=1100',
+            pin: true,
+            scrub: 0.8,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // 1. Scanning beam moves down the Human PDF view
+        tl.fromTo(
+          '.scan-beam-line',
+          { top: '0%', opacity: 0 },
+          { top: '95%', opacity: 1, duration: 1, ease: 'none' }
+        )
+        // 2. Human view card dims slightly into parsed state
+        .to(
+          '.human-doc-card',
+          {
+            opacity: 0.65,
+            scale: 0.98,
+            duration: 0.6,
+          },
+          0.3
+        )
+        // 3. Raw text output reveals and lines illuminate sequentially
+        .fromTo(
+          '.ats-raw-output',
+          { opacity: 0.3, y: 8 },
+          { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+          0.4
+        )
+        .fromTo(
+          '.ats-raw-line',
+          { opacity: 0.2, x: -6 },
+          { opacity: 1, x: 0, stagger: 0.12, duration: 0.9 },
+          0.5
+        )
+        // 4. Parsing warning callout pops & glows at the end
+        .fromTo(
+          '.ats-warning-box',
+          { opacity: 0, scale: 0.95, y: 10 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(1.5)' },
+          1.2
+        );
+
+        return () => {
+          tl.kill();
+        };
+      });
+
+      return () => {
+        mm.revert();
+      };
+    },
+    { scope: containerRef }
+  );
+
   return (
-    <section className="py-16 md:py-24 bg-white dark:bg-slate-900 relative overflow-hidden border-t border-slate-200 dark:border-slate-800">
+    <section ref={containerRef} className="py-16 md:py-24 bg-white/80 dark:bg-[#0A0A12]/80 backdrop-blur-[1px] relative overflow-hidden border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 space-y-16">
         
         {/* Header */}
@@ -150,19 +234,22 @@ export default function AtsEducation() {
           </div>
         </div>
 
-        {/* 1. What You See vs What an ATS Parses */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold font-display text-slate-900 dark:text-slate-100 text-center">
+        {/* 1. What You See vs What an ATS Parses (PINNED GSAP SCRUB SECTION) */}
+        <div ref={pinWrapperRef} className="space-y-6 pt-4">
+          <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-slate-100 text-center">
             What You See vs. What an ATS Parses
           </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-            {/* Human View */}
-            <Card padding="p-0" className="overflow-hidden border-slate-200 dark:border-slate-700 shadow-soft-sm bg-slate-50 dark:bg-slate-800/40 flex flex-col">
+            {/* Human View (PDF) */}
+            <Card padding="p-0" className="human-doc-card overflow-hidden border-slate-200 dark:border-slate-700 shadow-soft-sm bg-slate-50 dark:bg-slate-800/40 flex flex-col relative transition-all duration-300">
               <div className="bg-slate-100/50 dark:bg-slate-800/80 py-3 px-5 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Human View (PDF)</span>
               </div>
-              <div className="p-8 flex-1">
+              <div className="p-8 flex-1 relative overflow-hidden">
+                {/* GSAP Laser Scan Beam Overlay */}
+                <div className="scan-beam-line absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 dark:via-[var(--scanline)] to-transparent shadow-[0_0_12px_#45E0D8] pointer-events-none z-20" />
+                
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4 rounded select-none">
                   <div className="border-b border-slate-200 dark:border-slate-700 pb-4 text-center">
                     <h4 className="text-xl font-serif text-slate-900 dark:text-slate-100">Emily Chen</h4>
@@ -202,32 +289,34 @@ export default function AtsEducation() {
               </div>
             </Card>
 
-            {/* ATS View */}
-            <Card padding="p-0" className="overflow-hidden border-rose-200 dark:border-rose-500/20 shadow-soft-sm bg-rose-50/30 dark:bg-rose-500/5 flex flex-col">
+            {/* ATS View (Scrubbed Parsing Output) */}
+            <Card padding="p-0" className="ats-raw-output overflow-hidden border-rose-200 dark:border-rose-500/20 shadow-soft-sm bg-rose-50/30 dark:bg-rose-500/5 flex flex-col">
               <div className="bg-rose-100/50 dark:bg-rose-500/10 py-3 px-5 border-b border-rose-200 dark:border-rose-500/20 flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
                 <span className="text-xs font-semibold text-rose-800 dark:text-rose-400 uppercase tracking-wide">ATS Parsed Output (Raw Text)</span>
               </div>
               <div className="p-8 flex-1">
                 <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 dark:border-slate-900 shadow-inner p-5 space-y-2 rounded font-mono text-[11px] text-emerald-400 overflow-x-auto select-none leading-relaxed">
-                  <div><span className="text-slate-500">{"{"}</span></div>
-                  <div className="pl-4"><span className="text-purple-400">"candidate_name"</span>: <span className="text-amber-300">"Emily Chen emily.chen@email.com (555) 123-4567 San"</span>,</div>
-                  <div className="pl-4"><span className="text-purple-400">"location"</span>: <span className="text-amber-300">"Francisco, CA Education"</span>,</div>
-                  <div className="pl-4"><span className="text-purple-400">"education"</span>: <span className="text-slate-500">[</span></div>
-                  <div className="pl-8"><span className="text-slate-500">{"{"}</span></div>
-                  <div className="pl-12"><span className="text-purple-400">"degree"</span>: <span className="text-amber-300">"B.S. Computer Science Stanford University 2018 - 2022 Skills React, TypeScript, Node.js, Python, AWS, Docker Experience Frontend Engineer"</span>,</div>
-                  <div className="pl-12"><span className="text-purple-400">"institution"</span>: <span className="text-amber-300">null</span></div>
-                  <div className="pl-8"><span className="text-slate-500">{"}"}</span></div>
-                  <div className="pl-4"><span className="text-slate-500">]</span>,</div>
-                  <div className="pl-4"><span className="text-purple-400">"experience"</span>: <span className="text-slate-500">[</span></div>
-                    <div className="pl-8"><span className="text-slate-500">{"{"}</span></div>
-                  <div className="pl-12"><span className="text-purple-400">"company"</span>: <span className="text-amber-300">"TechCorp Inc."</span>,</div>
-                  <div className="pl-12"><span className="text-purple-400">"description"</span>: <span className="text-amber-300">"Led migration of legacy dashboard to React 18, reducing load time by 40%. Mentored 2 junior engineers and established UI testing standards."</span></div>
-                  <div className="pl-8"><span className="text-slate-500">{"}"}</span></div>
-                  <div className="pl-4"><span className="text-slate-500">]</span></div>
-                  <div><span className="text-slate-500">{"}"}</span></div>
-                  <div className="mt-4 pt-3 border-t border-slate-800 text-rose-400">
-                    <p>⚠ WARNING: Multi-column layout flattened incorrectly.</p>
+                  <div className="ats-raw-line"><span className="text-slate-500">{"{"}</span></div>
+                  <div className="ats-raw-line pl-4"><span className="text-purple-400">"candidate_name"</span>: <span className="text-amber-300">"Emily Chen emily.chen@email.com (555) 123-4567 San"</span>,</div>
+                  <div className="ats-raw-line pl-4"><span className="text-purple-400">"location"</span>: <span className="text-amber-300">"Francisco, CA Education"</span>,</div>
+                  <div className="ats-raw-line pl-4"><span className="text-purple-400">"education"</span>: <span className="text-slate-500">[</span></div>
+                  <div className="ats-raw-line pl-8"><span className="text-slate-500">{"{"}</span></div>
+                  <div className="ats-raw-line pl-12"><span className="text-purple-400">"degree"</span>: <span className="text-amber-300">"B.S. Computer Science Stanford University 2018 - 2022 Skills React, TypeScript, Node.js, Python, AWS, Docker Experience Frontend Engineer"</span>,</div>
+                  <div className="ats-raw-line pl-12"><span className="text-purple-400">"institution"</span>: <span className="text-amber-300">null</span></div>
+                  <div className="ats-raw-line pl-8"><span className="text-slate-500">{"}"}</span></div>
+                  <div className="ats-raw-line pl-4"><span className="text-slate-500">]</span>,</div>
+                  <div className="ats-raw-line pl-4"><span className="text-purple-400">"experience"</span>: <span className="text-slate-500">[</span></div>
+                  <div className="ats-raw-line pl-8"><span className="text-slate-500">{"{"}</span></div>
+                  <div className="ats-raw-line pl-12"><span className="text-purple-400">"company"</span>: <span className="text-amber-300">"TechCorp Inc."</span>,</div>
+                  <div className="ats-raw-line pl-12"><span className="text-purple-400">"description"</span>: <span className="text-amber-300">"Led migration of legacy dashboard to React 18, reducing load time by 40%. Mentored 2 junior engineers and established UI testing standards."</span></div>
+                  <div className="ats-raw-line pl-8"><span className="text-slate-500">{"}"}</span></div>
+                  <div className="ats-raw-line pl-4"><span className="text-slate-500">]</span></div>
+                  <div className="ats-raw-line"><span className="text-slate-500">{"}"}</span></div>
+
+                  {/* Warning Box reveal at end of scrub */}
+                  <div className="ats-warning-box mt-4 pt-3 border-t border-slate-800 text-rose-400">
+                    <p className="font-semibold text-rose-300">⚠ WARNING: Multi-column layout flattened incorrectly.</p>
                     <p>⚠ WARNING: Education and Skills concatenated.</p>
                     <p>⚠ WARNING: Location parsed as "Francisco, CA Education".</p>
                   </div>
@@ -240,10 +329,10 @@ export default function AtsEducation() {
         {/* 2. ATS-Safe Practices vs ATS Killers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {/* ATS-Safe */}
-          <Card padding="p-6 sm:p-8" className="bg-emerald-50/40 dark:bg-emerald-500/5 border-emerald-100 dark:border-emerald-500/20 shadow-soft-sm h-full">
+          <Card padding="p-6 sm:p-8" className="bg-emerald-50/40 dark:bg-emerald-500/5 border-emerald-100 dark:border-emerald-500/20 shadow-soft-sm h-full group">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
+                <AnimatedCheckCircleIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h3 className="text-lg font-bold font-display text-emerald-900 dark:text-emerald-400">ATS-Safe Practices</h3>
             </div>
@@ -255,8 +344,8 @@ export default function AtsEducation() {
                 'Saved as PDF from a text-based editor (Word, Docs)',
                 'Chronological or reverse-chronological order'
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-[13px] text-slate-700 dark:text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <li key={i} className="flex items-start gap-3 text-[13px] text-slate-700 dark:text-slate-300 group/li">
+                  <AnimatedCheckCircleIcon className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -264,10 +353,10 @@ export default function AtsEducation() {
           </Card>
 
           {/* ATS Killers */}
-          <Card padding="p-6 sm:p-8" className="bg-rose-50/40 dark:bg-rose-500/5 border-rose-100 dark:border-rose-500/20 shadow-soft-sm h-full">
+          <Card padding="p-6 sm:p-8" className="bg-rose-50/40 dark:bg-rose-500/5 border-rose-100 dark:border-rose-500/20 shadow-soft-sm h-full group">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                <XCircle className="w-5 h-5" />
+                <AnimatedXCircleIcon className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               </div>
               <h3 className="text-lg font-bold font-display text-rose-900 dark:text-rose-400">ATS Killers</h3>
             </div>
@@ -279,8 +368,8 @@ export default function AtsEducation() {
                 'Unconventional section names (e.g., "My Journey", "What I Do")',
                 'Exporting a canvas/image design as a flat PDF (Photoshop, Canva)'
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-[13px] text-slate-700 dark:text-slate-300">
-                  <XCircle className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />
+                <li key={i} className="flex items-start gap-3 text-[13px] text-slate-700 dark:text-slate-300 group/li">
+                  <AnimatedXCircleIcon className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -297,33 +386,33 @@ export default function AtsEducation() {
             {[
               {
                 title: 'Fonts & Typography',
-                icon: Type,
+                iconComponent: AnimatedTypeTextIcon,
                 bullets: ['Use standard system fonts (Arial, Helvetica, Times)', 'Minimum 10pt size for body text', 'Consistent sizing for headers']
               },
               {
                 title: 'Margins & Spacing',
-                icon: Layout,
+                iconComponent: AnimatedLayoutGridIcon,
                 bullets: ['Keep standard 0.5" to 1" margins', 'Use line spacing (1.15 to 1.2) for readability', 'Add space before new sections']
               },
               {
                 title: 'Graphics & Colors',
-                icon: FileText,
+                iconComponent: AnimatedFileTextIcon,
                 bullets: ['Stick to high-contrast text (black on white)', 'No photos or headshots (unless required)', 'Avoid icons for contact info']
               },
               {
                 title: 'File Format',
-                icon: FileJson,
+                iconComponent: AnimatedDownloadCloudIcon,
                 bullets: ['Always submit as a text-based PDF', 'Do not "Print to PDF" from an image', 'Keep file size under 2MB']
               }
             ].map((rule, i) => {
-              const Icon = rule.icon;
+              const IconComp = rule.iconComponent;
               return (
-                <Card key={i} padding="p-5" className="bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/50 shadow-soft-xs hover:shadow-soft-sm transition-shadow h-full flex flex-col">
+                <Card key={i} padding="p-5" className="bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/50 shadow-soft-xs hover:shadow-soft-sm transition-shadow h-full flex flex-col group cursor-pointer">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                      <Icon className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition-colors">
+                      <IconComp className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     </div>
-                    <h4 className="text-[14px] font-bold font-display text-slate-900 dark:text-slate-100 leading-tight">{rule.title}</h4>
+                    <h4 className="text-[14px] font-bold font-display text-slate-900 dark:text-slate-100 leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{rule.title}</h4>
                   </div>
                   <ul className="space-y-2 flex-1">
                     {rule.bullets.map((b, j) => (

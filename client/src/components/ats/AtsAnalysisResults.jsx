@@ -148,7 +148,7 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
   };
 
   return (
-    <Card padding="p-6 md:p-8" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-lg space-y-6">
+    <Card padding="p-6 md:p-8" className="bg-white border-slate-200 dark:border-[var(--border-glass)] dark:bg-[var(--ink)] shadow-soft-lg space-y-6">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 pb-5">
         <div className="space-y-1">
@@ -158,8 +158,8 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
             </Pill>
             <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">ATS, Grammar & Readability</span>
           </div>
-          <h3 className="text-xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <h3 className="text-xl font-extrabold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-indigo-600 dark:text-[var(--signal)]" />
             Resume Strength & ATS Audit Report
           </h3>
         </div>
@@ -196,15 +196,16 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
         </div>
       )}
 
-      {/* Loading Skeleton during AI Analysis */}
+      {/* Loading state with scan-line (placement #3 of 4) */}
       {analyzing ? (
-        <div className="p-10 rounded-2xl bg-indigo-50/70 dark:bg-indigo-900/20/70 border border-indigo-200 dark:border-indigo-700/40 text-center space-y-4 animate-fadeIn">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-500 dark:bg-indigo-400 text-white flex items-center justify-center mx-auto shadow-soft-md animate-spin">
+        <div className="scannable scanning p-10 rounded-2xl bg-indigo-50/70 dark:bg-[var(--signal)]/5 border border-indigo-200 dark:border-[var(--signal)]/20 text-center space-y-4 animate-fadeIn">
+          <div className="scan-line" aria-hidden="true" />
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500 dark:bg-[var(--signal)] text-white flex items-center justify-center mx-auto shadow-soft-md animate-spin">
             <Sparkles className="w-6 h-6" />
           </div>
           <div className="space-y-1.5">
-            <h4 className="text-base font-bold font-display text-indigo-950 dark:text-indigo-400">Analyzing Your Resume with Claude AI...</h4>
-            <p className="text-xs font-medium text-indigo-800 dark:text-indigo-400 max-w-md mx-auto">
+            <h4 className="text-base font-bold font-display text-indigo-950 dark:text-[var(--parchment)]">Analyzing Your Resume with AI...</h4>
+            <p className="text-xs font-medium text-indigo-800 dark:text-[var(--dust)] max-w-md mx-auto">
               Evaluating ATS compatibility, grammar accuracy, weak action verbs, and quantifiable impact metrics. This takes 2–4 seconds.
             </p>
           </div>
@@ -215,11 +216,11 @@ export default function AtsAnalysisResults({ resumeId, initialAnalysis = null, o
           <ScoreMeter score={analysis.score} breakdown={analysis.scoreBreakdown} />
 
           {/* Executive Summary Banner */}
-          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-1">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-display">
+          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[var(--void)]/50 border border-slate-200 dark:border-[var(--border-glass)] space-y-1">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[var(--dust)] font-display">
               Executive Overview
             </h4>
-            <p className="text-sm font-bold font-display text-slate-900 dark:text-slate-100 leading-relaxed">
+            <p className="text-sm font-bold font-display text-slate-900 dark:text-[var(--parchment)] leading-relaxed">
               {analysis.summary}
             </p>
           </div>

@@ -199,11 +199,11 @@ export default function Profile() {
   const initials = getInitials(formData.name || user?.name);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
+    <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] text-slate-900 dark:text-[var(--parchment)] flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
       {/* Navbar Header */}
       <AppHeader
         leftSlot={
-          <h1 className="text-sm font-bold font-display text-slate-900 dark:text-slate-100 dark:text-[#F5F6FA] truncate">
+          <h1 className="text-sm font-bold font-display text-slate-900 dark:text-[var(--parchment)] truncate">
             Account Settings
           </h1>
         }
@@ -219,8 +219,8 @@ export default function Profile() {
         {/* Navigation & Header */}
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight">Account Settings & Profile</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage your public profile details, social links, and avatar image.</p>
+            <h1 className="text-2xl font-extrabold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight">Account Settings & Profile</h1>
+            <p className="text-xs text-slate-500 dark:text-[var(--dust)] mt-1">Manage your public profile details, social links, and avatar image.</p>
           </div>
 
           {/* Auto-Save Indicator */}
@@ -236,11 +236,11 @@ export default function Profile() {
         </div>
 
         {/* Profile Card Container */}
-        <Card padding="p-8" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-lg space-y-8">
+        <Card padding="p-8" className="bg-white border-slate-200 dark:border-[var(--border-glass)] dark:bg-[var(--ink)] shadow-soft-lg space-y-8">
           {/* Avatar Section */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 border-b border-slate-200/80 dark:border-slate-700/80 pb-8">
+          <div className="flex flex-col sm:flex-row items-center gap-6 border-b border-slate-200/80 dark:border-[var(--border-glass)] pb-8">
             <div className="relative group shrink-0">
-              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-indigo-500/30 dark:border-indigo-400/30 shadow-soft-md bg-indigo-500 dark:bg-indigo-400 text-white font-display font-extrabold text-2xl flex items-center justify-center relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-indigo-500/30 dark:border-[var(--signal)]/30 shadow-soft-md bg-indigo-500 dark:bg-[var(--signal)] text-white font-display font-extrabold text-2xl flex items-center justify-center relative">
                 {avatarUrl && !imgLoadError ? (
                   <img src={avatarUrl} alt="Profile Avatar" className="w-full h-full object-cover" onError={() => setImgLoadError(true)} />
                 ) : (
@@ -260,18 +260,18 @@ export default function Profile() {
               </div>
 
               {uploadingAvatar && (
-                <div className="absolute inset-0 bg-white/85 dark:bg-slate-900/85 rounded-full flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                <div className="absolute inset-0 bg-white/85 dark:bg-[var(--ink)]/85 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-indigo-500 dark:border-[var(--signal)] border-t-transparent rounded-full animate-spin"></div>
                 </div>
               )}
             </div>
 
             <div className="space-y-2 text-center sm:text-left flex-1">
               <div className="inline-flex items-center gap-2">
-                <h3 className="text-lg font-bold font-display text-slate-900 dark:text-slate-100">{formData.name || 'HireSetu User'}</h3>
+                <h3 className="text-lg font-bold font-display text-slate-900 dark:text-[var(--parchment)]">{formData.name || 'HireSetu User'}</h3>
                 <Pill variant="brand" size="sm">Member</Pill>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Upload a square JPEG, PNG, or WebP profile image (max 2MB).</p>
+              <p className="text-xs text-slate-500 dark:text-[var(--dust)]">Upload a square JPEG, PNG, or WebP profile image (max 2MB).</p>
               
               <div className="pt-1">
                 <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} isLoading={uploadingAvatar} leftIcon={<Camera className="w-3.5 h-3.5" />}>
@@ -310,8 +310,8 @@ export default function Profile() {
             {/* Short Bio */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 font-display">Short Bio</label>
-                <span className={`text-[11px] font-semibold ${formData.bio.length >= 190 ? 'text-amber-600 font-bold' : 'text-slate-400 dark:text-slate-400'}`}>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-[var(--dust)] font-display">Short Bio</label>
+                <span className={`text-[11px] font-semibold ${formData.bio.length >= 190 ? 'text-amber-600 font-bold' : 'text-slate-400 dark:text-[var(--dust)]'}`}>
                   {formData.bio.length}/200
                 </span>
               </div>
@@ -326,10 +326,10 @@ export default function Profile() {
             </div>
 
             {/* Social Links Divider */}
-            <div className="border-t border-slate-200/80 dark:border-slate-700/80 pt-6 space-y-4">
+            <div className="border-t border-slate-200/80 dark:border-[var(--border-glass)] pt-6 space-y-4">
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-display">Social & Portfolio Links</h4>
-                <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">Include your professional profiles for ATS analysis and recruiter verification.</p>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[var(--dust)] font-display">Social & Portfolio Links</h4>
+                <p className="text-xs text-slate-400 dark:text-[var(--dust)] mt-0.5">Include your professional profiles for ATS analysis and recruiter verification.</p>
               </div>
 
               <div className="space-y-4">

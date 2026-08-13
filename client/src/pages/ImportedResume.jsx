@@ -98,7 +98,7 @@ export default function ImportedResume() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
+    <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] text-slate-900 dark:text-[var(--parchment)] flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
       {/* Top Navbar Header */}
       <AppHeader
         rightSlot={
@@ -123,9 +123,10 @@ export default function ImportedResume() {
         </div>
 
         {loading ? (
-          <div className="p-16 text-center text-slate-500 dark:text-slate-400 space-y-3">
-            <div className="w-8 h-8 border-2 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-xs font-medium">Loading uploaded resume details...</p>
+          <div className="scannable scanning relative overflow-hidden rounded-2xl bg-white dark:bg-[var(--ink)] border border-slate-200 dark:border-[var(--border-glass)] p-16 text-center text-slate-500 dark:text-[var(--dust)] space-y-3 shadow-soft-sm">
+            <div className="scan-line" aria-hidden="true" />
+            <div className="w-8 h-8 border-2 border-indigo-500 dark:border-[var(--signal)] border-t-transparent rounded-full animate-spin mx-auto relative z-10"></div>
+            <p className="text-xs font-medium relative z-10">Loading uploaded resume details...</p>
           </div>
         ) : error ? (
           <Card padding="p-8" className="bg-rose-50/70 border-rose-200 text-center space-y-4">
@@ -138,9 +139,9 @@ export default function ImportedResume() {
         ) : (
           <div className="space-y-6">
             {/* Success Hero Card */}
-            <Card padding="p-8" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-lg space-y-6">
+            <Card padding="p-8" className="bg-white border-slate-200 dark:border-[var(--border-glass)] dark:bg-[var(--ink)] shadow-soft-lg space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 shadow-soft-xs">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-[var(--scanline)]/10 border border-emerald-200 dark:border-[var(--scanline)]/30 flex items-center justify-center text-emerald-600 dark:text-[var(--scanline)] shrink-0 shadow-soft-xs">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-1.5 flex-1">
@@ -148,40 +149,40 @@ export default function ImportedResume() {
                     <Pill variant="success" size="sm">
                       Text Extraction Complete
                     </Pill>
-                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">ID #{resumeId}</span>
+                    <span className="text-xs font-semibold text-slate-400 dark:text-[var(--dust)]">ID #{resumeId}</span>
                   </div>
-                  <h2 className="text-2xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight">
+                  <h2 className="text-2xl font-extrabold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight">
                     Resume Uploaded & Processed!
                   </h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-slate-600 dark:text-[var(--dust)]">
                     Text extracted successfully from your uploaded resume.
                   </p>
                 </div>
               </div>
 
               {/* Upload Details Box */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/70 p-6 space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-display">
+              <div className="rounded-2xl border border-slate-200 dark:border-[var(--border-glass)] bg-slate-50/70 dark:bg-[var(--void)]/40 p-6 space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[var(--dust)] font-display">
                   File Summary
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-soft-xs">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-[var(--ink-glass-bg)] p-3.5 rounded-xl border border-slate-200/80 dark:border-[var(--border-glass)] shadow-soft-xs">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-[var(--signal)]/10 text-indigo-600 dark:text-[var(--signal)] flex items-center justify-center shrink-0">
                       <FileText className="w-5 h-5" />
                     </div>
                     <div className="truncate">
-                      <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">Filename</p>
-                      <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{filename}</p>
+                      <p className="text-[11px] font-semibold text-slate-400 dark:text-[var(--dust)]">Filename</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-[var(--parchment)] truncate">{filename}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-soft-xs">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-[var(--ink-glass-bg)] p-3.5 rounded-xl border border-slate-200/80 dark:border-[var(--border-glass)] shadow-soft-xs">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-[var(--signal)]/10 text-indigo-600 dark:text-[var(--signal)] flex items-center justify-center shrink-0">
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">File Size</p>
-                      <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{formatFileSize(size)}</p>
+                      <p className="text-[11px] font-semibold text-slate-400 dark:text-[var(--dust)]">File Size</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-[var(--parchment)]">{formatFileSize(size)}</p>
                     </div>
                   </div>
                 </div>
@@ -205,7 +206,7 @@ export default function ImportedResume() {
                   rightIcon={!mappingForBuilder && <ArrowRight className="w-4 h-4" />}
                   className="w-full sm:w-auto shadow-soft-md"
                 >
-                  {mappingForBuilder ? 'Setting up your resume for editing...' : 'Open in Builder'}
+                  {mappingForBuilder ? 'AI is mapping your resume data...' : 'Open in Builder'}
                 </Button>
               </div>
             </Card>

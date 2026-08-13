@@ -47,7 +47,14 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="py-16 md:py-24 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
+    <section id="faq" className="py-16 md:py-24 bg-slate-50/75 dark:bg-[var(--void)]/75 backdrop-blur-[1px] relative overflow-hidden">
+      {/* ── Decorative ambient orb — parallax 0.85, lags behind accordion content as user scrolls
+           through. Purely atmospheric depth, no interaction surface. */}
+      <div
+        data-speed="0.85"
+        className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-indigo-100/25 dark:bg-indigo-500/6 blur-[100px] pointer-events-none translate-x-1/4 translate-y-1/4"
+        aria-hidden="true"
+      />
       <div className="max-w-4xl mx-auto px-5 sm:px-8 space-y-12 relative z-10">
         
         {/* ── Section Header ──────────────────────── */}

@@ -59,7 +59,7 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
   };
 
   return (
-    <Card padding="p-6 md:p-8" className="bg-white border-slate-200 dark:border-slate-700 shadow-soft-lg space-y-6">
+    <Card padding="p-6 md:p-8" className="bg-white border-slate-200 dark:border-[var(--border-glass)] dark:bg-[var(--ink)] shadow-soft-lg space-y-6">
       {/* Header & Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 pb-5">
         <div className="space-y-1">
@@ -69,19 +69,19 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
             </Pill>
             <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">Transparency Inspector</span>
           </div>
-          <h3 className="text-xl font-extrabold font-display text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-2">
+          <h3 className="text-xl font-extrabold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight flex items-center gap-2">
             How an ATS Sees Your Resume
           </h3>
         </div>
 
         {/* Tab Switcher */}
-        <div className="inline-flex p-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl border border-slate-200/70 dark:border-slate-700/70 shrink-0">
+        <div className="inline-flex p-1 bg-slate-100/80 dark:bg-[var(--ink)] rounded-xl border border-slate-200/70 dark:border-[var(--border-glass)] shrink-0">
           <button
             onClick={() => setActiveTab('ats')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
               activeTab === 'ats'
-                ? 'bg-slate-900 dark:bg-slate-100 text-white shadow-soft-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-200/50 dark:bg-slate-700/50'
+                ? 'bg-slate-900 dark:bg-[var(--signal)] text-white shadow-soft-xs'
+                : 'text-slate-600 dark:text-[var(--dust)] hover:text-slate-900 dark:hover:text-[var(--parchment)] hover:bg-slate-200/50 dark:hover:bg-[var(--ink-glass-bg)]'
             }`}
           >
             <Bot className="w-4 h-4" />
@@ -92,8 +92,8 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
             onClick={() => setActiveTab('formatted')}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
               activeTab === 'formatted'
-                ? 'bg-indigo-600 dark:bg-indigo-400 text-white shadow-soft-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-200/50 dark:bg-slate-700/50'
+                ? 'bg-indigo-600 dark:bg-[var(--signal)] text-white shadow-soft-xs'
+                : 'text-slate-600 dark:text-[var(--dust)] hover:text-slate-900 dark:hover:text-[var(--parchment)] hover:bg-slate-200/50 dark:hover:bg-[var(--ink-glass-bg)]'
             }`}
           >
             <Eye className="w-4 h-4" />
@@ -106,10 +106,10 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
       {activeTab === 'ats' ? (
         <div className="space-y-5 animate-fadeIn">
           {/* Explanatory Note */}
-          <div className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 rounded-xl flex items-start gap-3">
-            <Info className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
-            <div className="text-xs text-slate-700 dark:text-slate-400 space-y-0.5">
-              <p className="font-bold font-display text-slate-900 dark:text-slate-100">
+          <div className="p-4 bg-slate-50 dark:bg-[var(--void)]/40 border border-slate-200/80 dark:border-[var(--border-glass)] rounded-xl flex items-start gap-3">
+            <Info className="w-5 h-5 text-indigo-600 dark:text-[var(--signal)] shrink-0 mt-0.5" />
+            <div className="text-xs text-slate-700 dark:text-[var(--dust)] space-y-0.5">
+              <p className="font-bold font-display text-slate-900 dark:text-[var(--parchment)]">
                 What applicant tracking systems actually see
               </p>
               <p className="leading-relaxed">
@@ -165,6 +165,7 @@ export default function AtsParseView({ rawText = '', resumeTitle = 'Resume', sec
               Plain Text Output
             </div>
             <DocumentSurface className="p-6 rounded-2xl max-h-[500px] overflow-y-auto">
+              {/* font-mono = IBM Plex Mono: the machine-read output. This is what the system sees. */}
               <pre className="font-mono text-xs leading-relaxed whitespace-pre-wrap selection:bg-indigo-500 selection:text-white text-slate-800">
                 {rawText || 'No raw text extracted.'}
               </pre>

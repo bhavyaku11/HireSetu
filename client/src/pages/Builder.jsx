@@ -6,14 +6,20 @@ import EducationForm from '../components/builder/EducationForm';
 import ExperienceForm from '../components/builder/ExperienceForm';
 import ProjectsForm from '../components/builder/ProjectsForm';
 import SkillsForm from '../components/builder/SkillsForm';
+import CertificationsForm from '../components/builder/CertificationsForm';
+import AchievementsForm from '../components/builder/AchievementsForm';
+import ResponsibilityForm from '../components/builder/ResponsibilityForm';
+import LanguagesForm from '../components/builder/LanguagesForm';
+import InterestsForm from '../components/builder/InterestsForm';
 import ResumePreview from '../components/builder/ResumePreview';
 import JobDescriptionManager from '../components/builder/JobDescriptionManager';
 import Button from '../components/ui/Button';
 import Badge, { Pill } from '../components/ui/Badge';
 import AppHeader from '../components/ui/AppHeader';
 import { usePdfExport } from '../hooks/usePdfExport';
+import { normalizeAllSections, DEFAULT_SECTION_TEMPLATES } from '../utils/normalizeResume';
 
-const ACTIVE_SECTIONS = [
+const DEFAULT_ACTIVE_SECTIONS = [
   { id: 'personal_info', label: 'Personal Info', icon: '👤', sortOrder: 1 },
   { id: 'education', label: 'Education', icon: '🎓', sortOrder: 2 },
   { id: 'experience', label: 'Experience', icon: '💼', sortOrder: 3 },
@@ -22,13 +28,15 @@ const ACTIVE_SECTIONS = [
   { id: 'job_description', label: 'Match to Job', icon: '🎯', sortOrder: 6 },
 ];
 
-const COMING_SOON_SECTIONS = [
-  { id: 'certifications', label: 'Certifications', icon: '📜' },
-  { id: 'achievements', label: 'Achievements', icon: '🏆' },
-  { id: 'positions_of_responsibility', label: 'Responsibility', icon: '🛡️' },
-  { id: 'languages', label: 'Languages', icon: '🌐' },
-  { id: 'interests', label: 'Interests', icon: '🎯' },
+const OPTIONAL_SECTIONS = [
+  { id: 'certifications', label: 'Certifications', icon: '📜', sortOrder: 7 },
+  { id: 'achievements', label: 'Achievements', icon: '🏆', sortOrder: 8 },
+  { id: 'positions_of_responsibility', label: 'Responsibility', icon: '🛡️', sortOrder: 9 },
+  { id: 'languages', label: 'Languages', icon: '🌐', sortOrder: 10 },
+  { id: 'interests', label: 'Interests', icon: '🎯', sortOrder: 11 },
 ];
+
+const ALL_SECTIONS = [...DEFAULT_ACTIVE_SECTIONS, ...OPTIONAL_SECTIONS];
 
 export default function Builder() {
   const { resumeId } = useParams();
@@ -44,6 +52,9 @@ export default function Builder() {
   const [activeTab, setActiveTab] = useState('personal_info');
   const [saveStatus, setSaveStatus] = useState('All changes saved');
 
+  // Track enabled section IDs (defaults + any unlocked optional sections)
+  const [activeSectionIds, setActiveSectionIds] = useState(DEFAULT_ACTIVE_SECTIONS.map((s) => s.id));
+
   // Sections content dictionary
   const [sectionsData, setSectionsData] = useState({
     personal_info: {},
@@ -51,6 +62,11 @@ export default function Builder() {
     experience: { items: [] },
     projects: { items: [] },
     skills: { categories: [] },
+    certifications: { items: [] },
+    achievements: { items: [] },
+    positions_of_responsibility: { items: [] },
+    languages: { items: [] },
+    interests: { items: [] },
   });
 
   const saveTimerRef = useRef({});
@@ -74,22 +90,19 @@ export default function Builder() {
         } else {
           setResume(data.resume);
 
-          // Populate sectionsData from API response
-          const initialSections = {
-            personal_info: {},
-            education: { items: [] },
-            experience: { items: [] },
-            projects: { items: [] },
-            skills: { categories: [] },
-          };
+          // Populate and normalize sectionsData from API response
+          const normalized = normalizeAllSections(data.resume.sections || []);
+          setSectionsData(normalized);
 
-          if (Array.isArray(data.resume.sections)) {
-            data.resume.sections.forEach((sec) => {
-              initialSections[sec.section_type] = sec.content;
-            });
+          // Auto-enable any optional section that contains items
+          const optionalWithData = OPTIONAL_SECTIONS.filter((sec) => {
+            const content = normalized[sec.id];
+            return content && Array.isArray(content.items) && content.items.length > 0;
+          }).map((s) => s.id);
+
+          if (optionalWithData.length > 0) {
+            setActiveSectionIds((prev) => Array.from(new Set([...prev, ...optionalWithData])));
           }
-
-          setSectionsData(initialSections);
         }
       } catch (err) {
         console.error('Error fetching resume:', err);
@@ -109,7 +122,7 @@ export default function Builder() {
     async (sectionType, content) => {
       setSaveStatus('Saving...');
       try {
-        const secMeta = ACTIVE_SECTIONS.find((s) => s.id === sectionType);
+        const secMeta = ALL_SECTIONS.find((s) => s.id === sectionType);
         const sortOrder = secMeta ? secMeta.sortOrder : 1;
 
         const response = await fetch(`/api/resumes/${resumeId}/sections/${sectionType}`, {
@@ -155,6 +168,13 @@ export default function Builder() {
     }, 1000);
   };
 
+  const handleAddSection = (secId) => {
+    if (!activeSectionIds.includes(secId)) {
+      setActiveSectionIds((prev) => [...prev, secId]);
+    }
+    setActiveTab(secId);
+  };
+
   const handleRetrySave = () => {
     if (sectionsData[activeTab]) {
       saveSectionToApi(activeTab, sectionsData[activeTab]);
@@ -163,10 +183,19 @@ export default function Builder() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center font-body">
-        <div className="flex items-center space-x-3 bg-white p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-soft-md">
-          <div className="w-6 h-6 border-2 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-slate-600 dark:text-slate-400 text-xs font-semibold">Loading resume builder...</span>
+      <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] text-slate-900 dark:text-[var(--parchment)] flex flex-col items-center justify-center p-6 font-body">
+        <div className="bg-white dark:bg-[var(--ink)] p-8 rounded-2xl border border-slate-200 dark:border-[var(--border-glass)] shadow-soft-xl max-w-sm w-full text-center space-y-4 relative overflow-hidden">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-[var(--signal)]/10 text-indigo-600 dark:text-[var(--signal)] border border-indigo-200 dark:border-[var(--signal)]/30 flex items-center justify-center mx-auto shadow-soft-xs">
+            <div className="w-6 h-6 border-2 border-indigo-600 dark:border-[var(--signal)] border-t-transparent rounded-full animate-spin" />
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-base font-bold font-display text-slate-900 dark:text-[var(--parchment)]">
+              AI is mapping your resume data...
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-[var(--dust)] leading-relaxed">
+              Extracting structured sections, formatting bullet points, and populating builder fields.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -191,12 +220,15 @@ export default function Builder() {
     );
   }
 
+  const activeSections = ALL_SECTIONS.filter((sec) => activeSectionIds.includes(sec.id));
+  const moreSections = OPTIONAL_SECTIONS.filter((sec) => !activeSectionIds.includes(sec.id));
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
+    <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] text-slate-900 dark:text-[var(--parchment)] flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
       {/* Top Header */}
       <AppHeader
         leftSlot={
-          <h1 className="text-sm md:text-base font-bold font-display text-slate-900 dark:text-slate-100 dark:text-[#F5F6FA] tracking-tight truncate max-w-[160px] md:max-w-sm">
+          <h1 className="text-sm md:text-base font-bold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight truncate max-w-[160px] md:max-w-sm">
             {resume.title}
           </h1>
         }
@@ -264,11 +296,11 @@ export default function Builder() {
       {/* Main Two-Panel Content */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Left Panel: Section Navigation & Active Form */}
-        <div className="w-full md:w-1/2 lg:w-5/12 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900">
+        <div className="w-full md:w-1/2 lg:w-5/12 border-r border-slate-200 dark:border-[var(--border-glass)] flex flex-col bg-white dark:bg-[var(--ink)]">
           {/* Horizontal scrollable tabs */}
-          <div className="p-3 bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-700/80 overflow-x-auto scrollbar-none">
+          <div className="p-3 bg-slate-50/80 dark:bg-[var(--void)]/80 border-b border-slate-200/80 dark:border-[var(--border-glass)] overflow-x-auto scrollbar-none">
             <div className="flex space-x-2">
-              {ACTIVE_SECTIONS.map((sec) => {
+              {activeSections.map((sec) => {
                 const isActive = activeTab === sec.id;
                 return (
                   <button
@@ -276,8 +308,8 @@ export default function Builder() {
                     onClick={() => setActiveTab(sec.id)}
                     className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center space-x-1.5 cursor-pointer ${
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-500 text-white shadow-soft-sm'
-                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/60 dark:hover:bg-indigo-500/10 border border-slate-200/60 dark:border-slate-700/60'
+                        ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-[var(--signal)] dark:to-[var(--signal-hover)] text-white shadow-soft-sm'
+                        : 'bg-white dark:bg-[var(--ink)] text-slate-600 dark:text-[var(--dust)] hover:text-indigo-600 dark:hover:text-[var(--parchment)] hover:bg-indigo-50/60 dark:hover:bg-[var(--signal)]/8 border border-slate-200/60 dark:border-[var(--border-glass)]'
                     }`}
                   >
                     <span>{sec.icon}</span>
@@ -290,11 +322,11 @@ export default function Builder() {
 
           <div className="flex-1 flex flex-col md:flex-row overflow-y-auto">
             {/* Sidebar Navigation */}
-            <div className="w-full md:w-48 bg-slate-50/50 dark:bg-slate-900/50 border-b md:border-b-0 md:border-r border-slate-200/80 dark:border-slate-700/80 p-3 space-y-1">
-              <div className="px-2 py-1 text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
+            <div className="w-full md:w-48 bg-slate-50/50 dark:bg-[var(--void)]/50 border-b md:border-b-0 md:border-r border-slate-200/80 dark:border-[var(--border-glass)] p-3 space-y-1">
+              <div className="px-2 py-1 text-[10px] font-bold text-slate-400 dark:text-[var(--dust)] uppercase tracking-wider">
                 Active Sections
               </div>
-              {ACTIVE_SECTIONS.map((sec) => {
+              {activeSections.map((sec) => {
                 const isActive = activeTab === sec.id;
                 return (
                   <button
@@ -302,8 +334,8 @@ export default function Builder() {
                     onClick={() => setActiveTab(sec.id)}
                     className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
                       isActive
-                        ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-700/40/80 shadow-soft-xs'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 hover:bg-slate-100/70 dark:bg-slate-800/70'
+                        ? 'bg-indigo-50 dark:bg-[var(--signal)]/10 text-indigo-700 dark:text-[var(--signal)] border border-indigo-200/80 dark:border-[var(--signal)]/20 shadow-soft-xs'
+                        : 'text-slate-600 dark:text-[var(--dust)] hover:text-slate-900 dark:hover:text-[var(--parchment)] hover:bg-slate-100/70 dark:hover:bg-[var(--ink-glass-bg)]'
                     }`}
                   >
                     <span className="flex items-center space-x-2">
@@ -314,29 +346,32 @@ export default function Builder() {
                 );
               })}
 
-              <div className="pt-3">
-                <div className="px-2 py-1 text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
-                  More Sections
-                </div>
-                {COMING_SOON_SECTIONS.map((sec) => (
-                  <div
-                    key={sec.id}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs text-slate-400 dark:text-slate-400 opacity-60 flex items-center justify-between cursor-not-allowed"
-                  >
-                    <span className="flex items-center space-x-2">
-                      <span>{sec.icon}</span>
-                      <span>{sec.label}</span>
-                    </span>
-                    <Pill variant="neutral" size="sm">
-                      Soon
-                    </Pill>
+              {moreSections.length > 0 && (
+                <div className="pt-3">
+                  <div className="px-2 py-1 text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
+                    More Sections
                   </div>
-                ))}
-              </div>
+                  {moreSections.map((sec) => (
+                    <button
+                      key={sec.id}
+                      onClick={() => handleAddSection(sec.id)}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-slate-800/50 flex items-center justify-between cursor-pointer transition-colors"
+                    >
+                      <span className="flex items-center space-x-2">
+                        <span>{sec.icon}</span>
+                        <span>{sec.label}</span>
+                      </span>
+                      <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-800">
+                        + Add
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Active Form Area */}
-            <div className="flex-1 p-6 overflow-y-auto bg-slate-50/30 dark:bg-slate-900/30 min-h-[400px]">
+            <div className="flex-1 p-6 overflow-y-auto bg-slate-50/30 dark:bg-[var(--void)]/30 min-h-[400px]">
               {activeTab === 'personal_info' && (
                 <PersonalInfoForm
                   data={sectionsData.personal_info || {}}
@@ -369,6 +404,41 @@ export default function Builder() {
                 <SkillsForm
                   data={sectionsData.skills || { categories: [] }}
                   onChange={(newVal) => handleSectionChange('skills', newVal)}
+                />
+              )}
+
+              {activeTab === 'certifications' && (
+                <CertificationsForm
+                  data={sectionsData.certifications || { items: [] }}
+                  onChange={(newVal) => handleSectionChange('certifications', newVal)}
+                />
+              )}
+
+              {activeTab === 'achievements' && (
+                <AchievementsForm
+                  data={sectionsData.achievements || { items: [] }}
+                  onChange={(newVal) => handleSectionChange('achievements', newVal)}
+                />
+              )}
+
+              {activeTab === 'positions_of_responsibility' && (
+                <ResponsibilityForm
+                  data={sectionsData.positions_of_responsibility || { items: [] }}
+                  onChange={(newVal) => handleSectionChange('positions_of_responsibility', newVal)}
+                />
+              )}
+
+              {activeTab === 'languages' && (
+                <LanguagesForm
+                  data={sectionsData.languages || { items: [] }}
+                  onChange={(newVal) => handleSectionChange('languages', newVal)}
+                />
+              )}
+
+              {activeTab === 'interests' && (
+                <InterestsForm
+                  data={sectionsData.interests || { items: [] }}
+                  onChange={(newVal) => handleSectionChange('interests', newVal)}
                 />
               )}
 

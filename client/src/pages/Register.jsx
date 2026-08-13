@@ -4,6 +4,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
+import GoogleAuthButton from '../components/ui/GoogleAuthButton';
 import logoMark from '../assets/logo-mark.png';
 
 export default function Register() {
@@ -18,7 +19,7 @@ export default function Register() {
   const [apiError, setApiError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, user } = useAuth();
+  const { register, loginWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -79,8 +80,22 @@ export default function Register() {
     }
   };
 
+  const handleGoogleSuccess = async (credential) => {
+    setApiError('');
+    const result = await loginWithGoogle(credential);
+    if (result.success) {
+      navigate('/dashboard');
+    } else {
+      setApiError(result.message);
+    }
+  };
+
+  const handleGoogleError = (message) => {
+    setApiError(message);
+  };
+
   return (
-    <div className="min-h-screen hero-bg flex items-center justify-center p-4 font-body selection:bg-indigo-500/20 dark:bg-indigo-400/20 selection:text-indigo-700 dark:text-indigo-300 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] flex items-center justify-center p-4 font-body selection:bg-indigo-500/20 selection:text-indigo-700 relative overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute -top-32 -left-32 w-[450px] h-[450px] rounded-full bg-indigo-200/20 dark:bg-indigo-700/40/20 blur-[90px] pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-[450px] h-[450px] rounded-full bg-indigo-100/30 dark:bg-indigo-800/30/30 blur-[90px] pointer-events-none" />
@@ -94,19 +109,19 @@ export default function Register() {
               alt="HireSetu Logo"
               className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-200"
             />
-            <span className="text-2xl font-extrabold font-display tracking-tight text-slate-900 dark:text-slate-100">
-              Hire<span className="text-indigo-500 dark:text-indigo-400">Setu</span>
+            <span className="text-2xl font-extrabold font-display tracking-tight text-slate-900 dark:text-[var(--parchment)]">
+              Hire<span className="text-indigo-500 dark:text-[var(--signal)]">Setu</span>
             </span>
           </Link>
-          <h1 className="text-xl font-bold font-display text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-xl font-bold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight">
             Create Your Account
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-[var(--dust)]">
             Start building AI-enhanced ATS resumes in seconds
           </p>
         </div>
 
-        <Card padding="p-8" className="bg-white border-slate-200/90 dark:border-slate-700/90 shadow-soft-xl">
+        <Card padding="p-8" className="bg-white border-slate-200/90 dark:border-[var(--border-glass)] dark:bg-[var(--ink)] shadow-soft-xl">
           {/* API Error Alert */}
           {apiError && (
             <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200/80 rounded-xl text-rose-700 text-xs font-medium flex items-center space-x-2 shadow-soft-xs">
@@ -114,6 +129,20 @@ export default function Register() {
               <span>{apiError}</span>
             </div>
           )}
+
+          {/* Google Sign-Up */}
+          <GoogleAuthButton
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            isLoading={isSubmitting}
+          />
+
+          {/* Divider */}
+          <div className="my-5 flex items-center gap-3">
+            <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800" />
+            <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide">or</span>
+            <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800" />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <Input
@@ -183,7 +212,7 @@ export default function Register() {
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:text-indigo-300 font-semibold hover:underline"
+              className="text-indigo-600 dark:text-[var(--signal)] hover:text-indigo-700 dark:hover:text-[var(--signal-hover)] font-semibold hover:underline"
             >
               Log in
             </Link>

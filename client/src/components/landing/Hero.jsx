@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
+import { useGSAP, ScrollTrigger } from '../../lib/gsap';
 
 /* ─── Decorative dot-grid SVG ────────────────────────────────────────── */
 function DotGrid({ className = '' }) {
@@ -119,12 +120,28 @@ function ResumeCard({ className = '', style = {} }) {
 
 /* ─── Main Hero Component ────────────────────────────────────────────── */
 export default function Hero() {
+  const heroRef = useRef(null);
+
+  // Setup Verification Test Trigger (Will be replaced/expanded in later parts)
+  useGSAP(
+    () => {
+      ScrollTrigger.create({
+        trigger: heroRef.current,
+        start: 'top 80%',
+        onEnter: () => {
+          console.log('[GSAP Setup Test] Hero section entered viewport via ScrollTrigger');
+        },
+      });
+    },
+    { scope: heroRef }
+  );
+
   return (
-    <section className="relative hero-bg min-h-[calc(100dvh-64px)] flex items-center py-16 md:py-20 overflow-hidden">
+    <section ref={heroRef} className="relative hero-bg min-h-[calc(100dvh-64px)] flex items-center py-16 md:py-20 overflow-hidden">
       
-      {/* ── Soft violet orbs for depth ─────────────── */}
-      <div className="absolute -top-32 -right-24 w-[520px] h-[520px] rounded-full bg-indigo-200/25 dark:bg-indigo-500/10 blur-[80px] pointer-events-none" />
-      <div className="absolute top-1/2 -left-32 w-[380px] h-[380px] rounded-full bg-indigo-100/30 dark:bg-indigo-400/5 blur-[64px] pointer-events-none" />
+      {/* ── Soft violet orbs for depth (parallax: orbs lag at 0.7 → feel like distant atmosphere) ─── */}
+      <div data-speed="0.7" className="absolute -top-32 -right-24 w-[520px] h-[520px] rounded-full bg-indigo-200/25 dark:bg-indigo-500/10 blur-[80px] pointer-events-none" />
+      <div data-speed="0.75" className="absolute top-1/2 -left-32 w-[380px] h-[380px] rounded-full bg-indigo-100/30 dark:bg-indigo-400/5 blur-[64px] pointer-events-none" />
 
       {/* ── Content wrapper ───────────────────────── */}
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
@@ -203,21 +220,33 @@ export default function Hero() {
           ══════════════════════════════════════════ */}
           <div className="relative flex justify-center lg:justify-end">
 
-            {/* Dot-grid decoration — behind both cards */}
-            <DotGrid className="bottom-0 right-0 translate-x-6 translate-y-6 z-0" />
+            {/* Dot-grid decoration — parallax at 0.8 (lags slightly, adds depth behind cards)
+                 NOTE: data-speed must be on the actual DOM node, not the custom component,
+                 because ScrollSmoother reads attributes directly from the element. */}
+            <div data-speed="0.8" className="absolute bottom-0 right-0 translate-x-6 translate-y-6 z-0" aria-hidden="true">
+              <DotGrid />
+            </div>
 
-            {/* ── Back card (offset, rotated slightly) ─ */}
-            <ResumeCard
-              className="absolute top-6 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:right-0 w-[300px] opacity-80 z-10"
-              style={{ transform: 'rotate(3deg) translateY(20px) scale(0.92)' }}
-            />
+            {/* ── Back card — parallax at 0.88, slightly slower than front card → depth illusion
+                 Wrapped in a div so ScrollSmoother can read data-speed (ResumeCard doesn't
+                 forward unknown props to its root element). */}
+            <div
+              data-speed="0.88"
+              className="absolute top-6 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:right-0 z-10"
+              aria-hidden="true"
+            >
+              <ResumeCard
+                className="w-[300px] opacity-80"
+                style={{ transform: 'rotate(3deg) translateY(20px) scale(0.92)' }}
+              />
+            </div>
 
-            {/* ── Front card (main, centered) ────────── */}
+            {/* ── Front card (main) — no parallax, user is reading this */}
             <div className="relative z-20 w-[300px] lg:w-[320px]">
               <ResumeCard style={{ transform: 'rotate(-1.5deg)' }} />
 
-              {/* Floating badge: ATS score — top-right */}
-              <div className="absolute -top-4 -right-5 z-30">
+              {/* Floating badge: ATS score — parallax 1.1 (rises slightly ahead of scroll) */}
+              <div data-speed="1.1" className="absolute -top-4 -right-5 z-30">
                 <div className="bg-white dark:bg-slate-800 border border-emerald-200/90 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 shadow-soft-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold font-display whitespace-nowrap">
                   <span className="relative flex w-2 h-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
@@ -227,8 +256,8 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Floating badge: auto-save — bottom-left */}
-              <div className="absolute -bottom-4 -left-5 z-30 hidden sm:flex">
+              {/* Floating badge: auto-save — parallax 1.15 (rises slightly faster) */}
+              <div data-speed="1.15" className="absolute -bottom-4 -left-5 z-30 hidden sm:flex">
                 <div className="bg-slate-900 dark:bg-slate-700 text-white shadow-soft-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-medium font-body whitespace-nowrap border dark:border-slate-600">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
                   ⚡ Saved automatically
@@ -236,16 +265,17 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* ── Floating rocket icon — top-right of visual area ── */}
+            {/* ── Floating rocket icon — parallax 1.25 (rises ahead of scroll, floaty feel) */}
             <div
+              data-speed="1.25"
               className="animate-float absolute -top-8 right-0 lg:-right-4 z-30 text-3xl pointer-events-none"
               aria-hidden="true"
             >
               🚀
             </div>
 
-            {/* Ambient glow behind all cards */}
-            <div className="absolute inset-4 bg-indigo-300/20 dark:bg-indigo-500/10 rounded-3xl blur-2xl -z-10" />
+            {/* Ambient glow behind all cards — parallax 0.75 (slowest layer, most distant) */}
+            <div data-speed="0.75" className="absolute inset-4 bg-indigo-300/20 dark:bg-indigo-500/10 rounded-3xl blur-2xl -z-10" />
           </div>
 
         </div>

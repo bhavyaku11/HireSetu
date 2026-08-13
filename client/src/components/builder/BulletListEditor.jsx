@@ -11,6 +11,8 @@ export default function BulletListEditor({
   context = {},
 }) {
   const { token } = useAuth();
+  const safeBullets = Array.isArray(bullets) && bullets.length > 0 ? bullets.map(b => (b == null ? '' : String(b))) : [''];
+
   const [aiModalState, setAiModalState] = useState({
     isOpen: false,
     bulletIndex: null,
@@ -22,30 +24,30 @@ export default function BulletListEditor({
   });
 
   const handleBulletChange = (index, value) => {
-    const newBullets = [...bullets];
+    const newBullets = [...safeBullets];
     newBullets[index] = value;
     onChange(newBullets);
   };
 
   const handleAddBullet = () => {
-    onChange([...bullets, '']);
+    onChange([...safeBullets, '']);
   };
 
   const handleRemoveBullet = (index) => {
-    if (bullets.length === 1) {
+    if (safeBullets.length === 1) {
       onChange(['']);
       return;
     }
-    const newBullets = bullets.filter((_, i) => i !== index);
+    const newBullets = safeBullets.filter((_, i) => i !== index);
     onChange(newBullets);
   };
 
   const handleMoveBullet = (index, direction) => {
     if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === bullets.length - 1) return;
+    if (direction === 'down' && index === safeBullets.length - 1) return;
 
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    const newBullets = [...bullets];
+    const newBullets = [...safeBullets];
     const [movedBullet] = newBullets.splice(index, 1);
     newBullets.splice(targetIndex, 0, movedBullet);
     onChange(newBullets);
@@ -135,7 +137,7 @@ export default function BulletListEditor({
       </div>
 
       <div className="space-y-2">
-        {bullets.map((bullet, index) => {
+        {safeBullets.map((bullet, index) => {
           const isEligibleForAi = bullet && bullet.trim().length >= 5;
 
           return (
@@ -179,7 +181,7 @@ export default function BulletListEditor({
                 <button
                   type="button"
                   onClick={() => handleMoveBullet(index, 'down')}
-                  disabled={index === bullets.length - 1}
+                  disabled={index === safeBullets.length - 1}
                   title="Move Down"
                   className="p-1 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 disabled:opacity-30 text-xs cursor-pointer"
                 >
