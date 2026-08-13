@@ -16,6 +16,77 @@ const pool = mysql.createPool({
 
 async function ensureSchemaUpdates() {
   try {
+    // Auto-create users table if missing
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NULL,
+        google_id VARCHAR(255) NULL,
+        profile_image_url VARCHAR(500) NULL,
+        linkedin_url VARCHAR(500) NULL,
+        github_url VARCHAR(500) NULL,
+        portfolio_url VARCHAR(500) NULL,
+        bio VARCHAR(255) NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
+    // Auto-create job_descriptions table if missing
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS job_descriptions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        resume_id INT NOT NULL,
+        title VARCHAR(255) NULL,
+        raw_text LONGTEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
+    // Auto-create resumes table if missing
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS resumes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        raw_extracted_text LONGTEXT NULL,
+        ats_analysis JSON NULL,
+        tailored_for_jd_id INT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        INDEX idx_resumes_user_id (user_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
+    // Auto-create resume_sections table if missing
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS resume_sections (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        resume_id INT NOT NULL,
+        section_type ENUM(
+          'personal_info',
+          'education',
+          'experience',
+          'projects',
+          'skills',
+          'certifications',
+          'achievements',
+          'positions_of_responsibility',
+          'languages',
+          'interests'
+        ) NOT NULL,
+        content JSON NOT NULL,
+        sort_order INT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE,
+        INDEX idx_sections_resume_id (resume_id),
+        INDEX idx_sections_sort (resume_id, sort_order)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
     const [rawCols] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'raw_extracted_text'");
     if (rawCols.length === 0) {
       await pool.query('ALTER TABLE resumes ADD COLUMN raw_extracted_text LONGTEXT NULL');
@@ -28,26 +99,15 @@ async function ensureSchemaUpdates() {
       console.log('Successfully added ats_analysis column to resumes table');
     }
 
-    const userProfileCols = ['profile_image_url', 'linkedin_url', 'github_url', 'portfolio_url', 'bio'];
+    const userProfileCols = ['google_id', 'profile_image_url', 'linkedin_url', 'github_url', 'portfolio_url', 'bio'];
     for (const col of userProfileCols) {
       const [existing] = await pool.query(`SHOW COLUMNS FROM users LIKE '${col}'`);
       if (existing.length === 0) {
-        const colType = col === 'bio' ? 'VARCHAR(255) NULL' : 'VARCHAR(500) NULL';
+        const colType = (col === 'bio' || col === 'google_id') ? 'VARCHAR(255) NULL' : 'VARCHAR(500) NULL';
         await pool.query(`ALTER TABLE users ADD COLUMN ${col} ${colType}`);
         console.log(`Successfully added ${col} column to users table`);
       }
     }
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS job_descriptions (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        resume_id INT NOT NULL,
-        title VARCHAR(255) NULL,
-        raw_text LONGTEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    `);
 
     const [tailoredCols] = await pool.query("SHOW COLUMNS FROM resumes LIKE 'tailored_for_jd_id'");
     if (tailoredCols.length === 0) {
