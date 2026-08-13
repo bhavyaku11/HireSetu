@@ -1,6 +1,5 @@
 /**
  * AppHeader — shared header for all authenticated app pages.
- * Uses dark: Tailwind variants for reliable dark mode (not CSS overrides).
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -13,7 +12,7 @@ export default function AppHeader({ leftSlot, rightSlot }) {
   const { isDarkMode, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/60 px-4 md:px-6 py-3 shadow-soft-xs transition-colors duration-300">
+    <header className="sticky top-0 z-30 bg-white/90 dark:bg-[var(--void)]/95 backdrop-blur-md border-b border-slate-200 dark:border-[var(--border-glass)] px-4 md:px-6 py-3 shadow-soft-xs transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
 
         {/* ── Left: Logo + page-specific slot ─────── */}
@@ -24,14 +23,14 @@ export default function AppHeader({ leftSlot, rightSlot }) {
               alt="HireSetu Logo"
               className="w-8 h-8 object-contain group-hover:scale-105 transition-transform duration-200"
             />
-            <span className="text-[16px] font-extrabold font-display tracking-tight text-slate-900 dark:text-slate-100 leading-none hidden sm:block">
-              Hire<span className="text-indigo-500 dark:text-indigo-400">Setu</span>
+            <span className="text-[16px] font-extrabold font-display tracking-tight text-slate-900 dark:text-[var(--parchment)] leading-none hidden sm:block">
+              Hire<span className="text-indigo-500 dark:text-[var(--signal)]">Setu</span>
             </span>
           </Link>
 
           {leftSlot && (
             <>
-              <div className="h-5 w-px bg-slate-200 dark:bg-slate-700 shrink-0" />
+              <div className="h-5 w-px bg-slate-200 dark:bg-[var(--border-glass)] shrink-0" />
               <div className="min-w-0 flex items-center gap-2">
                 {leftSlot}
               </div>

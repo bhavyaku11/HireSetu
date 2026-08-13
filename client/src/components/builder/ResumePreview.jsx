@@ -16,14 +16,45 @@ export default function ResumePreview({ sections = {} }) {
   const skillsObj = sections.skills || { categories: [] };
   const skillCategories = Array.isArray(skillsObj.categories) ? skillsObj.categories : [];
 
+  const certObj = sections.certifications || { items: [] };
+  const certItems = Array.isArray(certObj.items) ? certObj.items : [];
+
+  const achObj = sections.achievements || { items: [] };
+  const achItems = Array.isArray(achObj.items) ? achObj.items : [];
+
+  const respObj = sections.positions_of_responsibility || { items: [] };
+  const respItems = Array.isArray(respObj.items) ? respObj.items : [];
+
+  const langObj = sections.languages || { items: [] };
+  const langItems = Array.isArray(langObj.items) ? langObj.items : [];
+
+  const interestsObj = sections.interests || { items: [] };
+  const interestItems = Array.isArray(interestsObj.items) ? interestsObj.items : [];
+
   // Filter valid entries
   const validEducation = educationItems.filter((i) => i.institution && i.institution.trim() !== '');
   const validExperience = experienceItems.filter((i) => i.company && i.company.trim() !== '');
   const validProjects = projectItems.filter((i) => i.name && i.name.trim() !== '');
   const validSkills = skillCategories.filter((cat) => cat.name && cat.skills && cat.skills.length > 0);
+  const validCerts = certItems.filter((i) => i.name && i.name.trim() !== '');
+  const validAchs = achItems.filter((i) => i.title && i.title.trim() !== '');
+  const validResps = respItems.filter((i) => (i.role || i.organization) && (i.role.trim() !== '' || i.organization.trim() !== ''));
+  const validLangs = langItems.filter((i) => i.name && i.name.trim() !== '');
+  const validInterests = interestItems.filter((i) => typeof i === 'string' && i.trim() !== '');
 
   const hasPersonalHeader = personal.fullName || personal.email || personal.phone || personal.location;
-  const hasContent = hasPersonalHeader || personal.summary || validEducation.length > 0 || validExperience.length > 0 || validProjects.length > 0 || validSkills.length > 0;
+  const hasContent =
+    hasPersonalHeader ||
+    personal.summary ||
+    validEducation.length > 0 ||
+    validExperience.length > 0 ||
+    validProjects.length > 0 ||
+    validSkills.length > 0 ||
+    validCerts.length > 0 ||
+    validAchs.length > 0 ||
+    validResps.length > 0 ||
+    validLangs.length > 0 ||
+    validInterests.length > 0;
 
   return (
     <DocumentSurface className="w-full max-w-[210mm] min-h-[297mm] rounded-xl shadow-2xl p-10 font-sans text-[11px] leading-relaxed transition-all border-none">
@@ -227,6 +258,94 @@ export default function ResumePreview({ sections = {} }) {
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Certifications Section */}
+          {validCerts.length > 0 && (
+            <div className="space-y-2">
+              <h2 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+                Certifications
+              </h2>
+              <div className="space-y-1.5">
+                {validCerts.map((cert, idx) => (
+                  <div key={cert.id || idx} className="space-y-0.5">
+                    <div className="flex justify-between font-bold text-slate-900">
+                      <span>
+                        {cert.name} {cert.issuer ? `— ${cert.issuer}` : ''}
+                      </span>
+                      {cert.date && <span className="font-medium text-slate-600 text-[10px]">{cert.date}</span>}
+                    </div>
+                    {cert.link && <div className="text-[10px] text-slate-600 font-mono">{cert.link}</div>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Achievements Section */}
+          {validAchs.length > 0 && (
+            <div className="space-y-2">
+              <h2 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+                Achievements & Awards
+              </h2>
+              <div className="space-y-1.5">
+                {validAchs.map((ach, idx) => (
+                  <div key={ach.id || idx} className="space-y-0.5">
+                    <div className="flex justify-between font-bold text-slate-900">
+                      <span>{ach.title}</span>
+                      {ach.date && <span className="font-medium text-slate-600 text-[10px]">{ach.date}</span>}
+                    </div>
+                    {ach.description && <p className="text-[10.5px] text-slate-700">{ach.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Positions of Responsibility Section */}
+          {validResps.length > 0 && (
+            <div className="space-y-2">
+              <h2 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+                Positions of Responsibility
+              </h2>
+              <div className="space-y-1.5">
+                {validResps.map((resp, idx) => (
+                  <div key={resp.id || idx} className="space-y-0.5">
+                    <div className="flex justify-between font-bold text-slate-900">
+                      <span>
+                        {resp.role} {resp.organization ? `— ${resp.organization}` : ''}
+                      </span>
+                      {resp.date && <span className="font-medium text-slate-600 text-[10px]">{resp.date}</span>}
+                    </div>
+                    {resp.description && <p className="text-[10.5px] text-slate-700">{resp.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Languages Section */}
+          {validLangs.length > 0 && (
+            <div className="space-y-1.5">
+              <h2 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+                Languages
+              </h2>
+              <div className="text-[10.5px] text-slate-800">
+                {validLangs.map((lang) => `${lang.name}${lang.proficiency ? ` (${lang.proficiency})` : ''}`).join(', ')}
+              </div>
+            </div>
+          )}
+
+          {/* Interests Section */}
+          {validInterests.length > 0 && (
+            <div className="space-y-1.5">
+              <h2 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider border-b border-slate-300 pb-0.5">
+                Interests & Hobbies
+              </h2>
+              <div className="text-[10.5px] text-slate-800">
+                {validInterests.join(', ')}
               </div>
             </div>
           )}

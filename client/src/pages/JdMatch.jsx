@@ -152,21 +152,22 @@ export default function JdMatch() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center font-body">
-        <div className="flex items-center space-x-3 bg-white p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-soft-md">
-          <div className="w-6 h-6 border-2 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Loading Job Match Analysis...</span>
+      <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] text-slate-900 dark:text-[var(--parchment)] flex items-center justify-center font-body">
+        <div className="scannable scanning flex items-center space-x-3 bg-white dark:bg-[var(--ink)] p-6 rounded-2xl border border-slate-200 dark:border-[var(--border-glass)] shadow-soft-md">
+          <div className="scan-line" aria-hidden="true" />
+          <div className="w-6 h-6 border-2 border-indigo-500 dark:border-[var(--signal)] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-semibold text-slate-600 dark:text-[var(--dust)]">Loading Job Match Analysis...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
+    <div className="min-h-screen bg-slate-50 dark:bg-[var(--void)] text-slate-900 dark:text-[var(--parchment)] flex flex-col font-body selection:bg-indigo-500/20 selection:text-indigo-400">
       {/* Page Header */}
       <AppHeader
         leftSlot={
-          <h1 className="text-sm md:text-base font-bold font-display text-slate-900 dark:text-slate-100 dark:text-[#F5F6FA] tracking-tight truncate">
+          <h1 className="text-sm md:text-base font-bold font-display text-slate-900 dark:text-[var(--parchment)] tracking-tight truncate">
             <span className="hidden sm:inline">{resume?.title || 'Resume'} — </span>Job Match
           </h1>
         }
@@ -220,8 +221,8 @@ export default function JdMatch() {
 
       {/* Modal for Adding / Pasting a New Job Description */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-slate-200 dark:border-slate-700 p-6 md:p-8 max-w-2xl w-full shadow-soft-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-[var(--void)]/70 dark:bg-[var(--void)]/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
+          <div className="bg-white dark:bg-[var(--ink)] rounded-3xl border border-slate-200 dark:border-[var(--border-glass)] p-6 md:p-8 max-w-2xl w-full shadow-soft-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <h3 className="text-base font-bold font-display text-slate-900 dark:text-slate-100 flex items-center space-x-2">
                 <span>🎯 Save New Job Description</span>
