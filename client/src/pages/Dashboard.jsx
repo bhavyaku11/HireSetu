@@ -16,6 +16,7 @@ import {
   AnimatedSparklesIcon,
   AnimatedClockIcon,
 } from '../components/icons/AnimatedIcons';
+import ResumeCard from '../components/dashboard/ResumeCard';
 
 /* ─── Skeleton card (matches ResumeCard shape) ────────── */
 function SkeletonCard() {
