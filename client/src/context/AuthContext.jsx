@@ -70,10 +70,20 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        return { success: false, message: data.message || 'Registration failed' };
+        return { 
+          success: false, 
+          message: data?.message || (response.status === 404 
+            ? 'Backend API not found. Please check server deployment.' 
+            : `Registration failed (${response.status})`) 
+        };
       }
 
       localStorage.setItem('token', data.token);
@@ -82,7 +92,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Registration API error:', error);
-      return { success: false, message: 'Network error. Please try again later.' };
+      return { success: false, message: 'Network error: Cannot reach the backend server. Please check if the server is running.' };
     }
   };
 
@@ -96,10 +106,20 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        return { success: false, message: data.message || 'Login failed' };
+        return { 
+          success: false, 
+          message: data?.message || (response.status === 404 
+            ? 'Backend API not found. Please check server deployment.' 
+            : `Login failed (${response.status})`) 
+        };
       }
 
       localStorage.setItem('token', data.token);
@@ -108,7 +128,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Login API error:', error);
-      return { success: false, message: 'Network error. Please try again later.' };
+      return { success: false, message: 'Network error: Cannot reach the backend server. Please check if the server is running.' };
     }
   };
 
@@ -126,10 +146,20 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ credential }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        return { success: false, message: data.message || 'Google sign-in failed.' };
+        return { 
+          success: false, 
+          message: data?.message || (response.status === 404 
+            ? 'Backend API not found. Please check server deployment.' 
+            : `Google sign-in failed (${response.status})`) 
+        };
       }
 
       localStorage.setItem('token', data.token);
@@ -138,7 +168,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Google auth API error:', error);
-      return { success: false, message: 'Network error. Please try again later.' };
+      return { success: false, message: 'Network error: Cannot reach the backend server. Please check if the server is running.' };
     }
   };
 

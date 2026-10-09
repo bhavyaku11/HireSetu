@@ -47,6 +47,11 @@ export default class ErrorBoundary extends Component {
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 An unexpected error occurred. Your saved resume data is safe — try reloading or going back to the dashboard.
               </p>
+              {import.meta.env?.DEV && this.state.error?.message && (
+                <pre className="text-left text-[11px] font-mono bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 p-3 rounded-xl border border-rose-200 dark:border-rose-900/50 overflow-auto max-h-36 whitespace-pre-wrap">
+                  {this.state.error.toString()}
+                </pre>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
