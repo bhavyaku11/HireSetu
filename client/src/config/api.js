@@ -1,5 +1,10 @@
 // Central API Base URL Configuration
-// In production, this will use VITE_API_URL if set, or fall back to empty string (which uses vercel.json rewrite proxy).
-const rawApiUrl = import.meta.env.VITE_API_URL || '';
+// In production on Vercel, requests route through the vercel.json rewrite proxy ('')
+// to prevent cross-origin issues and eliminate stale domain dependencies.
+const envUrl = (import.meta.env.VITE_API_URL || '').trim();
+// Ignore deprecated Railway domain if still configured in Vercel environment variables
+const rawApiUrl = envUrl.includes('railway') ? '' : envUrl;
+
 // Strip trailing slash if present
 export const API_BASE = rawApiUrl.replace(/\/$/, '');
+
